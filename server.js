@@ -675,7 +675,7 @@ app.post('/stores/stock-out', logger, userLevel('user'), (req, res, next) => {
         if(row == undefined){        
           next()
         }else{
-          res.send("allready out")
+          res.send("already out")
           return
         }
       }
