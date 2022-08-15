@@ -1,0 +1,84 @@
+<%- include('../admin/admin-header.ejs') %>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+</head>
+
+<body>
+    <div>
+        <form class="myBox" style="animation-name: fromTop;" method='post' action='' enctype='multipart/form-data' id="form">
+            <h2>Add order</h2>
+            <input type="checkbox" name="print" id="print">Print
+            <input type="checkbox" name="emb" id="emb">Emb
+            <input type="checkbox" name="transfer">Transfer
+            <input type="checkbox" name="aspre">As Pre <br>
+            <input type="checkbox" name="digi">Digi pic
+            <input type="checkbox" name="sample">Sample
+            <input type="checkbox" name="swatch">Swatch <br>
+            <br>
+            <input type="text" class="input-field-small" autocomplete="off" placeholder="Order Number" name="ordernumber" id="orderNumber">
+            <input type="text" class="input-field-med" autocomplete="off" placeholder="Order Name" name="ordername" id="orderName"><br>
+            <br>
+            Date Order Taken: <input type="date" class="input-field-jobs" name="takendate" id="takenDate"><br>
+            <br>
+            Date Order Required: <input type="date" class="input-field-jobs" name="duedate" id="dueDate"><br>
+            <br>
+            Positions: <input type="number" size="1" name="pos" min="1" value="1" id="pos"><br>
+            <br>
+            Screens: <input type="number" size="1" name="screens" min="0" value="0" id="screens"><br>
+            <br>
+            stitch count: <input type="text" class="input-field-med" autocomplete="off" placeholder="0" name="stitchcount" id="stitchCount"><br>
+            <br>
+            delivery time: <input type="number" size="1" name="deliverytime" min="1" value="1" id="pos"> day's<br>
+            <br>
+            <input type='submit' name='addjob' value='add job'>
+            <div id="errorMsg"></div>
+
+        </form>
+    </div>
+
+</body>
+<script type="text/JavaScript">
+const orderNumber = document.getElementById("orderNumber");
+const form = document.getElementById("form");
+const orderName = document.getElementById("orderName");
+const takenDate = document.getElementById("takenDate");
+const dueDate = document.getElementById("dueDate");
+const stitchCount = document.getElementById("stitchCount");
+const print = document.getElementById("print");
+const emb = document.getElementById("emb");
+const screens = document.getElementById("screens");
+const errorMsg = document.getElementById("errorMsg");
+
+form.addEventListener("submit", (e) => {
+    let messages = []
+    if (orderNumber.value === "" || orderNumber.value == null ){
+        messages.push("Order number?")
+    }
+    if (orderName.value === "" || orderName.value == null){
+        messages.push("Name?")
+    }
+    if (takenDate.value === "" || takenDate.value == null){
+        messages.push("Taken on?")
+    }
+    if (dueDate.value === "" || dueDate.value == null){
+        messages.push("Due for delivery?")
+    }
+    if (emb.checked && (stitchCount.value === "" || stitchCount.value == null || isNaN(stitchCount.value) ) ){
+        messages.push("Stitch count?")
+    }
+    if (print.checked && (screens.value === "" || screens.value == null || screens.value === "0" ) ) {
+        messages.push("Screen count?")
+    }
+    if (messages.length > 0){
+        e.preventDefault()
+        errorMsg.innerText = messages.join(", ")
+    }
+    
+})  
+
+    </script>
+
+</html>
+<%- include('../footer.ejs') %>

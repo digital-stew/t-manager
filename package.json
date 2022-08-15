@@ -1,0 +1,32 @@
+{
+  "name": "t-manager",
+  "version": "3.0_node",
+  "description": "",
+  "main": "index.js",
+  "environment": "production",
+  "env": "production",
+  "scripts": {
+    "devStart": "nodemon server.js",
+    "convert": "nodemon convertDatabase.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.1",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "express-fileupload": "^1.4.0",
+    "express-session": "^1.17.3",
+    "fs-extra": "^10.1.0",
+    "imagemagick": "^0.1.3",
+    "socketio": "^1.0.0",
+    "sqlite3": "^5.0.11"
+  }
+}

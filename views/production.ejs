@@ -1,0 +1,144 @@
+<%- include('./header.ejs') %>
+
+<!DOCTYPE html>
+<html>
+  <head>
+
+  </head>
+
+<body>
+  <main>
+  <div class="hiddenData" id="hiddenData" style='position: absolute;left: 0px;top: 450px;width: 300px;padding: 10px;'>
+
+    <div>
+      <b id="hidden-orderName"> </b> <br>
+      <b id="hidden-orderNumber"> </b> <br>
+    </div>
+    <div>
+      <input id="hidden-print" type="checkbox" onclick="return false;">Print
+      <input id="hidden-emb" type="checkbox" onclick="return false;">Emb
+      <input id="hidden-transfer" type="checkbox" onclick="return false;">Transfer
+      <input id="hidden-aspre" type="checkbox" onclick="return false;">As Pre <br>
+      <input id="hidden-digi" type="checkbox" onclick="return false;">Digi pic
+      <input id="hidden-sample" type="checkbox" onclick="return false;">Sample
+      <input id="hidden-swatch" type="checkbox" onclick="return false;">Swatch <br>
+    </div>
+    <div>
+      <p id="hidden-"> </p>
+      <p id="hidden-"> </p>
+      <p id="hidden-"> </p>
+      <p id="hidden-"> </p>
+      <p id="hidden-"> </p>
+      <p id="hidden-"> </p>
+      <p id="hidden-"> </p>
+      <p id="hidden-"> </p>
+    </div>
+
+  </div>
+  <div style="text-align: center;">
+    <form method='get' action='' enctype='multipart/form-data'>
+      <input type="date" class="input-field" name="selected_date" value="<%=selected_date%>">
+      <input type='submit' name='submit' value='Search'>
+    </form>
+  </div>
+
+  <h2>Production for <%=new Date(searchDate *1000).toLocaleDateString()%> </h2>
+<div>
+  <form class='myBox'  method='get' action='' enctype='multipart/form-data'>
+
+    <table id="t01" class="grid-item" >
+  <tr height="50" >
+	<th>Order number</th>
+	<th>Order name</th>
+	<th>Due date</th>
+  
+    <th>machine</th>
+    <th>stock</th>
+    <th>screens</th>
+    <th>approval</th>
+    
+    <th></th>
+    
+  </tr>
+  <% row.forEach(e => { %>
+    <% var colour = '' %>
+    <% if(e.duedate - todayTimestamp <= 86400 * e.deliverytime ) {colour = "style='background-color:orange'"}%> <!--   if must go out today -->
+    <% if(e.duedate - todayTimestamp <= 0  ) {colour = "style='background-color:red'"} %> <!--   if late -->
+    <tr <%-colour%> >
+          <td>  <%=e.ordernumber%> </td>
+            <td> <%=e.ordername%> </td>
+            <td> <%=new Date(e.duedate*1000).toLocaleDateString()%> </td>            
+            <td> <%=e.machine%> </td>
+            <td><input type='checkbox' onclick='return false;' <%if(e.hasstock){%>checked<%}%> > </td>
+            <td><input type='checkbox' onclick='return false;' <%if(e.hasscreens){%>checked<%}%> > </td>
+            <td><input type='checkbox' onclick='return false;' <%if(e.hasapp){%>checked<%}%> > </td>
+            
+            <td><input type="button" onclick="location.href='/orders/view/<%=e.id%>';" value="View" /></td>
+            <td class= "hiddenData" id="<%=e.ordernumber%>" style="display: none;" > <%-JSON.stringify(e)%> </td>
+           
+            </tr>
+      <% }) %> 
+
+    </table>  
+    </form>
+  </div>
+  <div>
+  &numsp;
+  </div>
+  </div>
+  <script>
+    function addRowHandlers() {
+      var rows = document.getElementById("t01").rows;
+      for (i = 0; i < rows.length; i++) {
+        rows[i].onclick = function() {
+          return function() {
+            //get ordernumber from click
+            var ordernumber = this.cells[0].innerHTML;
+            // console.log("id:" + ordernumber);
+
+            //select element from click
+            var json = document.getElementById(ordernumber).innerHTML;
+
+            var data = JSON.parse(json);
+
+
+            //show hidden box
+            document.getElementById("hiddenData").style.display = "block";
+            document.getElementById("hidden-orderName").innerHTML = "Order name: " + data.orderName;
+            document.getElementById("hidden-orderNumber").innerHTML = "Order number: " + data.orderNumber;
+
+            if (data.print === "1") {
+              document.getElementById("hidden-print").checked = true;
+            }
+            if (data.emb === "1") {
+              document.getElementById("hidden-emb").checked = true;
+            }
+            if (data.transfer === "1") {
+              document.getElementById("hidden-transfer").checked = true;
+            }
+            if (data.aspre === "1") {
+              document.getElementById("hidden-aspre").checked = true;
+            }
+            if (data.digi === "1") {
+              document.getElementById("hidden-digi").checked = true;
+            }
+            if (data.sample === "1") {
+              document.getElementById("hidden-sample").checked = true;
+            }
+            if (data.swatch === "1") {
+              document.getElementById("hidden-swatch").checked = true;
+            }
+            console.log(data.orderName);
+          };
+        }(rows[i]);
+      }
+    }
+
+    window.onload = addRowHandlers();
+  </script>
+  </main>
+</body>
+
+</html>
+
+<%- include('./footer.ejs') %>

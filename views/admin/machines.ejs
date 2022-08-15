@@ -1,0 +1,47 @@
+<%- include('./admin-header.ejs') %>
+
+<!DOCTYPE html>
+<html>
+
+<body>
+  <div>
+    <form class='myBox' method='post' style='width:1000px' action='' enctype='multipart/form-data'>
+
+      <table id="t01">
+        <tr>
+          <th>ID</th>
+          <th>Machine Name</th>
+          <th>Print Heads</th>
+          <th>Dryers</th>
+          <th>Delete</th>
+
+        </tr>
+
+        <% row.forEach(e => { %>
+        <tr>
+          <td> <%=e.id%> </td>
+          <td> <%=e.name%> </td>
+          <td> <%=e.printheads%> </td>
+          <td> <%=e.dryers%> </td>
+          <td> <button type='submit' name='delete' onclick='return confirm()' value='<%=e.id%>' > delete </button> </td>
+        </tr>
+
+        <% }) %>
+    </form>
+    </table>
+  </div>
+
+  <div>
+    <form class="myBox" method='post' action='' enctype='multipart/form-data'>
+      <h2>Add Machine</h2>
+      <input type="text" id="name" name="machine" class="input-field" autocomplete="off" placeholder="Machine Name">
+      <input type="text" id="name" name="printheads" class="input-field" autocomplete="off" placeholder="Print Heads">
+      <input type="text" id="name" name="dryers" class="input-field" autocomplete="off" placeholder="Dryers">
+      <input type='submit' name='add' value='Add Machine'>
+      <br />
+    </form>
+  </div>
+</body>
+
+</html>
+<%- include('../footer.ejs') %>

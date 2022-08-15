@@ -1,0 +1,57 @@
+<%- include('./header.ejs') %>
+
+<!DOCTYPE html>
+<html>
+
+<body>
+  <div>
+    <form class='myBox' method='post' style='width:1000px' action='' enctype='multipart/form-data'>
+
+      <table id="t01">
+
+      <% row.forEach(e => { %>
+              <tr>
+                <td> <%=e.filename%> </td>
+                <td> <%=e.note%> </td>
+                <%if (session.userLevel == 'admin'){%>                       
+                  <td> <button type='submit' name='delete' onclick='return confirm(${sure})' value='<%=e.id%>' > delete </button> </td>
+                <%}%>  
+              </tr>
+      <% }) %>
+    </form>
+    </table>
+  </div>
+  <div>
+<%if (session.userLevel == 'admin'){%>
+    <form class="myBox" method='post' action='' enctype='multipart/form-data'>
+      <h2> Add </h2>
+      <input type="file" name="uploadFile" id="uploadFile">
+      <input type="text" name="note" class="input-field" autocomplete="off" placeholder="note">
+      <input type='submit' name='add' value='Add'>
+      <br />
+    </form>
+<%}%>
+    <br />
+
+  </div>
+
+
+  <script>
+    function addRowHandlers() {
+      var rows = document.getElementById("t01").rows;
+      for (i = 0; i < rows.length; i++) {
+        rows[i].onclick = function() {
+          return function() {
+            window.location.href = this.cells[0].innerHTML;
+          };
+        }(rows[i]);
+      }
+    }
+
+    window.onload = addRowHandlers();
+  </script>
+</body>
+
+</html>
+
+<%- include('./footer.ejs') %>

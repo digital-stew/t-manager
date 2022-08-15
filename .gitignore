@@ -1,0 +1,7 @@
+db.sqlite
+public/Files_Images/*
+public/Files_Images.tn/*
+public/ink/*
+node_modules/
+log.txt
+todo.txt

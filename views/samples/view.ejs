@@ -1,0 +1,158 @@
+<%- include('../header.ejs') %>
+<!DOCTYPE html>
+<html>
+
+
+<body>
+  <br>
+  <div class="myBox">
+    <div class="navbar">
+      <p>Job name:<br>
+        <%=row.name%>
+      </p>
+      <p>Order number:<br>
+        <%=row.number%>
+      </p>
+      <p>Other ref:<br>
+        <%=row.otherref%>
+      </p>
+      <p>Date sampled:<br>
+        <%=new Date(row.date*1000).toLocaleDateString()%>
+      </p>
+      <p>ID:<br>
+        <%=row.rowid%>
+      </p>
+    </div>
+    <div class="row">
+      <!-- Photo Grid -->
+      <div class="column">
+
+        <!-- Slideshow container -->
+        <div class="slideshow-container myBox">
+
+          <!-- Full-width images with number and caption text -->
+          <% var count=1 %>
+          <% try{var pics=JSON.parse(row.pics)}catch{console.error("parse JSON in samples/view error");var pics = []} %>
+          <% var howMany=pics.length %>
+          
+          <%pics.forEach(e=>{ %>
+            <div class='mySlides fade'>
+            <div class='numbertext'>
+            <%=count%> / <%=howMany%>
+            </div>
+                    <img src='/Files_Images/<%=e%>'>
+                  </div>
+                  <% count++ %>
+                    <% }) %>
+                      <!-- Next and previous buttons -->
+                      <a class="prev" onclick="plusSlides(-1)">&#10094</a>
+                      <a class="next" onclick="plusSlides(1)">&#10095</a>
+        </div>
+      </div>
+      <div class="column">
+
+        <div id="printData">
+          <h1>print data front</h1>
+          <p>
+            <% if(row.printdata) { %>
+              <%- row.printdata.replace(/dry /g, '<img src="/img/flash.svg" style="width:40px;height:40px; vertical-align: middle;" > ') %>
+              <%}%>
+          </p>
+        </div>
+
+        <div id="printData">
+          <h1>print data back</h1>
+          <p>
+            <% if(row.printdataback) { %>
+              <%- row.printdataback.replace(/dry /g, '<img src="/img/flash.svg" style="width:40px;height:40px; vertical-align: middle;" > ') %>
+              <%}%>
+          </p>
+        </div>
+
+        <div id="printData">
+          <h1>print data other</h1>
+          <p>
+            <% if(row.printdataother) { %>
+            <%- row.printdataother.replace(/dry /g, '<img src="/img/flash.svg" style="width:40px;height:40px; vertical-align: middle;" > ')  %>
+            <%}%>
+          </p>
+        </div>
+
+        <div id="printData">
+          <h1>notes</h1>
+          <p>
+            <% if(row.notes) { %>
+            <%- row.notes.replace(/dry /g, '<img src="/img/flash.svg" style="width:40px;height:40px; vertical-align: middle;" > ')  %>
+            <%}%>
+          </p>
+        </div>
+
+        <p> printer
+          <%= row.printer %>
+        </p>
+          <% if(session.userName == row.printer || session.userLevel == "admin"){ %>
+            <input type=button onClick="location.href='/samples/edit/<%=row.rowid%>'" value='Edit'>
+            <%}%>
+      </div>
+    </div>
+
+  </div>
+
+
+  <script>
+    //---------------- change the print data titles if : in the <p>-------------    
+    const printData = document.querySelectorAll('#printData');
+    printData.forEach(change)
+
+    function change(element) { // change h1 titles if the <p> contains a :  
+      const currentP = element.getElementsByTagName("p")[0]
+      if (currentP.innerText.includes(':')) {
+        element.getElementsByTagName("h1")[0].innerHTML = currentP.innerHTML.split(':')[0]
+        element.getElementsByTagName("p")[0].innerHTML = currentP.innerHTML.slice(currentP.innerHTML.split(':')[0].length + 1)
+      }
+      if (currentP.innerText == '') {
+        element.getElementsByTagName("h1")[0].remove()
+        element.getElementsByTagName("p")[0].remove()
+      }
+    }
+    //-----------------------------slideshow-------------------------------------
+    let slideIndex = 1;
+    showSlides(slideIndex);
+
+    // Next/previous controls
+    function plusSlides(n) {
+      showSlides(slideIndex += n);
+    }
+
+    // Thumbnail image controls
+    function currentSlide(n) {
+      showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+      let i;
+      let slides = document.getElementsByClassName("mySlides");
+      if (n > slides.length) {
+        slideIndex = 1
+      }
+      if (n < 1) {
+        slideIndex = slides.length
+      }
+      for (i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+      slides[slideIndex - 1].style.display = "block"
+    }
+
+    //--------------double click to view image in new tab-----------------------
+    const imgs = document.querySelectorAll('.slideshow-container img')
+    imgs.forEach(img => {
+      img.addEventListener('dblclick', function () {
+        window.open(img.src) // open in new tab
+      })
+    })
+  </script>
+</body>
+
+</html>
+<%- include('../footer.ejs') %>

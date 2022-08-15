@@ -1,0 +1,212 @@
+<%- include('../header.ejs') %>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+</head>
+
+<body>
+  <div class="columns-3">
+    <div class="column">
+      <form class="myBox" style="animation-name: fromLeft;" method='post' action='' enctype='multipart/form-data'>
+        <h2>Edit Job</h2>
+        <input type="checkbox" name="print" <% if(row.print=='on' ){ %> checked <%}%> >Print
+        <input type="checkbox" name="emb" <% if(row.emb=='on' ){ %> checked <%}%>>Emb
+        <input type="checkbox" name="transfer" <% if(row.transfer=='on' ){ %> checked <%}%>>Transfer
+        <input type="checkbox" name="aspre" <% if(row.aspre=='on' ){ %> checked <%}%>>As Pre
+        <br>
+        <input type="checkbox" name="digi" <% if(row.digi=='on' ){ %> checked <%}%>>Digi pic
+        <input type="checkbox" name="sample" <% if(row.sample=='on' ){ %> checked <%}%>>Sample
+        <input type="checkbox" name="swatch" <% if(row.swatch=='on' ){ %> checked<%}%>>Swatch
+        &numsp;&numsp;&numsp;&numsp;&numsp;&numsp;&numsp;&numsp;
+        <input type="checkbox" name='complete' onclick="return false;" <%if(row.complete=='on' ){ %> checked <%}%>>complete? <br>
+        <br>
+        <input type="text" class="input-field-small" autocomplete="off" placeholder="Order Number" name="ordernumber" value="<%=row.ordernumber%>">
+        <input type="text" class="input-field-med" autocomplete="off" placeholder="Order Name" name="ordername" value="<%=row.ordername%>"> <br>
+        <br>
+        <input type="checkbox" name="hasscreens" <% if(row.hasscreens=='on'){ %> checked <%}%>>Screens?
+        <input type="checkbox" name="hasstock" <% if(row.hasstock=='on'){ %> checked <%}%>>Stock?
+        <input type="checkbox" name="hasapp" <% if(row.hasapp=='on'){ %> checked <%}%>>Approval?
+        <input type="checkbox" name='ispacked' <%if(row.ispacked=='on' ){ %> checked <%}%>>Packed?
+        <br>
+        <br>
+        Entered by: <%=row.byuser%><br>
+        <br>
+        Date Order Taken: <input type="date" class="input-field-jobs" name="takendate" value='<%=new Date(row.takendate * 1000).toLocaleString('sv').slice(0,10)%>'><br>
+        <br>
+        Date Order Required: <input type="date" class="input-field-jobs" name="duedate" value='<%=new Date(row.duedate * 1000).toLocaleString('sv').slice(0,10)%>'><br>
+        <br>
+        positions: <input type="number" size="1" name="pos" min="1" autocomplete="off" value='<%=row.pos%>'><br>
+        <br>
+        screens: <input type="number" size="1" name="screens" min="0" autocomplete="off" value='<%=row.screens%>'><br>
+        <br>
+        stitch count: <input type="text" class="input-field-med" autocomplete="off" placeholder="0" name="stitchcount" value='<%=row.stitchcount%>'><br>
+        <br>
+        delivery time: <input type="number" size="1" name="deliverytime" min="1" value='<%=row.deliverytime%>' id="pos">
+        day's<br>
+        <br>
+        <input class="centerButton" type='submit' name='edit' value='Edit Job'>
+
+      </form>
+    </div>
+    <div class="column">
+      <div class="myBox" style="animation-name: fromTop;">
+        <form method='post' action='' enctype='multipart/form-data' id="stkForm">
+          <h2>Stock</h2>
+          <input type="text" class="input-field-small" placeholder="product code" name="code" id="code">
+          <input type="text" class="input-field-small" placeholder="colour" name="colour" id="colour">
+          <select name="size" id="size">
+            <option value='size'>size</option>
+            <option value='xs'>xs</option>
+            <option value='s'>s</option>
+            <option value='m'>m</option>
+            <option value='l'>l</option>
+            <option value='xl'>xl</option>
+            <option value='xxl'>xxl</option>
+            <option value='3xl'>3xl</option>
+            <option value='4xl'>4xl</option>
+            <option value='5xl'>5xl</option>
+            <option value='6xl'>6xl</option>
+            <option value='7xl'>7xl</option>
+            <option value='1-2'>1-2</option>
+            <option value='3-4'>3-4</option>
+            <option value='5-6'>5-6</option>
+            <option value='7-8'>7-8</option>
+            <option value='9-10'>9-10</option>
+            <option value='11-12'>11-12</option>
+            <option value='13-14'>13-14</option>
+          </select>
+          <input type="text" class="input-field-small" autocomplete="off" placeholder="amount" name="amount" id="amount">
+          <input type='submit' name='addStock' value='Add stock'> <br>
+          <div id="errorMsg"></div>
+          <br>
+          <br>
+        </form>
+        <form method='post' action='' enctype='multipart/form-data' id="NotesForm">
+          <textarea autocomplete="off" placeholder="Notes" name="notes" rows="10"><%=row.notes%></textarea>
+          <input class="centerButton" type='submit' name='addNotes' value='Add note'> <br>
+        </form>
+      </div>
+      <div class="myBox" style="animation-name: fromBottom;">
+        <form method='post' action='' id='bookInForm' enctype='multipart/form-data'>
+
+          <%if (row.bookindate){%>
+          <h2>booked in for </h2>
+          <input type="date" id="bookInDate" class="input-field-jobs" value="<%=new Date(row.bookindate * 1000).toLocaleString('sv').slice(0,10)%>" name="bookInDate"> &numsp;
+          Machine: <select name="machine" id="machine">
+            <option value='<%=row.machine%>'> <%=row.machine%>
+              <% mach.forEach(e=>{ %>
+            <option value='<%=e.name%>'> <%=e.name%>
+            </option>
+            <% }) %>
+          </select><br>
+          <%}else {%>
+          <h2>Book on a days production</h2>
+          <input type="date" id="bookInDate" class="input-field-jobs" name="bookInDate"> &numsp;
+          Machine: <select name="machine" id="machine">
+            <option value='select'> machine
+              <% mach.forEach(e=>{ %>
+            <option value='<%=e.name%>'>
+              <%=e.name%>
+            </option>
+            <% }) %>
+          </select><br>
+          <%}%>            
+    <br>
+<input class="centerButton" type='submit' name='bookIn' value='bookIn'>
+<div id="errorBookIn"></div>
+</form>
+</div>
+</div>
+
+<div class="cloumn">
+<form style="animation-name: fromRight;" class="myBox" method='post' action='' enctype='multipart/form-data'>
+<h2>stock</h2>
+<table id="t01">
+<tr>
+<th>code</th>
+<th>colour</th>
+<th>size</th>
+<th>amount</th>
+<th>remove</th>
+</tr>
+
+<% const garments = JSON.parse(row.garments) %>
+          <% var index = 0 %>
+          <% let totalGarments = 0 %>
+          <% try{garments.forEach(e => { %>
+          <tr>
+            <td> <%=e.code%> </td>
+            <td> <%=e.colour%> </td>
+            <td> <%=e.size%> </td>
+            <td> <%=e.amount%> </td>
+            <td> <button padding='320px' type='submit' name='deleteStock' value='<%=index%>'>delete</button> </td>
+            <% totalGarments += Number(e.amount) %>
+          </tr>
+          <% index++ %>
+          <%})}catch(err){console.log("garments error")}%>
+
+          </table>
+  
+          Total: <%=totalGarments%> <br>
+        </form>
+
+      </div>
+    </div>
+
+</body>
+<script type="text/JavaScript">
+const amount = document.getElementById("amount");
+const form = document.getElementById("stkForm");
+const code = document.getElementById("code");
+const colour = document.getElementById("colour");
+const errorMsg = document.getElementById("errorMsg");
+const size = document.getElementById("size");
+
+form.addEventListener("submit", (e) => {
+let messages = []
+if (amount.value === "" || amount.value == null){
+messages.push("You forgot the amount")
+}
+if (code.value === "" || code.value == null){
+messages.push("Need a product code")
+}
+if (colour.value === "" || colour.value == null){
+messages.push("What colour?")
+}
+if (size.value === "size" ) messages.push("size?")
+
+if (messages.length > 0){
+e.preventDefault()
+errorMsg.innerText = messages.join(", ")
+}
+})
+
+
+
+const bookIn = document.getElementById("bookInForm")
+bookIn.addEventListener('submit', (e) =>{
+
+let messages = []
+
+if(bookIn.machine.value == 'select')  {
+e.preventDefault()
+messages.push("Select a machine")  
+}  
+
+if (bookIn.bookInDate.value == ''){
+messages.push("Select a date")
+}
+
+if (messages.length > 0){
+e.preventDefault()
+document.getElementById("errorBookIn").innerText = messages.join(", ")
+}
+
+})
+
+</script>
+
+</html>
+<%- include('../footer.ejs') %>

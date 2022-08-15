@@ -1,0 +1,76 @@
+<%- include('./admin-header.ejs') %>
+<!DOCTYPE html>
+<html>
+
+<body>
+<div>
+  <form class='myBox' method='post' style='width:1000px' action='' enctype='multipart/form-data'>
+    <table id="t01">
+      <tr>
+        <th>ID</th>
+        <th>User Name</th>
+        <th>email</th>
+        <th>Department</th>
+        <th>User Level</th>
+        <th>Delete</th>
+
+      </tr>
+
+      <% row.forEach(e => { %>
+      <tr>
+        <td> <%=e.id%> </td>
+        <td> <%=e.user%> </td>
+        <td> <%=e.email%> </td>
+        <td> <%=e.department%> </td>
+        <td> <%=e.userlevel%> </td>
+        <td> <button type='submit' name='delete' onclick='return confirm()' value='<%=e.id%>'> delete</button> </td>
+      </tr>
+      <% }) %>
+
+
+
+      
+    </table>
+  </form>
+
+
+
+<div>
+ <br />
+  <form class="myBox" method='post' action='' enctype='multipart/form-data'>
+      <h2>Add user</h2>
+
+      <input type="text" id="name" name="username" class="input-field" autocomplete="off" placeholder="username">
+      <input type="password" id="name" name="password" class="input-field" autocomplete="off" placeholder="password">
+      <input type="text" id="name" name="email" class="input-field" autocomplete="off" placeholder="email">
+
+      <select name="department">
+        <option value=print>print</option>
+        <option value=stores>stores</option>
+        <option value=office>office</option>
+        <option value=screen>screen</option>
+        <option value=embroidery>embroidery</option>
+
+      </select>
+
+      <select name="userlevel">
+        <option value=user>user</option>
+        <option value=admin>admin</option>
+      </select>
+
+      <input type='submit' name='add' value='Add user'>
+      <br />
+    
+    </form>
+</div>
+
+
+
+
+</div>
+
+
+</body>
+
+</html>
+<%- include('../footer.ejs') %>

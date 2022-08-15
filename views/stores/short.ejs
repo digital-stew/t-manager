@@ -1,0 +1,112 @@
+<%- include('./stores-header.ejs') %>
+
+
+<!DOCTYPE html>
+<html>
+
+<body>
+  <div id="searchShort">
+    <h2>Short</h2>
+    <form class="example" method='get' action='' style="margin:auto;max-width:300px">
+      <input type="text" autocomplete="off" placeholder="Search.." name="search">
+      <button type="submit">Search</button>
+    </form>
+
+    </br>
+  </div>
+
+  <% if (session.search){ %>
+   <div id="displaySearch"> 
+    <form class="myBox" method="post" action="" enctype="multipart/form-data">
+      <table id="t01" class="myBox">
+    <tr>
+    <th>Order</th>
+    <th>Product code</th>
+    <th>Size</th>
+      <th>Colour</th>
+      <th>Amount</th>
+      <th>Due Date</th>
+      <% if(session.department == 'stores' || session.userLevel == 'admin') {%>
+        <th>Edit</th>
+        <th>Complete</th>
+      <%}%>
+    </tr>
+    <% row.forEach(e => { %>
+      <tr id="<%=e.id%>">
+        <td> <%=e.ordernumber%>  </td>
+        <td> <%=e.productcode%>  </td>
+        <td> <%=e.size%>  </td>
+        <td> <%=e.colour%> </td>
+        <td> <%=e.amount%> </td>            
+        <td> <%=e.date%> </td>
+        <% if(session.department == 'stores' || session.userLevel == 'admin') {%>
+          <td> <input type="button" onclick="editShort(<%=e.id%>);" value="Edit" /> </td>
+          <td> <button type='submit' name='delete' value='<%=e.id%>'> delete </button> </td>
+        <%}%>                 
+        </tr>
+        <%})%>
+      <%}%> 
+      </table>
+      </form>
+ 
+  </div>
+
+<% if(session.department == 'stores' || session.userLevel == 'admin') {%>
+
+<div id="addShort">
+    <form class="myBox box" method='post' action='' enctype='multipart/form-data'>
+        <h2> add a Shortage</h2>
+        <input type="text" name="ordernumber" class="input-field" autocomplete="off" placeholder="Order number" required>
+        <input type="text" name="productcode" class="input-field" placeholder="Product code">
+        <input type="text" name="size" class="input-field" placeholder="Size"> <br>
+        <input type="text" name="colour" class="input-field" placeholder="Colour">
+        <input type="text" name="amount" class="input-field" autocomplete="off" placeholder="Amount">
+        <input type="text" name="date" class="input-field" autocomplete="off" placeholder="Due date">
+        <br>
+        <br>
+        <input type='submit' name='add' class="centerButton" value='Add'>
+    </form>
+</div>
+
+<div id="editShort" style="display: none;">
+  <form class="myBox box" method='post' action='' enctype='multipart/form-data'>
+      <h2> Edit a Shortage</h2>
+      <input type="text" id="ordernumber" name="ordernumber" class="input-field" autocomplete="off" placeholder="Order number">
+      <input type="text" id="productcode" name="productcode" class="input-field" placeholder="Product code">
+      <input type="text" id="size" name="size" class="input-field" placeholder="Size">
+      <input type="text" id="colour" name="colour" class="input-field" placeholder="Colour">
+      <input type="text" id="amount" name="amount" class="input-field" autocomplete="off" placeholder="Amount">
+      <input type="text" id="date" name="date" class="input-field" autocomplete="off" placeholder="due date">
+      <input type="hidden" id="id" name="id" class="input-field" autocomplete="off">
+      <br>
+      <br>
+      <input type='submit' class="centerButton" name='edit' value='edit'>
+  </form>
+</div>
+
+<%}%>
+
+<script>
+  function editShort(id){
+    document.getElementById("searchShort").style.display = "none"
+    document.getElementById("displaySearch").style.display = "none"
+    document.getElementById("addShort").style.display = "none"
+    document.getElementById("editShort").style.display = "block"
+
+    var row = document.getElementById(id)
+    document.getElementById("ordernumber").value = row.cells[0].innerHTML.trim()
+    document.getElementById("productcode").value = row.cells[1].innerHTML.trim()
+    document.getElementById("size").value = row.cells[2].innerHTML.trim()
+    document.getElementById("colour").value = row.cells[3].innerHTML.trim()
+    document.getElementById("amount").value = row.cells[4].innerHTML.trim()
+    document.getElementById("date").value = row.cells[5].innerHTML.trim()
+    document.getElementById("id").value = id
+    
+  }
+</script>
+
+</body>
+
+</html>
+
+<%- include('../footer.ejs') %>

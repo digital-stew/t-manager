@@ -1,0 +1,32 @@
+<%- include('../header.ejs') %>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit sample entry</title>
+</head>
+
+<body>
+<main id="swup" class="transition-fade">
+    <form class="myBox" method='post' action='' enctype='multipart/form-data'>
+        <h2>Sample Edit</h2>
+        <input type="text" class="input-field" autocomplete="off" placeholder="Job name" value="<%=row.name%>" name="jobname"><br />
+        <input type="text" class="input-field" autocomplete="off" placeholder="order number" value="<%=row.number%>" name="ordernumber"><br />
+        <input type="text" class="input-field" autocomplete="off" placeholder="other ref" value="<%=row.otherref%>" name="otherref"><br />
+        <textarea autocomplete="off" placeholder="Print data front" name="printdata1" rows="2"><%=row.printdata%></textarea> <br />
+        <textarea autocomplete="off" placeholder="Print data back" name="printdata2" rows="2"><%=row.printdataback%></textarea> <br />
+        <textarea autocomplete="off" placeholder="Print data other" name="printdata3" rows="2"><%=row.printdataother%></textarea> <br />
+        <textarea autocomplete="off" placeholder="Notes" name="notes" name="notes" rows="2"><%=row.notes%></textarea> <br />
+        <br />
+        <input type='submit' name='submit' value='Edit'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type='submit' name='delete' onclick="return confirm('Are you sure you want to delete?')" value='delete'>
+    </form>
+
+</main>
+</body>
+
+</html>
+<%- include('../footer.ejs') %>

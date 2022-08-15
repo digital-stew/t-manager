@@ -1,0 +1,45 @@
+<%- include('./admin-header.ejs') %>
+
+<!DOCTYPE html>
+<html>
+
+<body>
+  <div>
+    <form class='myBox' method='post' style='width:1000px' action='' enctype='multipart/form-data'>
+
+      <table id="t01">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>E-mail</th>  
+        <th>Delete</th>
+      </tr> 
+      <% row.forEach(e => { %>
+              <tr>
+                <td> <%=e.id%> </td>
+                <td> <%=e.name%> </td>
+                <td> <%=e.email%> </td>            
+                <td> <button type='submit' name='delete' onclick='return confirm()' value='<%=e.id%>'> delete</button> </td>
+              </tr>
+      <% }) %>
+    </form>
+    </table>
+  </div>
+  <div>
+
+    <form class="myBox" method='post' action='' enctype='multipart/form-data'>
+      <h2> Add Representative</h2>
+      <input type="text" id="name" name="name" class="input-field" autocomplete="off" placeholder="Name">
+      <input type="text" id="name" name="email" class="input-field" autocomplete="off" placeholder="email">
+      <input type='submit' name='add' value='Add'>
+      <br />
+    </form>
+
+    <br />
+
+  </div>
+</body>
+
+</html>
+
+<%- include('../footer.ejs') %>

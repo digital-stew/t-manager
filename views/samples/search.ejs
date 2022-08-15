@@ -1,0 +1,95 @@
+<%- include('../header.ejs') %>
+
+
+<!DOCTYPE html>
+<head>
+
+	<meta charset="utf-8">
+	<title>T manager</title>
+	<link href="/style.css" type="text/css" rel="stylesheet" />
+<html>
+
+<body>
+
+<% if(locals.session.department == 'print' || locals.session.userLevel == 'admin') { %>
+  <input type=button onClick="location.href='/samples/upload'" value='Upload sample'>
+<% } %>
+  <br> 
+  <form method='post' action='/samples/search' style="margin:auto;max-width:fit-content">
+    <input id="search" type="text" autocomplete="off" placeholder="Search.." name="search">
+    <button type="submit">Search</button>
+  </form>
+  <br>
+  <% if (locals.Recent) { %> 
+     <h2> Recent Samples </h2> 
+     <% } %>
+
+  <div class="myBox" style="width:80%">
+  <table id="t01" >
+  <tr>
+	<th>Order number</th>
+	<th>Other Ref</th>
+	<th>Name</th>
+  <th>Sampled</th>
+  <th>Pic</th>
+  <th>Printer</th>
+  </tr> 
+
+<%
+var count = 0
+row.forEach(e => { %>
+<% try{ var pic = JSON.parse(e.pics)}catch(err){console.error(err+" /samples/search");var pic = [];}%>
+  <tr> 
+    <td> <%=e.number%> </td>
+    <td> <%=e.otherref%> </td>
+    <td> <%=e.name%> </td>
+    <td> <%=new Date(e.date*1000).toLocaleDateString()%> </td>           
+    <td> <img src='/Files_Images.tn/<%=pic[0]%>' width='180' height='145'> </a> </td>
+    <td> <%=e.printer%> </td>
+    <td id="id" style="display:none"> <%= e.rowid -%> </td>
+    <%// console.log(pic[0]) %>
+  </tr>
+<% 
+count++
+}) %>
+ 
+
+  </table>
+  </div>
+<script>
+var tbl = document.getElementById("t01");
+    if (tbl != null) {
+      for (var i = 1; i < tbl.rows.length; i++) {
+        cells = tbl.rows[i].getElementsByTagName('td')
+        if (cells[0].innerText.includes("DO NOT USE") || cells[0].innerText.includes("OLD SAMPLE") || cells[1].innerText.includes("DO NOT USE") || cells[1].innerText.includes("OLD SAMPLE"))
+          tbl.rows[i].style.backgroundColor = "red";
+      }
+    }
+
+</script>
+
+<script>
+
+  function addRowHandlers() {
+    var rows = document.getElementById("t01").rows;
+    for (i = 0; i < rows.length; i++) {
+      rows[i].onclick = function() {
+        return function () {
+          //get number from click
+         // var test = this.cells[6].innerHTML;
+        // console.log(this.cells[6].innerText)
+          window.open(`/samples/view/${this.cells[6].innerText.trim()}`,"_self")
+         // document.getElementById("searchPage").style.display = "none"
+         // document.getElementById("viewPage").style.display = "block"
+       // console.log(test);
+        };
+      }(rows[i]);
+    }
+  
+  }
+  
+  window.onload = addRowHandlers();
+  
+
+</script>
+<%- include('../footer.ejs') %>

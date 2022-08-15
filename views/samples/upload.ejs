@@ -1,0 +1,29 @@
+<%- include('../header.ejs') %>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>PHP File Upload</title>
+</head>
+
+<body>
+    <form class="myBox" method='post' action='/samples/upload' enctype='multipart/form-data'>
+        <h2>Sample Upload</h2>
+        <input style="width: 500px;" type="text" class="input-field" autocomplete="off" placeholder="Job name" name="jobname"><br />
+        <input style="width: 500px;" type="text" class="input-field" autocomplete="off" placeholder="Order number" name="ordernumber"><br />
+        <input style="width: 500px;" type="text" class="input-field" autocomplete="off" placeholder="Other Ref" name="otherref"><br />
+        <textarea autocomplete="off" placeholder="Print data front" name="printdata1" rows="2"></textarea> <br />
+        <textarea autocomplete="off" placeholder="Print data back" name="printdata2" rows="2"></textarea> <br />
+        <textarea autocomplete="off" placeholder="Print data other" name="printdata3" rows="2"></textarea> <br />
+        <textarea autocomplete="off" placeholder="Notes" name="notes" rows="2"></textarea> <br />
+        <br />
+        the first pic you TAKE will become the thumbnail <br />
+        <input type="file" name="files" id="files" multiple> <br />
+        <br />
+        <input type='submit' class="centerButton" name='submit' value='Upload'>
+
+    </form>
+</body>
+
+<%- include('../footer.ejs') %>
