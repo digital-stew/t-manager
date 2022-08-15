@@ -1,4 +1,4 @@
-const socket = io('http://10.0.0.22:3000', { transports : ['websocket'] })
+const socket = io('http://10.0.0.55:3000', { transports : ['websocket'] })
 const id = document.getElementById('id').dataset.id
 
 

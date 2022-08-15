@@ -695,23 +695,6 @@ app.post('/stores/stock-out', logger, userLevel('user'), (req, res, next) => {
       }) 
 })
 //---------------------------------------------------------
-//---------------------------------------------------------
-// app.post('/stores/stock-out', logger, userLevel('user'), (req, res) => {
-//   if (req.body.remove) { // remove stock from stores
-//     db.run(`INSERT INTO goodsout (name, number, date, removedby, complete) VALUES (?,?,?,?,?)`,
-//       [req.body.ordername, req.body.ordernumber, timestampOfNow(), req.session.userName, req.body.complete], (err) => {
-//         if (err) {
-//           onError(err, res)
-//         } else {
-//           res.redirect(`/stores/stock-out?search=${req.body.ordernumber}`)
-//           return
-//         }
-//       })
-//   }
-// })
-//---------------------------------------------------------
-//---------------------------------------------------------
-
 app.get('/stores/search/', (req, res) => {
 
   if (req.query.search == "") { req.query.search = "%" }  // make empty search return all
