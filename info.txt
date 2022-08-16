@@ -1,0 +1,76 @@
+---------------Database info-----------------------------
+jobs:
+	'id' KEY
+	'print' bool - job is for print department
+	'emb' bool - job is for emb department
+	'transfer' bool - job is for transfer department
+	'aspre' bool - as previous
+	'digi' bool - needs a digi pic
+	'sample', bool - needs physical sample
+	'swatch', bool - needs physical swatch
+	'ordernumber' int* - the jobs order number
+	'ordername' text - order name
+	'takendate' timestamp - date job was taken 
+	'duedate' timestamp - when due for delevery
+	'packed' bool - job is packed
+	'packeddate' timestamp - when the job was packed
+	'pos' int - how many positions
+	'screens' int - how many screens 
+	'stitchcount' int - emb stictch count
+	'date' timestamp - entered into database 
+	'user' text - entered into database by user 
+	'json' text - json of orignal upload
+	'notes' text - any notes for all to read
+	'complete' bool - job is marked complete
+	'hasapp' bool - has got approval?
+	'hasscreens' bool - screens made?
+	'hasstock' bool - stock in?
+	'completed' timestamp - marked as done in unix timestamp
+	'bookindate' timestamp - booked in for production on date
+	'machine' text - booked in for what machine
+	'completeby' text - who completed the job
+	'ispacked' bool - packed ready to go
+
+samples:
+	'rowid' KEY
+	'name' text - order name
+	'number' int* - order number
+	'date' timestamp - entered into database date
+	'pics' json - a json object of filenames for the images
+	'otherref' text - any other valid refrance. is searchable
+	'printdata' text - print data for front print
+	'printdataback' text - print data for back print
+	'printdataother' text - print data for other print
+	'notes' text - any notes for all
+	'printer' text - uploaded by
+
+short:
+	'id' KEY
+	'ordernumber'
+	'productcode'
+	'size'
+	'colour'
+	'amount'
+	'date'
+	'addby'
+
+machines:
+	'id' KEY
+	'name' text - machine name
+	'printheads' text - amount of print heads
+	'dryers' text - amount of flash dryers
+
+reps:
+	'id' KEY
+	'name'
+	'email'
+
+users:
+	'id' KEY
+	'user'
+	'password'
+	'email'
+	'department'
+	'userlevel'
+
+*is normally this but not always
