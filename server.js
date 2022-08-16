@@ -1,4 +1,4 @@
-const debug = true
+const debug = false
 
 require('dotenv').config()
 const bcrypt = require('bcrypt');
@@ -82,7 +82,15 @@ const department = (department) => {
     return
   }
 }
-
+var darkmode
+app.use((req, res, next) => {
+  if (req.cookies.darkmode == true){
+    darkmode = true
+  }else{
+    darkmode = false
+  }
+  next()
+})
 
 app.use((err, req, res, next) => {
   if (debug )console.error(err.stack)
@@ -94,9 +102,15 @@ const oneDay = 1000 * 60 * 60 * 24;
 app.use(sessions({
   secret: process.env.SESSION_SECRET_KEY,
   saveUninitialized: true,
-  cookie: { maxAge: oneDay/2 },
+  cookie: { maxAge: oneDay/4 },
   resave: false
-}));
+}))
+
+var session
+app.use((req, res, next) => {
+   session = req.session
+  next()
+})
 
 app.listen(process.env.LISTEN_PORT, () => {
   if (debug) console.log('server started on port: ' + process.env.LISTEN_PORT) //debug
@@ -116,8 +130,7 @@ var db = new sqlite3.Database(process.env.DB_LOCATION, sqlite3.OPEN_READWRITE, (
 });
 
 // #endregion
-// var session
- var darkmode = 1 
+
 
 app.get('/', (req, res) => {
   res.redirect('/production')
@@ -153,17 +166,14 @@ app.get('/logout', logger, (req, res) => {
 app.post('/darkmode', logger, (req, res) => {
   if (req.cookies.darkmode == 1) {
     res.cookie('darkmode', 0, { maxAge: oneDay*30, httpOnly: true })
-    darkmode = 0
   } else {
     res.cookie('darkmode', 1, { maxAge: oneDay*30, httpOnly: true })
-    darkmode = 1
   }
   res.redirect('back')
 })
 //---------------------------------------------------------
 app.get('/admin/machines', userLevel('admin'), (req, res) => {
   db.all("SELECT * FROM machines", (err, row) => {
-    const session = req.session
     res.render("admin/machines.ejs", { row, session, darkmode })
   })
 })
@@ -194,7 +204,6 @@ app.post('/admin/machines', logger, userLevel('admin'), (req, res) => {
 //---------------------------------------------------------
 app.get('/admin/reps', userLevel('admin'), (req, res) => {
   db.all("SELECT * FROM reps", (err, row) => {
-    const session = req.session
     res.render("admin/reps.ejs", { row, session, darkmode })
   })
 })
@@ -225,7 +234,6 @@ app.post('/admin/reps', logger, userLevel('admin'), (req, res) => {
 //---------------------------------------------------------
 app.get('/admin/users', userLevel('admin'), (req, res) => {
   db.all("SELECT * FROM users", (err, row) => {
-    const session = req.session
     res.render("admin/users.ejs", { row, session, darkmode })
   })
 })
@@ -259,7 +267,6 @@ app.post('/admin/users', logger, userLevel('admin'), (req, res) => {
 
 // #region samples
 app.get('/samples/upload', userLevel("user"), department("print"), (req, res) => {
-  const session = req.session
   res.render("samples/upload.ejs", { session, darkmode })
 })
 //---------------------------------------------------------
@@ -323,7 +330,6 @@ app.post('/samples/search', (req, res) => {
     if (err) {
       onError(err, res)
     } else {
-      const session = req.session
       res.render("samples/search.ejs", { row, session, darkmode })
     }
   })
@@ -335,7 +341,6 @@ app.get('/samples/search', (req, res) => {
       onError(err, res)
     } else {
       const Recent = 1
-      const session = req.session
       res.render("samples/search.ejs", { row, session, darkmode, Recent })
     }
   })
@@ -346,7 +351,6 @@ app.get('/samples/view/:id', (req, res) => {
     if (err) {
       onError(err, res)
     } else {
-      const session = req.session
       res.render("samples/view.ejs", { row, session, darkmode })
     }
   })
@@ -358,7 +362,6 @@ app.get('/samples/edit/:id', department("print"), (req, res) => {
       onError(err, res)
     } else {
       if (req.session.userName == row.printer || req.session.userLevel == "admin") {
-        const session = req.session
         res.render("samples/edit.ejs", { row, session, darkmode })
       } else {
         res.status(400).send("You cant edit others work. sorry")
@@ -399,7 +402,6 @@ app.post('/samples/edit/:id', logger, department("print"), (req, res) => {
 
 // #region orders
 app.get('/orders/add', userLevel('admin'), (req, res) => {
-  const session = req.session
   res.render("orders/add.ejs", { session, darkmode })
 })
 //---------------------------------------------------------
@@ -441,7 +443,6 @@ app.get('/orders/edit/:id', userLevel("admin"), (req, res, next) => {
       onError(err, res)
     } else {
       const mach = res.locals.mach
-      const session = req.session
       res.render("orders/edit.ejs", { row, session, darkmode, mach })
     }
   })
@@ -559,7 +560,6 @@ app.get('/orders/search', (req, res, next) => {
         if (err) {
           onError(err, res)
         } else {
-          const session = req.session
           res.render("orders/search.ejs", { row, session, darkmode, machines, todayTimestamp })
         }
 
@@ -569,7 +569,6 @@ app.get('/orders/search', (req, res, next) => {
         if (err) {
           onError(err, res)
         } else {
-          const session = req.session
           res.render("orders/search.ejs", { row, session, darkmode, machines, todayTimestamp })
         }
       })
@@ -582,7 +581,6 @@ app.get('/orders/search', (req, res, next) => {
       if (err) {
         onError(err, res)
       } else {
-        const session = req.session
         res.render("orders/search.ejs", { row, session, darkmode, machines, todayTimestamp })
       }
     })
@@ -594,7 +592,6 @@ app.get('/orders/search', (req, res, next) => {
     if (err) {
       onError(err, res)
     } else {
-      const session = req.session
       res.render("orders/search.ejs", { row, session, darkmode, machines, todayTimestamp })
     }
   })
@@ -620,7 +617,6 @@ app.get('/orders/view/:id', (req, res, next) => {
 
   db.get(`SELECT rowid FROM samples WHERE number =${res.locals.job.ordernumber}`, (err, sampleID) => {
     const row = res.locals.job
-    const session = req.session
     res.render("orders/view.ejs", { row, session, darkmode, sampleID })
   })
 })
@@ -659,7 +655,6 @@ app.get('/stores/stock-out/', (req, res) => {
       onError(err, res)
     } else {
       req.session.search = req.query.search
-      const session = req.session
       res.render("stores/stock-out.ejs", { row, session, darkmode })
     }
   })
@@ -703,7 +698,6 @@ app.get('/stores/search/', (req, res) => {
       onError(err, res)
     } else {
       req.session.search = req.query.search
-      const session = req.session
       res.render("stores/short.ejs", { row, session, darkmode })
     }
   })
@@ -766,18 +760,15 @@ app.get('/production', (req, res) => {
       onError(err, res)
     } else {
       const todayTimestamp = timestampOfTodaysDate()
-      const session = req.session
       res.render('production.ejs', { row, session, darkmode, searchDate, selected_date, todayTimestamp })
     }
   })
 
 })
 
-
 // INK
 app.get('/ink', (req, res) => {
   db.all("SELECT * FROM inkdata", (err, row) => {
-    const session = req.session
     res.render("ink.ejs", { row, session, darkmode })
   })
 })
@@ -847,12 +838,6 @@ function logger(req, res, next) {
 
 }
 
-
-// function sessionStart(req, res, next) {
-//   session = req.session
-//   // console.log(session)
-//   next()
-// }
 function onError(err, res) {
   log.write("ERROR, " + err + '\n')
   if(debug) console.log("ERROR!, " + err + '\n')
