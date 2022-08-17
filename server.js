@@ -175,10 +175,17 @@ app.post('/login', logger, (req, res) => {
     bcrypt.compare(req.body.password, row.password, (err, result) => {
       if (result) {
         //is loged in
+        
         req.session.userName = row.user
         req.session.userLevel = row.userlevel
         req.session.department = row.department
-        res.redirect('back')
+        
+        if (req.body.password == '123456'){
+          res.redirect('/user')
+        }else{
+         res.redirect('back') 
+        }
+        
       } else {
         //fail login
         res.send("incorrect password")
