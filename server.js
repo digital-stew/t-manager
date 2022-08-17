@@ -1,4 +1,5 @@
-const debug = false
+const debug = true
+
 
 require('dotenv').config()
 const bcrypt = require('bcrypt');
@@ -9,15 +10,43 @@ var log = fs.createWriteStream(__dirname + '/log.txt', { flags: 'a' });
 // #region ----socketIO setup-----------------------------
 const io = require('socket.io')(process.env.SOCKET_LISTEN_PORT, {
   cors: {
-      // origin: ['http//localhost:'+process.env.LISTEN_PORT],
-      origin: [`http//${process.env.SERVER_ADDRESS}:${process.env.LISTEN_PORT}`],
+    // origin: ['http//localhost:'+process.env.LISTEN_PORT],
+    origin: [`http//${process.env.SERVER_ADDRESS}:${process.env.LISTEN_PORT}`],
   },
 })
 io.on('connection', (socket) => {
- if(debug) console.log("socket connection");
+  if (debug) console.log("socket connection");
 });
 // #endregion
+// #region ----email setup--------------------------------
+var nodemailer = require('nodemailer');
 
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'digital.army@gmail.com',
+    pass: 'imhauijwestayjxs'
+  }
+});
+
+function sendMail(mailTo, subject, msg) {
+  var mailOptions = {
+    from: 't-manager@t-print.co.uk',
+    to: mailTo,
+    subject: subject,
+    text: msg
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.error(error);
+    } else {
+      if (debug) console.log('Email sent: ' + info.response);
+    }
+  });
+}
+// sendMail('digital.army@gmail.com','test','is this working?')
+// #endregion
 // #region ----express setup-----------------------------
 const express = require('express')
 const sessions = require('express-session');
@@ -84,16 +113,16 @@ const department = (department) => {
 }
 var darkmode
 app.use((req, res, next) => {
-  if (req.cookies.darkmode == true){
+  if (req.cookies.darkmode == true) {
     darkmode = true
-  }else{
+  } else {
     darkmode = false
   }
   next()
 })
 
 app.use((err, req, res, next) => {
-  if (debug )console.error(err.stack)
+  if (debug) console.error(err.stack)
   res.status(500).send('Something broke!')
 })
 
@@ -102,13 +131,13 @@ const oneDay = 1000 * 60 * 60 * 24;
 app.use(sessions({
   secret: process.env.SESSION_SECRET_KEY,
   saveUninitialized: true,
-  cookie: { maxAge: oneDay/4 },
+  cookie: { maxAge: oneDay / 4 },
   resave: false
 }))
 
 var session
 app.use((req, res, next) => {
-   session = req.session
+  session = req.session
   next()
 })
 
@@ -160,14 +189,49 @@ app.post('/login', logger, (req, res) => {
 //---------------------------------------------------------
 app.get('/logout', logger, (req, res) => {
   req.session.destroy()
+  res.redirect('/production')
+})
+//---------------------------------------------------------
+app.get('/user', userLevel('user'), (req, res) => {
+  db.get(`SELECT * FROM users WHERE user ='${req.session.userName}'`, (err, row) => {
+    if (err) {
+      onError(err, res)
+    } else {
+      res.render("user.ejs", { row, session, darkmode })
+    }
+  })
+})
+//---------------------------------------------------------
+app.post('/user', logger, (req, res) => {
+  
+  if (req.body.changePassword) {
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
+      if(err) {
+        onError(err,res)
+      }else{
+      db.run("UPDATE users SET password = ? WHERE user = ?",[hash, req.session.userName],(err) => {
+          if (err) {
+            onError(err, res)
+          } 
+        })
+      }  
+    })
+  }
+
+  if (req.body.changeEmail){
+    db.run("UPDATE users SET email = ?",[req.body.email],(err) =>{
+      if (err) onError(err, res)
+    })
+  }
+
   res.redirect('back')
 })
 //---------------------------------------------------------
 app.post('/darkmode', logger, (req, res) => {
   if (req.cookies.darkmode == 1) {
-    res.cookie('darkmode', 0, { maxAge: oneDay*30, httpOnly: true })
+    res.cookie('darkmode', 0, { maxAge: oneDay * 30, httpOnly: true })
   } else {
-    res.cookie('darkmode', 1, { maxAge: oneDay*30, httpOnly: true })
+    res.cookie('darkmode', 1, { maxAge: oneDay * 30, httpOnly: true })
   }
   res.redirect('back')
 })
@@ -274,21 +338,21 @@ app.post('/samples/upload', logger, userLevel("user"), department("print"), (req
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send('No files were uploaded.');
   }
-  
+
   let date = Date.now() / 1000
-  
-  
-  if (Array.isArray(req.files.files)){
-   var picsArray = [...req.files.files] 
-  }else{
+
+
+  if (Array.isArray(req.files.files)) {
+    var picsArray = [...req.files.files]
+  } else {
     var picsArray = []
     picsArray.push(req.files.files)
   }
-  
+
   picsArray.reverse()
 
 
-   let picsJSON = "["
+  let picsJSON = "["
 
   picsArray.forEach(e => { // move files
     e.mv(__dirname + '/public/Files_Images/' + e.name);
@@ -299,8 +363,8 @@ app.post('/samples/upload', logger, userLevel("user"), department("print"), (req
   picsArray.forEach(e => { // make thums and save in .tn
     im.convert([__dirname + '/public/Files_Images/' + e.name, '-resize', '320x240', __dirname + '/public/Files_Images.tn/' + e.name],
       function (err, stdout) {
-         if (err) onError(err)
-         if (debug) console.log(__dirname + '/public/Files_Images/' + e.name + 'uploaded to database');
+        if (err) onError(err)
+        if (debug) console.log(__dirname + '/public/Files_Images/' + e.name + 'uploaded to database');
         // console.log(stdout)
       });
   })
@@ -437,13 +501,25 @@ app.get('/orders/edit/:id', userLevel("admin"), (req, res, next) => {
     }
   })
 
-}, (req, res) => {
+}, (req,res,next) => {
+
+  db.all("SELECT name FROM reps", (err, row) => {
+    if (err) {
+      onError(err, res)
+    } else {
+      res.locals.reps = row
+      next()
+    }
+  })
+
+} ,(req, res) => {
   db.get(`SELECT * FROM jobs WHERE id=${req.params.id}`, (err, row) => {
     if (err) {
       onError(err, res)
     } else {
       const mach = res.locals.mach
-      res.render("orders/edit.ejs", { row, session, darkmode, mach })
+      const reps = res.locals.reps
+      res.render("orders/edit.ejs", { row, session, darkmode, mach, reps })
     }
   })
 })
@@ -497,8 +573,18 @@ app.post('/orders/edit/:id', logger, userLevel("admin"), (req, res, next) => { /
       if (err) {
         onError(err, res)
       }
+      //send email here
     })
   }
+
+  if(req.body.options){
+    db.run(`UPDATE jobs SET rep = ?, emailrep = ? WHERE id=${req.params.id}`, [req.body.rep,req.body.email], (err) => {
+      if (err) {
+        onError(err, res)
+      }
+    })
+  }
+
   io.emit('refresh', req.params.id) // refresh clients
   res.redirect('back')
 }, (req, res) => {
@@ -539,7 +625,7 @@ app.post('/orders/edit/:id', logger, userLevel("admin"), (req, res, next) => { /
 })
 //---------------------------------------------------------
 app.get('/orders/search', (req, res, next) => {
-  
+
   db.all("SELECT name FROM machines", (err, machines) => {
     if (err) {
       onError(err, res)
@@ -663,13 +749,13 @@ app.get('/stores/stock-out/', (req, res) => {
 //---------------------------------------------------------
 app.post('/stores/stock-out', logger, userLevel('user'), (req, res, next) => {
   if (req.body.remove) { // remove stock from stores
-    db.get(`SELECT id FROM goodsout WHERE number LIKE '%${req.body.ordernumber}%'`, (err,row) => {
-      if (err){
+    db.get(`SELECT id FROM goodsout WHERE number LIKE '%${req.body.ordernumber}%'`, (err, row) => {
+      if (err) {
         onError(err, res)
-      }else{
-        if(row == undefined){        
+      } else {
+        if (row == undefined) {
           next()
-        }else{
+        } else {
           res.send("already out")
           return
         }
@@ -679,15 +765,15 @@ app.post('/stores/stock-out', logger, userLevel('user'), (req, res, next) => {
 
   }
 }, (req, res) => {
-     db.run(`INSERT INTO goodsout (name, number, date, removedby, complete) VALUES (?,?,?,?,?)`,
-      [req.body.ordername, req.body.ordernumber, timestampOfNow(), req.session.userName, req.body.complete], (err) => {
-        if (err) {
-          onError(err, res)
-        } else {
-          res.redirect(`/stores/stock-out?search=${req.body.ordernumber}`)
-          return
-        }
-      }) 
+  db.run(`INSERT INTO goodsout (name, number, date, removedby, complete) VALUES (?,?,?,?,?)`,
+    [req.body.ordername, req.body.ordernumber, timestampOfNow(), req.session.userName, req.body.complete], (err) => {
+      if (err) {
+        onError(err, res)
+      } else {
+        res.redirect(`/stores/stock-out?search=${req.body.ordernumber}`)
+        return
+      }
+    })
 })
 //---------------------------------------------------------
 app.get('/stores/search/', (req, res) => {
@@ -745,6 +831,7 @@ app.post('/stores/search', logger, department('stores'), (req, res) => {
 })
 //---------------------------------------------------------
 // #endregion
+
 app.get('/production', (req, res) => {
   var selected_date = null
   if (req.query.selected_date) {
@@ -831,7 +918,7 @@ function logger(req, res, next) {
 
   messages.push(new Date().toLocaleString())
 
-  if(debug) console.log(messages.join(" , "))
+  if (debug) console.log(messages.join(" , "))
   log.write(messages.join(" , ") + "\n")
 
   next()
@@ -840,7 +927,7 @@ function logger(req, res, next) {
 
 function onError(err, res) {
   log.write("ERROR, " + err + '\n')
-  if(debug) console.log("ERROR!, " + err + '\n')
+  if (debug) console.log("ERROR!, " + err + '\n')
   return
 }
 function timestampOfTodaysDate() {
@@ -855,8 +942,8 @@ function timestampfromFormInputDate(formInput) {
 function timestampOfNow() {
   return Date.now() / 1000
 }
-function timestampToDateAndTime(timestamp){
-  return new Date(timestamp*1000).toLocaleDateString()
+function timestampToDateAndTime(timestamp) {
+  return new Date(timestamp * 1000).toLocaleDateString()
 }
 
 // #endregion

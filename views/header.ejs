@@ -83,25 +83,43 @@
       <ul>
         <%if (session.userName) { %>
         <p>Welcome <%=session.userName%> </p>
-        <li><a href="/logout">Logout</a></li>
         <%	} %>
         <li><a href="/stores/search">Stores</a></li>
         <li><a href="/ink">Ink</a></li>
         <li><a href="/production">Production</a></li>
         <li><a href="/samples">Samples</a></li>
         <li><a href="/orders/search">Orders</a></li>
+
+        <%if(session.userName){ %>
+        <li><a href="#">messages?</a></li>
+        <%}%>
+
         <%if(session.userLevel == "admin"){ %>
         <li><a href="/orders/add">admin</a></li>
         <%}%>
+
 			</ul>
 		</div>
-		<div class="navbarLogin">
-			<form method='post' action='/login' >
-				<input id="user" type="text" name="user" autocomplete="off" size="10" placeholder="User name" />
-				<input type="password" name="password" autocomplete="off" size="10" placeholder="Password" />
-				<input type="submit" name="login" value="Login">
-			</form>
-		</div>
+
+
+    <%if (session.userName) {%>
+
+        <li><a href="/logout">Logout</a>
+          <a href="/user">User</a>
+        </li>
+
+    <%}else {%>
+
+        <div class="navbarLogin">
+          <form method='post' action='/login'>
+            <input id="user" type="text" name="user" autocomplete="off" size="10" placeholder="User name" />
+            <input type="password" name="password" autocomplete="off" size="10" placeholder="Password" />
+            <input type="submit" name="login" value="Login">
+          </form>
+        </div>
+
+    <%}%>
+
 
 	</nav>
 

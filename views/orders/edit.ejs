@@ -80,13 +80,33 @@
           <input type="text" class="input-field-small" autocomplete="off" placeholder="amount" name="amount" id="amount">
           <input type='submit' name='addStock' value='Add stock'> <br>
           <div id="errorMsg"></div>
+          </form>
+
+          <form method='post' action='' enctype='multipart/form-data'>
+          <hr>
+          <h2>Options</h2>
+          <label for="rep">representative</label>
+          <select name="rep" id="rep">
+            <option value="<%=row.rep%>"><%=row.rep%></option>
+            <option value="house">house</option>
+            <%reps.forEach(e => { %>
+              <option value='<%=e.name%>'> <%=e.name%> </option>
+            <%})%>            
+          </select>          
+          <input type="checkbox" name="email" id="email" <%if(row.emailrep =='on' ){ %> checked <%}%> >
+          <label for="email">notify rep by email on order updates</label> <br>
           <br>
-          <br>
-        </form>
+          <input type="submit" value="Add rep" name="options">
+          <hr>
+          </form>
+          
+        
         <form method='post' action='' enctype='multipart/form-data' id="NotesForm">
+          <h2>Notes</h2>
           <textarea autocomplete="off" placeholder="Notes" name="notes" rows="10"><%=row.notes%></textarea>
           <input class="centerButton" type='submit' name='addNotes' value='Add note'> <br>
         </form>
+
       </div>
       <div class="myBox" style="animation-name: fromBottom;">
         <form method='post' action='' id='bookInForm' enctype='multipart/form-data'>
@@ -107,9 +127,7 @@
           Machine: <select name="machine" id="machine">
             <option value='select'> machine
               <% mach.forEach(e=>{ %>
-            <option value='<%=e.name%>'>
-              <%=e.name%>
-            </option>
+            <option value='<%=e.name%>'> <%=e.name%> </option>
             <% }) %>
           </select><br>
           <%}%>            
@@ -156,7 +174,7 @@
     </div>
 
 </body>
-<script type="text/JavaScript">
+<script>
 const amount = document.getElementById("amount");
 const form = document.getElementById("stkForm");
 const code = document.getElementById("code");

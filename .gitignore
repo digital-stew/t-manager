@@ -5,3 +5,4 @@ public/ink/*
 node_modules/
 log.txt
 todo.txt
+.vscode
