@@ -47,8 +47,8 @@
       
 
 
-        <%if (sampleID){%>
-          sampled: <input type="button" onclick="location.href='/samples/view/<%=sampleID.rowid%>';" value="View" />
+        <%if (sampleID[0]){%>
+          sampled: <input type="button" onclick="location.href='/samples/view/<%=sampleID[0].rowid%>';" value="View" />
         <%}%>
         <br>
         

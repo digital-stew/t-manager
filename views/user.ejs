@@ -6,27 +6,9 @@
         <form action="" method="post" enctype='multipart/form-data'>
             <h2>User options for <%=session.userName%></h2>
             <hr>
-            <% if (session.userLevel == 'admin') {%>
-                <label for="userLevel">User level</label> &numsp;
-                <select name="userLevel" id="userLevel">
-                    <option value="<%=session.userLevel%>"><%=session.userLevel%></option>
-                    <option value="admin">admin</option>
-                    <option value="user">user</option>
-                </select>
-                
-                <br>
-
-                <label for="department">Department</label>
-                <select name="department" id="department">
-                    <option value="<%=session.department%>"><%=session.department%></option>
-                    <option value="admin">admin</option>
-                    <option value="user">user</option>
-                </select>
-                <input type="submit" value="change" name="changeAdmin">
-
-            <%}else {%>
+            
             User level: <%=session.userLevel%> - Department: <%=session.department%>
-            <%}%>
+           
             <br>
             
         </form>

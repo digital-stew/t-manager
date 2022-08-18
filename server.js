@@ -164,6 +164,67 @@ var db = new sqlite3.Database(process.env.DB_LOCATION, sqlite3.OPEN_READWRITE, (
 app.get('/', (req, res) => {
   res.redirect('/production')
 })
+//---------------------------------------------------------
+
+app.get('/production', (req, res) => {
+  var selected_date = null
+  if (req.query.selected_date) {
+    var searchDate = timestampfromFormInputDate(req.query.selected_date)
+    selected_date = req.query.selected_date
+  } else {
+
+    var searchDate = timestampOfTodaysDate()
+  }
+
+  db.all(`SELECT * FROM jobs WHERE bookindate = ? ORDER BY duedate ASC `, [searchDate], (err, row) => {
+    if (err) {
+      onError(err, res)
+    } else {
+      const todayTimestamp = timestampOfTodaysDate()
+      res.render('production.ejs', { row, session, darkmode, searchDate, selected_date, todayTimestamp })
+    }
+  })
+
+})
+//---------------------------------------------------------
+
+// #region INK
+app.get('/ink', (req, res) => {
+  db.all("SELECT * FROM inkdata", (err, row) => {
+    res.render("ink.ejs", { row, session, darkmode })
+  })
+})
+//---------------------------------------------------------
+app.post('/ink', logger, (req, res) => {
+  if (req.body.add) {
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).send('No files were uploaded.');
+    }
+    req.files.uploadFile.mv(__dirname + '/public/ink/' + req.files.uploadFile.name)
+    db.run(`INSERT INTO inkdata (filename, note) VALUES (?,?)`,
+      [req.files.uploadFile.name, req.body.note], (err) => {
+        if (err) {
+          onError(err, res)
+        } else {
+          res.redirect('back')
+          return
+        }
+      })
+  }
+  if (req.body.delete) {
+    db.run(`DELETE FROM inkdata WHERE id=${req.body.delete}`, (err) => {
+      if (err) {
+        onError(err, res)
+      } else {
+        res.redirect('back')
+        return
+      }
+    })
+  }
+})
+//---------------------------------------------------------
+// #endregion
+
 // #region admin
 app.post('/login', logger, (req, res) => {
   db.get(`SELECT * FROM users WHERE user='${req.body.user.toLowerCase()}'`, (err, row) => {
@@ -175,17 +236,17 @@ app.post('/login', logger, (req, res) => {
     bcrypt.compare(req.body.password, row.password, (err, result) => {
       if (result) {
         //is loged in
-        
+
         req.session.userName = row.user
         req.session.userLevel = row.userlevel
         req.session.department = row.department
-        
-        if (req.body.password == '123456'){
+
+        if (req.body.password == '123456') {
           res.redirect('/user')
-        }else{
-         res.redirect('back') 
+        } else {
+          res.redirect('back')
         }
-        
+
       } else {
         //fail login
         res.send("incorrect password")
@@ -210,23 +271,23 @@ app.get('/user', userLevel('user'), (req, res) => {
 })
 //---------------------------------------------------------
 app.post('/user', logger, (req, res) => {
-  
+
   if (req.body.changePassword) {
     bcrypt.hash(req.body.password, 10, (err, hash) => {
-      if(err) {
-        onError(err,res)
-      }else{
-      db.run("UPDATE users SET password = ? WHERE user = ?",[hash, req.session.userName],(err) => {
+      if (err) {
+        onError(err, res)
+      } else {
+        db.run("UPDATE users SET password = ? WHERE user = ?", [hash, req.session.userName], (err) => {
           if (err) {
             onError(err, res)
-          } 
+          }
         })
-      }  
+      }
     })
   }
 
-  if (req.body.changeEmail){
-    db.run("UPDATE users SET email = ?",[req.body.email],(err) =>{
+  if (req.body.changeEmail) {
+    db.run("UPDATE users SET email = ?", [req.body.email], (err) => {
       if (err) onError(err, res)
     })
   }
@@ -476,62 +537,34 @@ app.get('/orders/add', userLevel('admin'), (req, res) => {
   res.render("orders/add.ejs", { session, darkmode })
 })
 //---------------------------------------------------------
-app.post('/orders/add', logger, userLevel('admin'), (req, res, next) => {
+app.post('/orders/add', logger, userLevel('admin'), (req, res) => {
   if (req.body.addjob) {
     db.run("INSERT INTO jobs ( print,emb,transfer,aspre,digi,sample,swatch,ordernumber,ordername,takendate,duedate,machine,pos,screens,stitchcount,date,byuser,json,notes,complete,deliverytime ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-      [req.body.print, req.body.emb, req.body.transfer, req.body.aspre, req.body.digi, req.body.sample, req.body.swatch, req.body.ordernumber, req.body.ordername, (new Date(req.body.takendate)).getTime() / 1000, (new Date(req.body.duedate)).getTime() / 1000, "unallocated", req.body.pos, req.body.screens, req.body.stitchcount, Date.now() / 1000, req.session.userName, JSON.stringify(req.body), "", "0", req.body.deliverytime], (err) => {
+      [req.body.print, req.body.emb, req.body.transfer, req.body.aspre, req.body.digi, req.body.sample, req.body.swatch, req.body.ordernumber, req.body.ordername, (new Date(req.body.takendate)).getTime() / 1000, (new Date(req.body.duedate)).getTime() / 1000, "unallocated", req.body.pos, req.body.screens, req.body.stitchcount, Date.now() / 1000, req.session.userName, JSON.stringify(req.body), "", "0", req.body.deliverytime], async (err) => {
         if (err) {
           onError(err, res)
         } else {
-          next()
+          newOrderID = await runSQL("SELECT id FROM jobs ORDER BY id DESC LIMIT 1", res)
+          res.redirect(`/orders/edit/${newOrderID[0].id}`)
         }
       })
   }
-}, (req, res) => {
-  db.get("SELECT id FROM jobs ORDER BY id DESC LIMIT 1", (err, row) => {
-    if (err) {
-      onError(err, res)
-    } else {
-      res.redirect(`/orders/edit/${row.id}`)
-    }
-  })
 })
 //---------------------------------------------------------
 app.get('/orders/edit/:id', userLevel("admin"), (req, res, next) => {
-
-  db.all("SELECT name FROM machines", (err, row) => {
+  db.get(`SELECT * FROM jobs WHERE id=${req.params.id}`, async (err, row) => {
     if (err) {
       onError(err, res)
     } else {
-      res.locals.mach = row
-      next()
-    }
-  })
-
-}, (req,res,next) => {
-
-  db.all("SELECT name FROM reps", (err, row) => {
-    if (err) {
-      onError(err, res)
-    } else {
-      res.locals.reps = row
-      next()
-    }
-  })
-
-} ,(req, res) => {
-  db.get(`SELECT * FROM jobs WHERE id=${req.params.id}`, (err, row) => {
-    if (err) {
-      onError(err, res)
-    } else {
-      const mach = res.locals.mach
-      const reps = res.locals.reps
-      res.render("orders/edit.ejs", { row, session, darkmode, mach, reps })
+      const reps = await runSQL("SELECT name FROM reps", res)
+      const machines = await runSQL("SELECT name FROM machines", res)
+      res.render("orders/edit.ejs", { row, session, darkmode, machines, reps })
     }
   })
 })
 //---------------------------------------------------------
-app.post('/orders/edit/:id', logger, userLevel("admin"), (req, res, next) => { // put admin only back
+app.post('/orders/edit/:id', logger, userLevel("admin"), async (req, res) => {
+
   if (req.body.edit) {
     db.run(`UPDATE jobs set 'print' = ? ,'emb' = ?,'transfer' = ?, 'aspre' = ?, 'digi' = ?, 'sample' = ?, 'swatch' = ?, 'ordernumber' = ?, 'ordername' = ?, 'takendate' = ?,'duedate' = ?,'pos' = ?,'screens' = ?,'hasscreens' = ?,'hasstock' = ?,'hasapp' = ?,'stitchcount' = ?, 'ispacked' = ?, 'deliverytime' = ? WHERE id=${req.params.id}`,
       [req.body.print, req.body.emb, req.body.transfer, req.body.aspre, req.body.digi, req.body.sample, req.body.swatch, req.body.ordernumber, req.body.ordername, (new Date(req.body.takendate)).getTime() / 1000, (new Date(req.body.duedate)).getTime() / 1000, req.body.pos, req.body.screens, req.body.hasscreens, req.body.hasstock, req.body.hasapp, req.body.stitchcount, req.body.ispacked, req.body.deliverytime], (err) => {
@@ -542,30 +575,42 @@ app.post('/orders/edit/:id', logger, userLevel("admin"), (req, res, next) => { /
   }
 
   if (req.body.addStock) {
-    db.get(`SELECT garments FROM jobs WHERE id=${req.params.id}`, (err, row) => {
+    var result = await runSQL(`SELECT garments FROM jobs WHERE id=${req.params.id}`, res)
+
+    try { // if garments not valid json eg. when no garments exist
+      var garments = JSON.parse(result[0].garments)
+      garments.push({ "code": req.body.code, "colour": req.body.colour, "size": req.body.size, "amount": req.body.amount })
+    } catch {
+      var garments = []
+      garments.push({ "code": req.body.code, "colour": req.body.colour, "size": req.body.size, "amount": req.body.amount })
+    }
+
+    db.run(`UPDATE jobs SET garments = ? WHERE id=${req.params.id}`, [JSON.stringify(garments)], (err) => {
       if (err) {
         onError(err, res)
-      } else {
-        res.locals.add = req.body.addStock
-        res.locals.garments = row.garments
-        next()
-        return
       }
     })
   }
 
+
   if (req.body.deleteStock) {
-    db.get(`SELECT garments FROM jobs WHERE id=${req.params.id}`, (err, row) => {
+    var result = await runSQL(`SELECT garments FROM jobs WHERE id=${req.params.id}`, res)
+    var garments = JSON.parse(result[0].garments)
+
+    var newGarments = []
+    for (var i = 0; i < garments.length; i++) {
+      if (req.body.deleteStock == i) { continue }
+      newGarments.push(garments[i])
+    }
+
+    db.run(`UPDATE jobs SET garments = ? WHERE id=${req.params.id}`, [JSON.stringify(newGarments)], (err) => {
       if (err) {
         onError(err, res)
-      } else {
-        res.locals.delete = req.body.deleteStock
-        res.locals.garments = row.garments
-        next()
-        return
       }
     })
   }
+
+
 
   if (req.body.addNotes) {
     db.run(`UPDATE jobs SET notes = ? WHERE id=${req.params.id}`, [req.body.notes.trim()], (err) => {
@@ -584,8 +629,8 @@ app.post('/orders/edit/:id', logger, userLevel("admin"), (req, res, next) => { /
     })
   }
 
-  if(req.body.options){
-    db.run(`UPDATE jobs SET rep = ?, emailrep = ? WHERE id=${req.params.id}`, [req.body.rep,req.body.email], (err) => {
+  if (req.body.options) {
+    db.run(`UPDATE jobs SET rep = ?, emailrep = ? WHERE id=${req.params.id}`, [req.body.rep, req.body.email], (err) => {
       if (err) {
         onError(err, res)
       }
@@ -594,58 +639,14 @@ app.post('/orders/edit/:id', logger, userLevel("admin"), (req, res, next) => { /
 
   io.emit('refresh', req.params.id) // refresh clients
   res.redirect('back')
-}, (req, res) => {
-
-
-  if (res.locals.delete) {
-    var garments = JSON.parse(res.locals.garments)
-    var newGarments = []
-    for (var i = 0; i < garments.length; i++) {
-      if (res.locals.delete == i) { continue }
-      newGarments.push(garments[i])
-    }
-
-    db.run(`UPDATE jobs SET garments = ? WHERE id=${req.params.id}`, [JSON.stringify(newGarments)], (err) => {
-      if (err) {
-        onError(err, res)
-      }
-    })
-  }
-
-  if (res.locals.add) {
-
-    try { // if garments not valid json eg. when no garments exist
-      var garments = JSON.parse(res.locals.garments)
-      garments.push({ "code": req.body.code, "colour": req.body.colour, "size": req.body.size, "amount": req.body.amount })
-    } catch {
-      var garments = []
-      garments.push({ "code": req.body.code, "colour": req.body.colour, "size": req.body.size, "amount": req.body.amount })
-    }
-
-    db.run(`UPDATE jobs SET garments = ? WHERE id=${req.params.id}`, [JSON.stringify(garments)], (err) => {
-      if (err) {
-        onError(err, res)
-      }
-    })
-  }
-
 })
 //---------------------------------------------------------
-app.get('/orders/search', (req, res, next) => {
+app.get('/orders/search', async (req, res) => {
 
-  db.all("SELECT name FROM machines", (err, machines) => {
-    if (err) {
-      onError(err, res)
-    } else {
-      res.locals.machines = machines
-      next()
-    }
-
-  })
-
-}, (req, res) => {
   const todayTimestamp = timestampOfTodaysDate()
-  const machines = res.locals.machines
+
+  const machines = await runSQL("SELECT name FROM machines", res)
+
   if (req.query.search) {
     //if (req.query.search == '' || req.query.search == undefined) { req.query.search = "%" } // make empty search return all
     if (req.query.all) { // show all jobs
@@ -695,23 +696,17 @@ app.post('/orders/search', (req, res) => {
 
 })
 //---------------------------------------------------------
-app.get('/orders/view/:id', (req, res, next) => {
+app.get('/orders/view/:id', (req, res) => {
 
-  db.get(`SELECT * FROM jobs WHERE id=${req.params.id}`, (err, row) => {
+  db.get(`SELECT * FROM jobs WHERE id=${req.params.id}`, async (err, row) => {
     if (err) {
       onError(err, res)
     } else {
-      res.locals.job = row
-      next()
+      const sampleID = await runSQL(`SELECT rowid FROM samples WHERE number =${row.ordernumber}`, res)
+      res.render("orders/view.ejs", { row, session, darkmode, sampleID })
     }
   })
 
-}, (req, res) => {
-
-  db.get(`SELECT rowid FROM samples WHERE number =${res.locals.job.ordernumber}`, (err, sampleID) => {
-    const row = res.locals.job
-    res.render("orders/view.ejs", { row, session, darkmode, sampleID })
-  })
 })
 //--------------------------------------------------------- 
 app.post('/orders/view/:id', logger, userLevel('user'), (req, res) => {
@@ -737,6 +732,7 @@ app.post('/orders/view/:id', logger, userLevel('user'), (req, res) => {
   io.emit('refresh', req.params.id) // refresh clients
   res.redirect('back')
 })
+//--------------------------------------------------------- 
 // #endregion
 
 // #region stores
@@ -754,33 +750,27 @@ app.get('/stores/stock-out/', (req, res) => {
 
 })
 //---------------------------------------------------------
-app.post('/stores/stock-out', logger, userLevel('user'), (req, res, next) => {
+app.post('/stores/stock-out', logger, userLevel('user'), async (req, res) => {
   if (req.body.remove) { // remove stock from stores
-    db.get(`SELECT id FROM goodsout WHERE number LIKE '%${req.body.ordernumber}%'`, (err, row) => {
-      if (err) {
-        onError(err, res)
-      } else {
-        if (row == undefined) {
-          next()
-        } else {
-          res.send("already out")
-          return
-        }
-      }
-    })
 
+    const result = await runSQL(`SELECT id FROM goodsout WHERE number LIKE '%${req.body.ordernumber}%'`,res) //here
+    if (result.length == 0) {
+
+      db.run(`INSERT INTO goodsout (name, number, date, removedby, complete) VALUES (?,?,?,?,?)`,
+        [req.body.ordername, req.body.ordernumber, timestampOfNow(), req.session.userName, req.body.complete], (err) => {
+          if (err) {
+            onError(err, res)
+          } else {
+            res.redirect(`/stores/stock-out?search=${req.body.ordernumber}`)
+            return
+          }
+        })
+
+    } else {
+      res.send("its out")
+    }
 
   }
-}, (req, res) => {
-  db.run(`INSERT INTO goodsout (name, number, date, removedby, complete) VALUES (?,?,?,?,?)`,
-    [req.body.ordername, req.body.ordernumber, timestampOfNow(), req.session.userName, req.body.complete], (err) => {
-      if (err) {
-        onError(err, res)
-      } else {
-        res.redirect(`/stores/stock-out?search=${req.body.ordernumber}`)
-        return
-      }
-    })
 })
 //---------------------------------------------------------
 app.get('/stores/search/', (req, res) => {
@@ -833,77 +823,26 @@ app.post('/stores/search', logger, department('stores'), (req, res) => {
       })
   }
 
-
-
 })
 //---------------------------------------------------------
 // #endregion
 
-app.get('/production', (req, res) => {
-  var selected_date = null
-  if (req.query.selected_date) {
-    var searchDate = timestampfromFormInputDate(req.query.selected_date)
-    selected_date = req.query.selected_date
-  } else {
-
-    var searchDate = timestampOfTodaysDate()
-  }
-
-  db.all(`SELECT * FROM jobs WHERE bookindate = ? ORDER BY duedate ASC `, [searchDate], (err, row) => {
-    if (err) {
-      onError(err, res)
-    } else {
-      const todayTimestamp = timestampOfTodaysDate()
-      res.render('production.ejs', { row, session, darkmode, searchDate, selected_date, todayTimestamp })
-    }
-  })
-
-})
-
-// INK
-app.get('/ink', (req, res) => {
-  db.all("SELECT * FROM inkdata", (err, row) => {
-    res.render("ink.ejs", { row, session, darkmode })
-  })
-})
-//---------------------------------------------------------
-app.post('/ink', logger, (req, res) => {
-  if (req.body.add) {
-    if (!req.files || Object.keys(req.files).length === 0) {
-      return res.status(400).send('No files were uploaded.');
-    }
-    req.files.uploadFile.mv(__dirname + '/public/ink/' + req.files.uploadFile.name)
-    db.run(`INSERT INTO inkdata (filename, note) VALUES (?,?)`,
-      [req.files.uploadFile.name, req.body.note], (err) => {
-        if (err) {
-          onError(err, res)
-        } else {
-          res.redirect('back')
-          return
-        }
-      })
-  }
-  if (req.body.delete) {
-    db.run(`DELETE FROM inkdata WHERE id=${req.body.delete}`, (err) => {
-      if (err) {
-        onError(err, res)
-      } else {
-        res.redirect('back')
-        return
-      }
-    })
-  }
-})
-
-
-
-
-
-
-
-
 
 // #region functions
+
+const runSQL = (sql, res) => {
+  return new Promise((resolve, reject) => {
+    db.all(sql, (err, results) => {
+      if (err) {
+        // reject(err)
+        onError(err, res)
+      } else {
+        resolve(results)
+      }
+    })
+  })
+}
+
 function logger(req, res, next) {
   let messages = []
 
@@ -932,11 +871,13 @@ function logger(req, res, next) {
 
 }
 
-function onError(err, res) {
+function onError(err, res = null) {
   log.write("ERROR, " + err + '\n')
   if (debug) console.log("ERROR!, " + err + '\n')
+   res.send("internal error please contact administrator ")
   return
 }
+
 function timestampOfTodaysDate() {
   var dateString = new Date().toLocaleDateString() // output = 30/12/2022
   var temp = dateString.split("/")

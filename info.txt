@@ -30,6 +30,8 @@ jobs:
 	'machine' text - booked in for what machine
 	'completeby' text - who completed the job
 	'ispacked' bool - packed ready to go
+	'rep' text email address of rep
+	'emailrep' bool weather to send emails on/off
 
 samples:
 	'rowid' KEY
@@ -53,6 +55,14 @@ short:
 	'amount'
 	'date'
 	'addby'
+
+goodsout:
+	'id' KEY
+	'name'
+	'number'
+	'date'
+	'removedby'
+	'complete'
 
 machines:
 	'id' KEY

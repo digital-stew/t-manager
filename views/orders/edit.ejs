@@ -116,7 +116,7 @@
           <input type="date" id="bookInDate" class="input-field-jobs" value="<%=new Date(row.bookindate * 1000).toLocaleString('sv').slice(0,10)%>" name="bookInDate"> &numsp;
           Machine: <select name="machine" id="machine">
             <option value='<%=row.machine%>'> <%=row.machine%>
-              <% mach.forEach(e=>{ %>
+              <% machines.forEach(e=>{ %>
             <option value='<%=e.name%>'> <%=e.name%>
             </option>
             <% }) %>
@@ -126,7 +126,7 @@
           <input type="date" id="bookInDate" class="input-field-jobs" name="bookInDate"> &numsp;
           Machine: <select name="machine" id="machine">
             <option value='select'> machine
-              <% mach.forEach(e=>{ %>
+              <% machines.forEach(e=>{ %>
             <option value='<%=e.name%>'> <%=e.name%> </option>
             <% }) %>
           </select><br>
