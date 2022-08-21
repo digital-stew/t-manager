@@ -120,14 +120,18 @@ app.use((req, res, next) => {
   }
   next()
 })
-
-const oneDay = 1000 * 60 * 60 * 24;
-app.use(sessions({
+var session = require('express-session')
+var SQLiteStore = require('connect-sqlite3')(session)
+const oneDay = 1000 * 60 * 60 * 24
+const oneHour = 1000 * 60 * 60
+app.use(session({
+  store: new SQLiteStore,
   secret: process.env.SESSION_SECRET_KEY,
-  saveUninitialized: true,
-  cookie: { maxAge: oneDay / 4 },
-  resave: false
-}))
+  cookie: { maxAge: oneHour * 4 },
+  resave: false,
+  saveUninitialized: false,
+  rolling: true
+}));
 
 var session
 app.use((req, res, next) => {
@@ -395,10 +399,11 @@ app.post('/samples/upload', logger, userLevel("user"), department("print"), asyn
         if (err) return next(err)
       })
       picsJSON = picsJSON.concat(`"${e.name}",`) // make json string
+      if (debug) console.log(`${e.name} moved to Files_Images`)
     })
 
     picsJSON = picsJSON.slice(0, -1) + "]"
-    if (debug) console.log("files moved")
+    if (debug) console.log("Move uploaded files complete")
     setTimeout(() => {
       resolve()
     }, 1000);
@@ -408,8 +413,7 @@ app.post('/samples/upload', logger, userLevel("user"), department("print"), asyn
 
   await im.convert([__dirname + '/public/Files_Images/' + picsArray[0].name, '-resize', '320x240', __dirname + '/public/Files_Images.tn/' + picsArray[0].name], (err) => {
     if (err) console.error(err)
-    // if (err) return next(err)
-    if (debug) console.log(__dirname + '/public/Files_Images/' + picsArray[0].name + ' uploaded to database');
+    if (debug) console.log(__dirname + '/public/Files_Images/' + picsArray[0].name + ' added to thumbnails');
   })
 
   db.run(`INSERT INTO samples (name, number, date, otherref, printdata, printdataback, printdataother, notes, printer, pics) VALUES (?,?,?,?,?,?,?,?,?,?)`,
@@ -670,7 +674,7 @@ app.post('/stores/stock-out', logger, userLevel('user'), async (req, res, next) 
 
 })
 //---------------------------------------------------------
-app.get('/stores/search/', (req, res,next) => {
+app.get('/stores/search/', (req, res, next) => {
 
   //  if (req.query.search == "") { req.query.search = " " }  // make empty search return all
   db.all("SELECT * FROM short WHERE ordernumber LIKE ? OR productcode LIKE ?", [`%${req.query.search}%`, `%${req.query.search}%`], (err, row) => {
