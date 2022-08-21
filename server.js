@@ -462,7 +462,7 @@ app.get('/samples/edit/:id', department("print"), (req, res, next) => {
   })
 })
 //---------------------------------------------------------
-app.post('/samples/edit/:id', logger, department("print"), (req, res, next) => {
+app.post('/samples/edit/:id', logger, department("print"), async (req, res, next) => {
 
   if (req.body.delete === "delete") {
     db.run("DELETE FROM samples WHERE rowid =?", [req.params.id], (err) => {
@@ -472,9 +472,8 @@ app.post('/samples/edit/:id', logger, department("print"), (req, res, next) => {
   }
 
   if (req.body.submit) {
-    db.get(`SELECT * FROM samples WHERE rowid=${req.params.id}`, (err, row) => {
-      if (err) return next(err)
-      if (req.session.userName == row.printer || req.session.userLevel == "admin") {
+      const sampleToEdit = await runSQL("SELECT * FROM samples WHERE rowid=?", [req.params.id], next)
+      if (sampleToEdit[0].printer == req.session.printer || req.session.userLevel == "admin") {
         db.run("UPDATE samples SET name = ?, number = ?, otherref = ?, printdata = ?, printdataback = ?, printdataother = ?, notes = ? WHERE rowid=?",
           [req.body.jobname, req.body.ordernumber, req.body.otherref, req.body.printdata1, req.body.printdata2, req.body.printdata3, req.body.notes, req.params.id]
         )
@@ -482,7 +481,6 @@ app.post('/samples/edit/:id', logger, department("print"), (req, res, next) => {
       } else {
         res.send("You cant edit others work. sorry")
       }
-    })
   }
 
 })
