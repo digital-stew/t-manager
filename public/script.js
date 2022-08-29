@@ -1,11 +1,16 @@
-const socket = io('http://10.0.0.55:3000', { transports : ['websocket'] })
+
+
+var socket = io(script.dataset.ip + ':' + script.dataset.port, {
+    transports: ['websocket'],
+})
+
 const id = document.getElementById('id').dataset.id
 
-
+console.log(id)
 socket.on('refresh', data => {
     //  console.log(data +':'+ id )
-    if (data == id ) {
-        location.reload(); 
+    if (data == id) {
+        location.reload();
     }
 })
 

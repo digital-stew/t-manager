@@ -7,16 +7,17 @@ var cookieParser = require('cookie-parser')
 var im = require('imagemagick');
 const fs = require('fs-extra')
 var log = fs.createWriteStream(__dirname + '/log.txt', { flags: 'a' });
-// #region ----socketIO setup-----------------------------
+//#region ----socketIO setup-----------------------------
 const io = require('socket.io')(process.env.SOCKET_LISTEN_PORT, {
   cors: {
-    // origin: ['http//localhost:'+process.env.LISTEN_PORT],
-    origin: [`http//${process.env.SERVER_ADDRESS}:${process.env.LISTEN_PORT}`],
+    origin: [`http://${process.env.SERVER_ADDRESS}:${process.env.HTTP_LISTEN_PORT}`]
   },
 })
 io.on('connection', (socket) => {
   if (debug) console.log("socket connection");
 });
+
+
 // #endregion
 // #region ----email setup--------------------------------
 var nodemailer = require('nodemailer');
@@ -24,8 +25,8 @@ var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'digital.army@gmail.com',
-    pass: 'imhauijwestayjxs'
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
   }
 });
 
@@ -49,7 +50,15 @@ function sendMail(mailTo, subject, msg) {
 // #endregion
 // #region ----express setup-----------------------------
 const express = require('express')
-const sessions = require('express-session');
+const https = require('https');
+const http = require('http');
+var key = fs.readFileSync(__dirname + '/keys/server.key');
+var cert = fs.readFileSync(__dirname + '/keys/server.crt');
+var options = {
+  key: key,
+  cert: cert
+};
+// const sessions = require('express-session');
 const fileUpload = require('express-fileupload');
 
 const app = express()
@@ -62,6 +71,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+
+var session = require('express-session')
+var SQLiteStore = require('connect-sqlite3')(session)
+const oneDay = 1000 * 60 * 60 * 24
+const oneHour = 1000 * 60 * 60
+app.use(session({
+  store: new SQLiteStore,
+  secret: process.env.SESSION_SECRET_KEY,
+  cookie: { maxAge: oneHour * 8 },
+  resave: false,
+  saveUninitialized: false,
+  rolling: true
+}));
 
 const userLevel = (level) => {
   return (req, res, next) => {
@@ -111,6 +133,13 @@ const department = (department) => {
     return
   }
 }
+
+var session
+app.use((req, res, next) => {
+  session = req.session
+  next()
+})
+
 var darkmode
 app.use((req, res, next) => {
   if (req.cookies.darkmode == true) {
@@ -121,23 +150,21 @@ app.use((req, res, next) => {
   next()
 })
 
-const oneDay = 1000 * 60 * 60 * 24;
-app.use(sessions({
-  secret: process.env.SESSION_SECRET_KEY,
-  saveUninitialized: true,
-  cookie: { maxAge: oneDay / 4 },
-  resave: false
-}))
+if (process.env.HTTP === 'on') {
+  http.createServer(app).listen(process.env.HTTP_LISTEN_PORT, () => {
+    console.log('HTTP Server running on port', process.env.HTTP_LISTEN_PORT);
 
-var session
-app.use((req, res, next) => {
-  session = req.session
-  next()
-})
+  });
+}
+if (process.env.HTTPS === 'on') {
+  https.createServer(options, app).listen(process.env.HTTPS_LISTEN_PORT, () => {
 
-app.listen(process.env.LISTEN_PORT, () => {
-  if (debug) console.log('server started on port: ' + process.env.LISTEN_PORT) //debug
-})
+    console.log('HTTPS Server running on port', process.env.HTTPS_LISTEN_PORT);
+  });
+}
+
+
+
 // #endregion
 // #region ----sqlite setup------------------------------
 var sqlite3 = require('sqlite3');
@@ -148,7 +175,7 @@ var db = new sqlite3.Database(process.env.DB_LOCATION, sqlite3.OPEN_READWRITE, (
     console.log("Getting error " + err);
     return (1);
   } else {
-    if (debug) console.log('access to database enabled. location= ' + process.env.DB_LOCATION)
+    if (debug) console.log('access to database enabled. ', process.env.DB_LOCATION)
   }
 
 });
@@ -611,10 +638,13 @@ app.post('/orders/search', (req, res) => {
 //---------------------------------------------------------
 app.get('/orders/view/:id', (req, res, next) => {
 
+  const socketIoIP = process.env.SERVER_ADDRESS
+  const socketIoPort = process.env.SOCKET_LISTEN_PORT
+
   db.get("SELECT * FROM jobs WHERE id =?", [req.params.id], async (err, row) => {
     if (err) return next(err)
     const sampleID = await runSQL("SELECT rowid FROM samples WHERE number =?", [row.ordernumber], next)
-    res.render("orders/view.ejs", { row, session, darkmode, sampleID })
+    res.render("orders/view.ejs", { row, session, darkmode, sampleID, socketIoIP, socketIoPort })
   })
 
 })
@@ -670,7 +700,7 @@ app.post('/stores/stock-out', logger, userLevel('user'), async (req, res, next) 
 
 })
 //---------------------------------------------------------
-app.get('/stores/search/', (req, res,next) => {
+app.get('/stores/search/', (req, res, next) => {
 
   //  if (req.query.search == "") { req.query.search = " " }  // make empty search return all
   db.all("SELECT * FROM short WHERE ordernumber LIKE ? OR productcode LIKE ?", [`%${req.query.search}%`, `%${req.query.search}%`], (err, row) => {
