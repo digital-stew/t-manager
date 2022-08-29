@@ -149,6 +149,7 @@ app.use((req, res, next) => {
   }
   next()
 })
+<<<<<<< HEAD
 
 if (process.env.HTTP === 'on') {
   http.createServer(app).listen(process.env.HTTP_LISTEN_PORT, () => {
@@ -163,6 +164,20 @@ if (process.env.HTTPS === 'on') {
   });
 }
 
+=======
+var session = require('express-session')
+var SQLiteStore = require('connect-sqlite3')(session)
+const oneDay = 1000 * 60 * 60 * 24
+const oneHour = 1000 * 60 * 60
+app.use(session({
+  store: new SQLiteStore,
+  secret: process.env.SESSION_SECRET_KEY,
+  cookie: { maxAge: oneHour * 4 },
+  resave: false,
+  saveUninitialized: false,
+  rolling: true
+}));
+>>>>>>> c0a856218b65a0d137a028c19c7d1ae5d638d377
 
 
 // #endregion
@@ -422,10 +437,11 @@ app.post('/samples/upload', logger, userLevel("user"), department("print"), asyn
         if (err) return next(err)
       })
       picsJSON = picsJSON.concat(`"${e.name}",`) // make json string
+      if (debug) console.log(`${e.name} moved to Files_Images`)
     })
 
     picsJSON = picsJSON.slice(0, -1) + "]"
-    if (debug) console.log("files moved")
+    if (debug) console.log("Move uploaded files complete")
     setTimeout(() => {
       resolve()
     }, 1000);
@@ -435,8 +451,7 @@ app.post('/samples/upload', logger, userLevel("user"), department("print"), asyn
 
   await im.convert([__dirname + '/public/Files_Images/' + picsArray[0].name, '-resize', '320x240', __dirname + '/public/Files_Images.tn/' + picsArray[0].name], (err) => {
     if (err) console.error(err)
-    // if (err) return next(err)
-    if (debug) console.log(__dirname + '/public/Files_Images/' + picsArray[0].name + ' uploaded to database');
+    if (debug) console.log(__dirname + '/public/Files_Images/' + picsArray[0].name + ' added to thumbnails');
   })
 
   db.run(`INSERT INTO samples (name, number, date, otherref, printdata, printdataback, printdataother, notes, printer, pics) VALUES (?,?,?,?,?,?,?,?,?,?)`,
@@ -485,7 +500,7 @@ app.get('/samples/edit/:id', department("print"), (req, res, next) => {
   })
 })
 //---------------------------------------------------------
-app.post('/samples/edit/:id', logger, department("print"), (req, res, next) => {
+app.post('/samples/edit/:id', logger, department("print"), async (req, res, next) => {
 
   if (req.body.delete === "delete") {
     db.run("DELETE FROM samples WHERE rowid =?", [req.params.id], (err) => {
@@ -495,9 +510,8 @@ app.post('/samples/edit/:id', logger, department("print"), (req, res, next) => {
   }
 
   if (req.body.submit) {
-    db.get(`SELECT * FROM samples WHERE rowid=${req.params.id}`, (err, row) => {
-      if (err) return next(err)
-      if (req.session.userName == row.printer || req.session.userLevel == "admin") {
+      const sampleToEdit = await runSQL("SELECT * FROM samples WHERE rowid=?", [req.params.id], next)
+      if (sampleToEdit[0].printer == req.session.printer || req.session.userLevel == "admin") {
         db.run("UPDATE samples SET name = ?, number = ?, otherref = ?, printdata = ?, printdataback = ?, printdataother = ?, notes = ? WHERE rowid=?",
           [req.body.jobname, req.body.ordernumber, req.body.otherref, req.body.printdata1, req.body.printdata2, req.body.printdata3, req.body.notes, req.params.id]
         )
@@ -505,7 +519,6 @@ app.post('/samples/edit/:id', logger, department("print"), (req, res, next) => {
       } else {
         res.send("You cant edit others work. sorry")
       }
-    })
   }
 
 })
