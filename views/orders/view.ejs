@@ -16,8 +16,7 @@
     <div class="column">
       <form class="myBox" style="animation-name: fromLeft;">
         <h2><%=row.ordername%> </h2>
-        <h3><%=row.ordernumber%> </h3>
-        <h5 data-id="<%=row.id%>" id="id">ID: <%=row.id%></h3>
+        <h3><%=row.ordernumber%> </h3>        <h5 data-id="<%=row.id%>" id="id">ID: <%=row.id%></h3>
         <input type="checkbox" onclick="return false;" <%if(row.print == 'on' ){ %> checked <%}%>>Print
         <input type="checkbox" onclick="return false;" <%if(row.emb == 'on' ){ %> checked <%}%>>Emb
         <input type="checkbox" onclick="return false;" <%if(row.transfer == 'on' ){ %> checked <%}%>>Transfer
@@ -118,7 +117,7 @@
             <% totalGarments += Number(e.amount) %>
           </tr>
           <% index++ %>
-          <%})}catch(err){console.log("garments error")}%>
+          <%})}catch(err){ if (debugVar) console.log("error in parsing garments orders/view.ejs. probably just empty") }%>
 
           </table>
   

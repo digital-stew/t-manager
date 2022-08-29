@@ -1,7 +1,13 @@
-const debug = true
-
-
 require('dotenv').config()
+let debug = undefined
+if (process.env.NODE_ENV === 'production') {
+  debug = false
+}
+if (process.env.NODE_ENV === 'dev') {
+  debug = true
+  console.log("DEBUG MODE")
+}
+
 const bcrypt = require('bcrypt');
 var cookieParser = require('cookie-parser')
 var im = require('imagemagick');
@@ -149,7 +155,6 @@ app.use((req, res, next) => {
   }
   next()
 })
-<<<<<<< HEAD
 
 if (process.env.HTTP === 'on') {
   http.createServer(app).listen(process.env.HTTP_LISTEN_PORT, () => {
@@ -164,20 +169,6 @@ if (process.env.HTTPS === 'on') {
   });
 }
 
-=======
-var session = require('express-session')
-var SQLiteStore = require('connect-sqlite3')(session)
-const oneDay = 1000 * 60 * 60 * 24
-const oneHour = 1000 * 60 * 60
-app.use(session({
-  store: new SQLiteStore,
-  secret: process.env.SESSION_SECRET_KEY,
-  cookie: { maxAge: oneHour * 4 },
-  resave: false,
-  saveUninitialized: false,
-  rolling: true
-}));
->>>>>>> c0a856218b65a0d137a028c19c7d1ae5d638d377
 
 
 // #endregion
@@ -658,8 +649,18 @@ app.get('/orders/view/:id', (req, res, next) => {
 
   db.get("SELECT * FROM jobs WHERE id =?", [req.params.id], async (err, row) => {
     if (err) return next(err)
-    const sampleID = await runSQL("SELECT rowid FROM samples WHERE number =?", [row.ordernumber], next)
-    res.render("orders/view.ejs", { row, session, darkmode, sampleID, socketIoIP, socketIoPort })
+
+    var sampleID = null
+
+    try {
+      sampleID = await runSQL("SELECT rowid FROM samples WHERE number =?", [row.ordernumber], next)
+    } catch (error) {
+      console.error("attempt to load a non existent order", req.params)
+      next(error)
+    }
+
+    var debugVar = debug
+    res.render("orders/view.ejs", { row, session, darkmode, sampleID, socketIoIP, socketIoPort, debugVar })
   })
 
 })
@@ -754,11 +755,15 @@ app.post('/stores/search', logger, department('stores'), (req, res, next) => {
 })
 //---------------------------------------------------------
 app.use((err, req, res, next) => {
+
   if (res.headersSent) {
     return next(err)
   }
-  res.send(`Shit Something broke!<br>${err}<br>if the problem persists contact your administrator`)
+  if (process.env.NODE_ENV === 'production') {
+    res.send(`Shit Something broke!<br>${err}<br>if the problem persists contact your administrator `)
+  }
   log.write("ERROR, " + err + '\n')
+
 })
 //---------------------------------------------------------
 // #endregion
