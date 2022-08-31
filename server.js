@@ -36,22 +36,7 @@ var transporter = nodemailer.createTransport({
   }
 });
 
-function sendMail(mailTo, subject, msg) {
-  var mailOptions = {
-    from: 't-manager@t-print.co.uk',
-    to: mailTo,
-    subject: subject,
-    text: msg
-  };
 
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.error(error);
-    } else {
-      if (debug) console.log('Email sent: ' + info.response);
-    }
-  });
-}
 // sendMail('digital.army@gmail.com','test','is this working?')
 // #endregion
 // #region ----express setup-----------------------------
@@ -176,6 +161,7 @@ if (process.env.HTTPS === 'on') {
 var sqlite3 = require('sqlite3');
 const { parse } = require('dotenv');
 const { encodeXText } = require('nodemailer/lib/shared');
+const { report } = require('process')
 var db = new sqlite3.Database(process.env.DB_LOCATION, sqlite3.OPEN_READWRITE, (err) => {
   if (err) {
     console.log("Getting error " + err);
@@ -539,7 +525,8 @@ app.get('/orders/edit/:id', userLevel("admin"), (req, res, next) => {
     if (err) return next(err)
     const reps = await runSQL("SELECT name FROM reps", [], next)
     const machines = await runSQL("SELECT name FROM machines", [], next)
-    res.render("orders/edit.ejs", { row, session, darkmode, machines, reps })
+    const debugVar = debug
+    res.render("orders/edit.ejs", { row, session, darkmode, machines, reps, debugVar })
   })
 })
 //---------------------------------------------------------
@@ -588,8 +575,11 @@ app.post('/orders/edit/:id', logger, userLevel("admin"), async (req, res, next) 
   if (req.body.bookIn) {
     db.run("UPDATE jobs SET bookindate = ?, machine = ? WHERE id=?", [timestampfromFormInputDate(req.body.bookInDate), req.body.machine, req.params.id], (err) => {
       if (err) return next(err)
-      //send email here
     })
+    var job = await runSQL("SELECT rep, emailrep FROM jobs WHERE id=?", [req.params.id], next) // get job options 
+    if (job[0].emailrep === 'on') {
+       updateRep(job[0].rep, req.params.id, `Order booked in for production ${timestampToDateAndTime(timestampfromFormInputDate(req.body.bookInDate))}`, next) //send email
+    }
   }
 
   if (req.body.options) {
@@ -642,48 +632,39 @@ app.post('/orders/search', (req, res) => {
 
 })
 //---------------------------------------------------------
-app.get('/orders/view/:id', (req, res, next) => {
+app.get('/orders/view/:id', async (req, res, next) => {
 
   const socketIoIP = process.env.SERVER_ADDRESS
   const socketIoPort = process.env.SOCKET_LISTEN_PORT
 
   db.get("SELECT * FROM jobs WHERE id =?", [req.params.id], async (err, row) => {
     if (err) return next(err)
-
-    var sampleID = null
-
-    try {
-      sampleID = await runSQL("SELECT rowid FROM samples WHERE number =?", [row.ordernumber], next)
-    } catch (error) {
-      console.error("attempt to load a non existent order", req.params)
-      next(error)
-    }
-
-    var debugVar = debug
+    const sampleID = await runSQL("SELECT rowid FROM samples WHERE number =?", [row?.ordernumber], next)
+    const debugVar = debug
     res.render("orders/view.ejs", { row, session, darkmode, sampleID, socketIoIP, socketIoPort, debugVar })
   })
 
 })
 //--------------------------------------------------------- 
-app.post('/orders/view/:id', logger, userLevel('user'), (req, res, next) => {
+app.post('/orders/view/:id', logger, userLevel('user'), async (req, res, next) => {
 
   if (req.body.update) {
     db.run("UPDATE jobs SET notes = ?, hasstock = ?, hasscreens = ?, hasapp = ?, ispacked = ? WHERE rowid=?",
       [req.body.notes.trim(), req.body.hasstock, req.body.hasscreens, req.body.hasapp, req.body.ispacked, req.params.id], (err) => {
         if (err) return next(err)
-        //send email here?
         io.emit('refresh', req.params.id) // refresh clients 
         res.redirect('back')
       })
   }
 
   if (req.body.completejob) { //complete job
-    db.run("UPDATE jobs SET completed = ?, complete = ?, completeby = ? WHERE rowid=?", [Date.now() / 1000, "on", req.session.userName, req.params.id], (err) => {
+    db.run("UPDATE jobs SET completed = ?, complete = ?, completeby = ? WHERE rowid=?", [timestampOfNow(), "on", req.session.userName, req.params.id], (err) => {
       if (err) return next(err)
-      //send email here?
       io.emit('refresh', req.params.id) // refresh clients 
       res.redirect('back')
     })
+    const completedJob = await runSQL("SELECT rep, emailrep FROM jobs WHERE id =?", [req.params.id], next)
+    if (completedJob[0].emailrep === 'on') updateRep(completedJob[0].rep, req.params.id, 'Order complete', next) //send email
   }
 
 })
@@ -769,6 +750,29 @@ app.use((err, req, res, next) => {
 // #endregion
 
 // #region functions
+async function updateRep(rep, jobID, msg, next) {
+  const email = await runSQL("SELECT email FROM reps WHERE name = ?", [rep], next)
+  const job = await runSQL("SELECT * FROM jobs WHERE id = ?", [jobID], next)
+  sendMail(email[0].email, `Order update ${job[0].ordernumber} - ${job[0].ordername}`, msg)
+  log.write("email sent to " + rep + '\n')
+}
+
+function sendMail(mailTo, subject, msg) {
+  var mailOptions = {
+    from: 't-manager@t-print.co.uk',
+    to: mailTo,
+    subject: subject,
+    text: msg
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.error(error);
+    } else {
+      if (debug) console.log('Email sent: ' + info.response);
+    }
+  });
+}
 
 const runSQL = (sql, data, next) => {
   return new Promise((resolve, reject) => {

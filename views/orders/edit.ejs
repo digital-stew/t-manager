@@ -87,8 +87,7 @@
           <h2>Options</h2>
           <label for="rep">representative</label>
           <select name="rep" id="rep">
-            <option value="<%=row.rep%>"><%=row.rep%></option>
-            <option value="house">house</option>
+            <option value="<%=row.rep%>"><%=row.rep%></option>           
             <%reps.forEach(e => { %>
               <option value='<%=e.name%>'> <%=e.name%> </option>
             <%})%>            
@@ -163,7 +162,7 @@
             <% totalGarments += Number(e.amount) %>
           </tr>
           <% index++ %>
-          <%})}catch(err){console.log("garments error")}%>
+          <%})}catch(err){if (debugVar) console.log("error in parsing garments orders/edit.ejs. probably just empty")}%>
 
           </table>
   
