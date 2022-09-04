@@ -1,7 +1,12 @@
 db.sqlite
-public/Files_Images/*
-public/Files_Images.tn/*
-public/ink/*
+
+public/Files_Images/*.jpg
+public/Files_Images/*.png
+
+public/Files_Images.tn/*.jpg
+public/Files_Images.tn/*.png
+
+public/ink/*.pdf
 node_modules/
 log.txt
 todo.txt

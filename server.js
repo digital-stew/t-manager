@@ -7,49 +7,30 @@ if (process.env.NODE_ENV === 'dev') {
   debug = true
   console.log("DEBUG MODE")
 }
+module.exports = { debug }
 
-const bcrypt = require('bcrypt');
-var cookieParser = require('cookie-parser')
-var im = require('imagemagick');
-const fs = require('fs-extra')
-var log = fs.createWriteStream(__dirname + '/log.txt', { flags: 'a' });
-//#region ----socketIO setup-----------------------------
-const io = require('socket.io')(process.env.SOCKET_LISTEN_PORT, {
-  cors: {
-    origin: [`http://${process.env.SERVER_ADDRESS}:${process.env.HTTP_LISTEN_PORT}`]
-  },
-})
-io.on('connection', (socket) => {
-  if (debug) console.log("socket connection");
-});
+const bcrypt = require('bcrypt'); // for password hash
+const cookieParser = require('cookie-parser')
+const im = require('imagemagick'); // to make thubnails
+const fs = require('fs-extra') // log to text file
+const log = fs.createWriteStream(__dirname + '/log.txt', { flags: 'a' });
+const { db, runSQL } = require('./myModules/sqlite.js') // sqlite3 database and runSQL as promise
+const sendMail = require('./myModules/email.js').sendMail
+const { timestampOfTodaysDate, timestampfromFormInputDate, timestampOfNow, timestampToDateAndTime } = require('./myModules/functions.js')
+const { userLevel, department } = require('./myModules/authentication')
+const io = require('./myModules/socket.js').io // socket.io for auto page refresh on new data
 
-
-// #endregion
-// #region ----email setup--------------------------------
-var nodemailer = require('nodemailer');
-
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
-  }
-});
-
-
-// sendMail('digital.army@gmail.com','test','is this working?')
-// #endregion
 // #region ----express setup-----------------------------
 const express = require('express')
-const https = require('https');
 const http = require('http');
-var key = fs.readFileSync(__dirname + '/keys/server.key');
-var cert = fs.readFileSync(__dirname + '/keys/server.crt');
+const https = require('https');
+var key = fs.readFileSync(process.env.HTTPS_SSL_KEY);
+var cert = fs.readFileSync(process.env.HTTPS_SSL_CERTIFICATE);
 var options = {
   key: key,
   cert: cert
 };
-// const sessions = require('express-session');
+
 const fileUpload = require('express-fileupload');
 
 const app = express()
@@ -62,7 +43,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
-
 var session = require('express-session')
 var SQLiteStore = require('connect-sqlite3')(session)
 const oneDay = 1000 * 60 * 60 * 24
@@ -70,60 +50,11 @@ const oneHour = 1000 * 60 * 60
 app.use(session({
   store: new SQLiteStore,
   secret: process.env.SESSION_SECRET_KEY,
-  cookie: { maxAge: oneHour * 8 },
+  cookie: { maxAge: oneHour * 8 }, // users can stay loged in all day
   resave: false,
   saveUninitialized: false,
   rolling: true
 }));
-
-const userLevel = (level) => {
-  return (req, res, next) => {
-    switch (level) {
-      case "admin":
-        if (req.session.userLevel == "admin") {
-          next()
-          break
-        }
-      case "user":
-        if (req.session.userLevel == "user" || req.session.userLevel == "admin") {
-          next()
-          break
-        }
-      default:
-        res.send("you are not authorized to access this page")
-        break;
-    }
-
-    return
-  }
-}
-
-const department = (department) => {
-  return (req, res, next) => {
-    switch (department) {
-      case "print":
-        if (req.session.department == "print" || req.session.userLevel == "admin") {
-          next()
-          break
-        }
-      case "stores":
-        if (req.session.department == "stores" || req.session.userLevel == "admin") {
-          next()
-          break
-        }
-      case "office":
-        if (req.session.department == "office" || req.session.userLevel == "admin") {
-          next()
-          break
-        }
-      default:
-        res.send("you are not authorized to access this page")
-        break;
-    }
-
-    return
-  }
-}
 
 var session
 app.use((req, res, next) => {
@@ -154,29 +85,10 @@ if (process.env.HTTPS === 'on') {
   });
 }
 
-
-
-// #endregion
-// #region ----sqlite setup------------------------------
-var sqlite3 = require('sqlite3');
-const { parse } = require('dotenv');
-const { encodeXText } = require('nodemailer/lib/shared');
-const { report } = require('process')
-var db = new sqlite3.Database(process.env.DB_LOCATION, sqlite3.OPEN_READWRITE, (err) => {
-  if (err) {
-    console.log("Getting error " + err);
-    return (1);
-  } else {
-    if (debug) console.log('access to database enabled. ', process.env.DB_LOCATION)
-  }
-
-});
-
-// #endregion
-
 app.get('/', (req, res) => {
   res.redirect('/production')
 })
+// #endregion
 //---------------------------------------------------------
 
 app.get('/production', (req, res, next) => {
@@ -392,36 +304,28 @@ app.post('/samples/upload', logger, userLevel("user"), department("print"), asyn
     return res.status(400).send('No files were uploaded.');
   }
 
-  let date = Date.now() / 1000
-
-
-  if (Array.isArray(req.files.files)) { // forEach will only work on arrays so make sure it is
+  if (Array.isArray(req.files.files)) { // forEach will only work on arrays so make sure it is. is there a better way to do this?
     var picsArray = [...req.files.files]
   } else {
     var picsArray = []
     picsArray.push(req.files.files)
   }
 
-  picsArray.reverse() // first taken pic will become the thumbnail
+  picsArray.sort() // first taken pic will become the thumbnail
 
+  let picNames = []
 
-  let picsJSON = "["
 
   await new Promise((resolve, reject) => {
 
     picsArray.forEach(e => { // move files
-      e.mv(__dirname + '/public/Files_Images/' + e.name, (err) => {
-        if (err) return next(err)
-      })
-      picsJSON = picsJSON.concat(`"${e.name}",`) // make json string
+      e.mv(__dirname + '/public/Files_Images/' + e.name, (err) => { if (err) return next(err) })
+      picNames.push(e.name)
       if (debug) console.log(`${e.name} moved to Files_Images`)
     })
 
-    picsJSON = picsJSON.slice(0, -1) + "]"
     if (debug) console.log("Move uploaded files complete")
-    setTimeout(() => {
-      resolve()
-    }, 1000);
+    setTimeout(() => { resolve() }, 1000);
 
   })
 
@@ -432,7 +336,7 @@ app.post('/samples/upload', logger, userLevel("user"), department("print"), asyn
   })
 
   db.run(`INSERT INTO samples (name, number, date, otherref, printdata, printdataback, printdataother, notes, printer, pics) VALUES (?,?,?,?,?,?,?,?,?,?)`,
-    [req.body.jobname, req.body.ordernumber, date, req.body.otherref, req.body.printdata1, req.body.printdata2, req.body.printdata3, req.body.notes, req.session.userName, picsJSON], async (err) => {
+    [req.body.jobname, req.body.ordernumber, timestampOfNow(), req.body.otherref, req.body.printdata1, req.body.printdata2, req.body.printdata3, req.body.notes, req.session.userName, JSON.stringify(picNames)], async (err) => {
       if (err) return next(err)
       const lastID = await runSQL("SELECT rowid FROM samples ORDER BY rowid DESC LIMIT 1", [], next)
       res.redirect(`/samples/view/${lastID[0].rowid}`)
@@ -578,7 +482,7 @@ app.post('/orders/edit/:id', logger, userLevel("admin"), async (req, res, next) 
     })
     var job = await runSQL("SELECT rep, emailrep FROM jobs WHERE id=?", [req.params.id], next) // get job options 
     if (job[0].emailrep === 'on') {
-       updateRep(job[0].rep, req.params.id, `Order booked in for production ${timestampToDateAndTime(timestampfromFormInputDate(req.body.bookInDate))}`, next) //send email
+      updateRep(job[0].rep, req.params.id, `Order booked in for production ${timestampToDateAndTime(timestampfromFormInputDate(req.body.bookInDate))}`, next) //send email
     }
   }
 
@@ -687,12 +591,17 @@ app.post('/stores/stock-out', logger, userLevel('user'), async (req, res, next) 
 
   if (req.body.remove) { // remove stock from stores
     const result = await runSQL("SELECT id FROM goodsout WHERE number LIKE ?", [`%${req.body.ordernumber}%`], next)
-    if (result.length == 0) {
-      db.run(`INSERT INTO goodsout (name, number, date, removedby, complete) VALUES (?,?,?,?,?)`, [req.body.ordername, req.body.ordernumber, timestampOfNow(), req.session.userName, req.body.complete], (err) => {
-        if (err) return next(err)
-        res.redirect(`/stores/stock-out?search=${req.body.ordernumber}`)
-      })
-    } else res.send(`<script>alert('already removed form stores');window.location.replace('/stores/stock-out?search=${req.body.ordernumber}');</script>`)
+
+    if (result.length != 0) {
+      res.send(`<script>alert('already removed form stores');window.location.replace('/stores/stock-out?search=${req.body.ordernumber}');</script>`)
+      return
+    }
+
+    db.run(`INSERT INTO goodsout (name, number, date, removedby, complete) VALUES (?,?,?,?,?)`, [req.body.ordername, req.body.ordernumber, timestampOfNow(), req.session.userName, req.body.complete], (err) => {
+      if (err) return next(err)
+      res.redirect(`/stores/stock-out?search=${req.body.ordernumber}`)
+    })
+
   }
 
 })
@@ -735,13 +644,13 @@ app.post('/stores/search', logger, department('stores'), (req, res, next) => {
 
 })
 //---------------------------------------------------------
-app.use((err, req, res, next) => {
+app.use((err, req, res, next) => { // error handler
 
   if (res.headersSent) {
     return next(err)
   }
   if (process.env.NODE_ENV === 'production') {
-    res.send(`Shit Something broke!<br>${err}<br>if the problem persists contact your administrator `)
+    res.send(`Something broke!<br>${err}<br>if the problem persists contact your administrator `)
   }
   log.write("ERROR, " + err + '\n')
 
@@ -755,35 +664,6 @@ async function updateRep(rep, jobID, msg, next) {
   const job = await runSQL("SELECT * FROM jobs WHERE id = ?", [jobID], next)
   sendMail(email[0].email, `Order update ${job[0].ordernumber} - ${job[0].ordername}`, msg)
   log.write("email sent to " + rep + '\n')
-}
-
-function sendMail(mailTo, subject, msg) {
-  var mailOptions = {
-    from: 't-manager@t-print.co.uk',
-    to: mailTo,
-    subject: subject,
-    text: msg
-  };
-
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.error(error);
-    } else {
-      if (debug) console.log('Email sent: ' + info.response);
-    }
-  });
-}
-
-const runSQL = (sql, data, next) => {
-  return new Promise((resolve, reject) => {
-    db.all(sql, data, (err, results) => {
-      if (err) {
-        next(err)
-      } else {
-        resolve(results)
-      }
-    })
-  })
 }
 
 function logger(req, res, next) {
@@ -810,22 +690,6 @@ function logger(req, res, next) {
 
   next()
 
-}
-
-function timestampOfTodaysDate() {
-  var dateString = new Date().toLocaleDateString() // output = 30/12/2022
-  var temp = dateString.split("/")
-  var timestampOfTodaysDate = new Date(`${temp[2]}-${temp[1]}-${temp[0]}`).getTime() / 1000
-  return timestampOfTodaysDate
-}
-function timestampfromFormInputDate(formInput) {
-  return (new Date(formInput)).getTime() / 1000
-}
-function timestampOfNow() {
-  return Date.now() / 1000
-}
-function timestampToDateAndTime(timestamp) {
-  return new Date(timestamp * 1000).toLocaleDateString()
 }
 
 // #endregion
