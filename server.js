@@ -7,16 +7,16 @@ if (process.env.NODE_ENV === 'dev') {
   debug = true
   console.log("DEBUG MODE")
 }
-module.exports = { debug }
 
 const bcrypt = require('bcrypt'); // for password hash
 const cookieParser = require('cookie-parser')
-const im = require('imagemagick'); // to make thubnails
+const im = require('imagemagick'); // to make thumbnails
 const fs = require('fs-extra') // log to text file
 const log = fs.createWriteStream(__dirname + '/log.txt', { flags: 'a' });
+module.exports = { debug, log }
 const { db, runSQL } = require('./myModules/sqlite.js') // sqlite3 database and runSQL as promise
 const sendMail = require('./myModules/email.js').sendMail
-const { timestampOfTodaysDate, timestampfromFormInputDate, timestampOfNow, timestampToDateAndTime } = require('./myModules/functions.js')
+const { timestampOfTodaysDate, timestampfromFormInputDate, timestampOfNow, timestampToDateAndTime, logger, updateRep } = require('./myModules/functions.js')
 const { userLevel, department } = require('./myModules/authentication')
 const io = require('./myModules/socket.js').io // socket.io for auto page refresh on new data
 
@@ -85,12 +85,13 @@ if (process.env.HTTPS === 'on') {
   });
 }
 
+
+// #endregion
+//---------------------------------------------------------
 app.get('/', (req, res) => {
   res.redirect('/production')
 })
-// #endregion
 //---------------------------------------------------------
-
 app.get('/production', (req, res, next) => {
 
   var selected_date = null
@@ -108,7 +109,6 @@ app.get('/production', (req, res, next) => {
 
 })
 //---------------------------------------------------------
-
 // #region INK
 app.get('/ink', (req, res, next) => {
   db.all("SELECT * FROM inkdata", (err, row) => {
@@ -643,53 +643,17 @@ app.post('/stores/search', logger, department('stores'), (req, res, next) => {
   }
 
 })
-//---------------------------------------------------------
-app.use((err, req, res, next) => { // error handler
+//-------------------error handler-------------------------
+app.use((err, req, res, next) => { 
 
   if (res.headersSent) {
     return next(err)
   }
-  if (process.env.NODE_ENV === 'production') {
+ 
     res.send(`Something broke!<br>${err}<br>if the problem persists contact your administrator `)
-  }
+  
   log.write("ERROR, " + err + '\n')
 
 })
 //---------------------------------------------------------
-// #endregion
-
-// #region functions
-async function updateRep(rep, jobID, msg, next) {
-  const email = await runSQL("SELECT email FROM reps WHERE name = ?", [rep], next)
-  const job = await runSQL("SELECT * FROM jobs WHERE id = ?", [jobID], next)
-  sendMail(email[0].email, `Order update ${job[0].ordernumber} - ${job[0].ordername}`, msg)
-  log.write("email sent to " + rep + '\n')
-}
-
-function logger(req, res, next) {
-  let messages = []
-
-  messages.push(req.originalUrl)
-
-  if (req.body.login) {
-    messages.push(JSON.stringify(req.body.user))
-  } else {
-    messages.push(JSON.stringify(req.body))
-  }
-
-  if (req.session.userName) {
-    messages.push(JSON.stringify(req.session.userName))
-  } else {
-    messages.push(JSON.stringify("UNKNOWN"))
-  }
-
-  messages.push(new Date().toLocaleString())
-
-  if (debug) console.log(messages.join(" , "))
-  log.write(messages.join(" , ") + "\n")
-
-  next()
-
-}
-
 // #endregion
