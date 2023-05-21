@@ -358,7 +358,7 @@ app.post(
     userLevel("user"),
     department("print"),
     async (req, res, next) => {
-        if (!req.files || Object.keys(req.files).length === 0) {
+        if (!req.files.thumbnail) {
             return res.status(400).send("No files were uploaded.");
         }
 
@@ -367,12 +367,14 @@ app.post(
             var picsArray = [...req.files.files];
         } else {
             var picsArray = [];
-            picsArray.push(req.files.files);
+            //only push if 2nd files input has anything
+            if (req.files.files) picsArray.push(req.files.files);
         }
 
-        picsArray.sort(); // first taken pic will become the thumbnail
-
         let picNames = [];
+
+        //put thumbnail on top of stack
+        picsArray.unshift(req.files.thumbnail);
 
         await new Promise((resolve, reject) => {
             picsArray.forEach((e) => {
