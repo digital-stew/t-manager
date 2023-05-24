@@ -358,7 +358,7 @@ app.post(
     userLevel("user"),
     department("print"),
     async (req, res, next) => {
-        if (!req.files.thumbnail) {
+        if (!req.files) {
             return res.status(400).send("No files were uploaded.");
         }
 
