@@ -1,15 +1,6 @@
-db.sqlite
 
-public/Files_Images/*.jpg
-public/Files_Images/*.png
 
-public/Files_Images.tn/*.jpg
-public/Files_Images.tn/*.png
+assets/images/sample-images/*.jpg
+assets/images/sample-images/*.png
 
-public/ink/*.pdf
-node_modules/
-log.txt
-todo.txt
-.vscode
-sessions
-.svelte-kit/
+
