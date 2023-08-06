@@ -1,6 +1,6 @@
 
 
-assets/images/sample-images/*.jpg
-assets/images/sample-images/*.png
+assets/images/samples/original/*.jpg
+assets/images/samples/webp/*.webp
 
 

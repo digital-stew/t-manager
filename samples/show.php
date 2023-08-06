@@ -1,18 +1,24 @@
 <?php
-require $_SERVER['DOCUMENT_ROOT'].'/header.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/header.php';
 
 $id = htmlspecialchars($_GET['id']);
 // SELECT all from sample table and all images from its table
-$stm = $db->prepare('SELECT samples.*, sample_images.image FROM samples LEFT JOIN sample_images ON samples.rowid = sample_images.sample_id WHERE rowid = ?;');
-$stm->bindValue(1,SQLite3::escapeString($id));
-//$stm->bindValue(2,SQLite3::escapeString($id));
+$sql = <<<EOD
+    SELECT samples.*, sample_images.webp_filename
+    FROM samples
+    LEFT JOIN sample_images
+    ON samples.rowid = sample_images.sample_id
+    WHERE rowid = ?;
+EOD;
+$stm = $db->prepare($sql);
+$stm->bindValue(1, SQLite3::escapeString($id));
 $res = $stm->execute();
-$sample = $res->fetchArray(); // get all sample details including first image
 
+$sample = $res->fetchArray(); // get all sample details including first image
 $images = array(); // create array to hold image names
-array_push($images, $sample['image']); // push the first image
-while ($row = $res->fetchArray(SQLITE3_ASSOC)){
-    array_push($images, $row['image']); // push the rest
+array_push($images, $sample['webp_filename']); // push the first image
+while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+    array_push($images, $row['webp_filename']); // push the rest
 }
 ?>
 
@@ -20,42 +26,49 @@ while ($row = $res->fetchArray(SQLITE3_ASSOC)){
     <div class="box sample_show_titleBar">
         <span>
             <p>id:</p>
-            <p><?=$sample['rowid']?></p>
+            <p><?= $sample['rowid'] ?></p>
         </span>
         <span>
             <p>name:</p>
-            <p><?=$sample['name']?></p>
+            <p><?= $sample['name'] ?></p>
         </span>
         <span>
             <p>number:</p>
-            <p><?=$sample['number']?></p>
+            <p><?= $sample['number'] ?></p>
         </span>
         <span>
             <p>date:</p>
-            <p id="timestamp"><?=$sample['date']?></p>
+            <p class="timestamp"><?= $sample['date'] ?></p>
         </span>
     </div>
     <div class="sample__imageWrapper box">
-        <span id="count">1</span> <span>/<?php echo sizeof($images) ?></span>
-        <button onclick="imageDown()">-</button>
-        <img id="sampleImage" src="/assets/images/sample-images/<?php echo $sample['image'] ?>" alt="">
-        <button onclick="imageUp()">+</button>
+        <div class="imageCount">
+
+            <span id="count">1</span> <span id="imageAmount">/<?= sizeof($images) ?></span>
+        </div>
+        <button class="prev" onclick="imageDown()">&lt;</button>
+        <img id="sampleImage" src="/assets/images/samples/webp/<?= $sample['webp_filename'] ?>" alt="">
+        <button class="next" onclick="imageUp()">&gt;</button>
     </div>
     <div class="sample_show_data" id="sampleData">
-        <p><?php if (strlen($sample['printdata'])) {echo '<h3>front</h3>'. $sample['printdata'];} ?></p>
-        <p><?php if (strlen($sample['printdataback'])) {echo '<h3>back</h3>'. $sample['printdataback'];} ?></p>
-        <p><?php if (strlen($sample['printdataother'])) {echo '<h3>other</h3>'. $sample['printdataother'];} ?></p>
-        <p><?php if (strlen($sample['notes'])) {echo '<h3>notes</h3>'. $sample['notes'];} ?></p>
+        <p><?php if (strlen($sample['printdata'])) {
+                echo '<h3>front</h3>' . $sample['printdata'];
+            } ?></p>
+        <p><?php if (strlen($sample['printdataback'])) {
+                echo '<h3>back</h3>' . $sample['printdataback'];
+            } ?></p>
+        <p><?php if (strlen($sample['printdataother'])) {
+                echo '<h3>other</h3>' . $sample['printdataother'];
+            } ?></p>
+        <p><?php if (strlen($sample['notes'])) {
+                echo '<h3>notes</h3>' . $sample['notes'];
+            } ?></p>
 
         <button onclick="editSample()">edit</button>
     </div>
 </div>
-
 <script>
-let timestamp = document.getElementById('timestamp');
-timestamp.innerText = new Date(timestamp.innerText * 1000).toLocaleDateString()
-
-let images = JSON.parse('<?php echo json_encode($images) ?>'); // pass image array to client
+let images = JSON.parse('<?= json_encode($images) ?>'); // pass image array to client
 let imageCountElement = document.getElementById('count')
 let imageNumber = 0;
 let image = document.getElementById('sampleImage');
@@ -65,19 +78,25 @@ async function removeImage() {
     form.append('removeImage', 'true');
     form.append('image', images[imageNumber])
 
-    const req = await fetch('/api/samples/edit.php?id=<?=$id?>', {
+    const req = await fetch('/api/samples/edit.php?id=<?= $id ?>', {
         method: 'POST',
         body: form
     })
     const res = await req.text()
-    console.log(res);
+
+    if (res === "image=removed") images = images.map((image, index) => {
+        if (imageNumber == index) return image;
+    })
+    image.src = '';
+    let imageAmount = document.getElementById('imageAmount')
+    imageAmount.innerText = '/' + (imageAmount.innerText.slice(1) - 1);
 }
 
 function imageUp() {
     if (imageNumber >= images.length - 1) return;
     imageNumber++;
     imageCountElement.innerText = imageNumber + 1
-    image.src = "/assets/images/sample-images/" + images[imageNumber];
+    image.src = "/assets/images/samples/webp/" + images[imageNumber];
 }
 
 function imageDown() {
@@ -85,7 +104,7 @@ function imageDown() {
     imageNumber--;
     imageCountElement.innerText = imageNumber + 1
 
-    image.src = "/assets/images/sample-images/" + images[imageNumber];
+    image.src = "/assets/images/samples/webp/" + images[imageNumber];
 }
 async function editSample() {
     let div = document.getElementById('sampleData')
@@ -107,5 +126,5 @@ function updateSample(x) {
 </script>
 
 <?php
-require dirname(__DIR__).'/footer.php';
+require dirname(__DIR__) . '/footer.php';
 ?>

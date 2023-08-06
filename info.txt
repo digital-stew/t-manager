@@ -2,3 +2,28 @@ orders:
 name
 number
 due date
+
+table sample_images:
+id
+sample_id
+webp_filename
+original_filename
+user
+date
+
+table samples:
+rowid
+name
+number
+date
+otherref
+printdata
+printdataback
+printdataother
+notes
+printer
+
+
+sudo apt install php-gd
+apt install apache2
+apt install libapache2-mod-php

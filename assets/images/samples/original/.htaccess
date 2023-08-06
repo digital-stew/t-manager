@@ -1,0 +1,7 @@
+<IfModule mod_expires.c>
+    # Enable the Expires module
+    ExpiresActive On
+    
+    # Set the default expiration time for images to 1 week (604800 seconds)
+    ExpiresDefault "access plus 1 week"
+</IfModule>

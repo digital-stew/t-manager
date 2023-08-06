@@ -1,5 +1,9 @@
 <?php
-echo 'footer';
 $db->close();
 ?>
+<script>
+HRtimestamp();
+</script>
+</body>
+
 </html>
