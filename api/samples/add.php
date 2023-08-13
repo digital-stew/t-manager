@@ -78,7 +78,7 @@ if (isset($_POST['add'])) {
 }
 ?>
 
-<form enctype="multipart/form-data" action="/api/samples/add.php" method="POST" class="box sample__add__form">
+<form id="show" enctype="multipart/form-data" action="/api/samples/add.php" method="POST" class="box sample__add__form">
 
     <div>
         <h3>Job Data</h3>

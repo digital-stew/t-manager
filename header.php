@@ -31,16 +31,11 @@ $expires = 604800; // 1 week in seconds
 </style>
 
 <body>
-    <nav class="navbar">
-        <div class="imageWrapper">
+    <nav class="navbar-top">
+        <!-- <div class="imageWrapper">
             <img src="/assets/images/logo-light.png" alt="company logo">
-        </div>
-        <ul class="linkList">
-            <li><a href="/samples">Samples</a></li>
-            <li><a href="/">Ink</a></li>
-            <li><a href="/">Maintenance log</a></li>
-            <li><a href="/admin">admin</a></li>
-        </ul>
+        </div> -->
+
         <?php if (isset($_SESSION['userName'])) : ?>
         <div>
             <h4>welcome <?= $_SESSION['userName'] ?></h4>
@@ -48,14 +43,22 @@ $expires = 604800; // 1 week in seconds
         </div>
 
         <?php else : ?>
-        <form id="loginForm" class="loginForm" method="post">
-            <input type="text" name="username" id="" placeholder="Username"> <br />
-            <input type="password" name="password" placeholder="Password"> <br />
+        <form id="loginForm" method="post" style="width: 100%;">
+            <div style="display: flex;justify-content: center;gap: 1rem;">
+                <input type="text" name="username" id="" placeholder="Username">
+                <input type="password" name="password" placeholder="Password">
+            </div>
             <button id="loginButton" type="submit" name="login" value="login">Login</button>
         </form>
         <?php endif ?>
 
-
+        <ul class="linkList">
+            <li><a href="/samples">Samples</a></li>
+            <li><a href="/">Ink</a></li>
+            <li><a href="/">Maintenance log</a></li>
+            <li><a href="/admin">admin</a></li>
+        </ul>
+        <div id="error" class="error"></div>
     </nav>
     <script>
     <?php if (!isset($_SESSION['userName'])) : ?>
@@ -86,11 +89,12 @@ $expires = 604800; // 1 week in seconds
     }
 
     async function replaceElement(element, link) {
-        const res = await fetch(link)
-        if (res.ok) {
-            document.getElementById(element).innerHTML = await res.text()
+        const res = await fetch(link);
+        const reply = await res.text();
+        if (reply === 'not auth') {
+            setError('not logged in')
         } else {
-            document.getElementById('error').innerText = 'error'
+            document.getElementById(element).outerHTML = reply
         }
     }
 
@@ -99,5 +103,12 @@ $expires = 604800; // 1 week in seconds
         timestamp.forEach(element => {
             element.innerText = new Date(element.innerText * 1000).toLocaleDateString()
         });
+    }
+
+    function setError(string) {
+        document.getElementById('error').innerText = string
+        setTimeout(() => {
+            document.getElementById('error').innerText = ''
+        }, 2000)
     }
     </script>

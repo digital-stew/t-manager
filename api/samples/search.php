@@ -26,9 +26,25 @@ $stm->bindValue(2, '%' . $_GET["search"] . '%', SQLITE3_TEXT);
 $stm->bindValue(3, '%' . $_GET["search"] . '%', SQLITE3_TEXT);
 $res = $stm->execute();
 
-while ($row = $res->fetchArray()) {
-    $link = '/assets/images/samples/webp/' . $row['image'];
-    echo "
+
+//$db->close();
+?>
+<table id="show">
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>name</th>
+            <th>number</th>
+            <th>date</th>
+            <th>image</th>
+
+        </tr>
+    </thead>
+    <tbody id="searchResults">
+        <?php
+        while ($row = $res->fetchArray()) {
+            $link = '/assets/images/samples/webp/' . $row['image'];
+            echo "
         <tr onclick='selectSample({$row['rowid']})'>
             <td>{$row['rowid']}</td>
             <td>{$row['name']}</td>
@@ -36,5 +52,8 @@ while ($row = $res->fetchArray()) {
             <td class='timestamp'>{$row['date']}</td>
             <td><img src='{$link}' alt='' style='width:100px;height:100px;'>
         </tr>";
-}
-$db->close();
+        }
+        ?>
+
+    </tbody>
+</table>

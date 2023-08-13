@@ -50,29 +50,30 @@ if (isset($_GET['search'])) {
 ?>
 
 
-<div class="box samples_index_search-wrapper"
-    style="display:flex;margin-block: 1rem;flex-direction: column;gap: 0.5rem;">
+<nav class="navbar-bottom">
+    <h4>Samples</h4>
     <input onkeyup="updateSamplesList()" type="search" id="search" placeholder="search..." />
-    <button onclick="replaceElement('tableWrapper', '/api/samples/add.php')">add new sample</button>
-</div>
-<div id="tableWrapper" class="box" style="padding-inline: 2rem;">
-    <h2 id="recentSamples">recent samples</h2>
-    <table id="table">
-        <thead>
-            <tr>
-                <th>id</th>
-                <th>name</th>
-                <th>number</th>
-                <th>date</th>
-                <th>image</th>
+    <hr>
+    <button onclick="replaceElement('show', '/api/samples/add.php')">add new sample</button>
+</nav>
+<!-- <div id="tableWrapper" class="box" style="padding-inline: 2rem;"> -->
+<!-- <h2 id="recentSamples">recent samples</h2> -->
+<table id="show">
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>name</th>
+            <th>number</th>
+            <th>date</th>
+            <th>image</th>
 
-            </tr>
-        </thead>
-        <tbody id="searchResults">
-            <?php
-            while ($row = $res->fetchArray()) {
-                $link = '/assets/images/samples/webp/' . $row['image'];
-                echo "
+        </tr>
+    </thead>
+    <tbody id="searchResults">
+        <?php
+        while ($row = $res->fetchArray()) {
+            $link = '/assets/images/samples/webp/' . $row['image'];
+            echo "
             <tr onclick='selectSample({$row['rowid']})'>
                 <td>{$row['rowid']}</td>
                 <td>{$row['name']}</td>
@@ -81,12 +82,13 @@ if (isset($_GET['search'])) {
                 <td><img src='{$link}' alt='' style='width:100px;height:100px;'>
             </td>
             </tr>";
-            }
-            ?>
+        }
+        ?>
 
-        </tbody>
-    </table>
-</div>
+    </tbody>
+</table>
+<!-- </div> -->
+
 
 
 
@@ -95,53 +97,53 @@ if (isset($_GET['search'])) {
 
 
 <script>
-function clear() {
-    //document.getElementById('search').value = '';
-}
+    function clear() {
+        //document.getElementById('search').value = '';
+    }
 
-function setError() {
-    let element = document.querySelector('.error')
-    element.innerText = 'error';
-    element.classList.add('animate');
-    setTimeout(() => {
-        element.innerText = '';
-        element.classList.remove('animate');
-    }, 2000)
+    // function setError() {
+    //     let element = document.querySelector('.error')
+    //     element.innerText = 'error';
+    //     element.classList.add('animate');
+    //     setTimeout(() => {
+    //         element.innerText = '';
+    //         element.classList.remove('animate');
+    //     }, 2000)
 
-}
+    // }
 
-function updateSamplesList() {
-    const timeout = setTimeout(async () => {
-        let searchText = document.getElementById('search').value;
-        if (searchText === '') return;
-        let tbody = document.getElementById('searchResults');
+    function updateSamplesList() {
+        const timeout = setTimeout(async () => {
+            let searchText = document.getElementById('search').value;
+            if (searchText === '') return;
+            let tbody = document.getElementById('show');
 
-        const res = await fetch('/api/samples/search.php?search=' + searchText);
-        if (res.ok) {
-            const reply = await res.text();
-            tbody.innerHTML = reply;
-            document.getElementById('recentSamples').innerText = '';
-            HRtimestamp();
-            history.pushState(null, "", "/samples?search=" + searchText);
+            const res = await fetch('/api/samples/search.php?search=' + searchText);
+            if (res.ok) {
+                const reply = await res.text();
+                tbody.outerHTML = reply;
+                //document.getElementById('recentSamples').innerText = '';
+                HRtimestamp();
+                history.pushState(null, "", "/samples?search=" + searchText);
 
-        } else {
-            setError();
-        }
-    }, 1000);
+            } else {
+                setError();
+            }
+        }, 1000);
 
-    clearTimeout(timeout - 1)
-}
+        clearTimeout(timeout - 1)
+    }
 
 
-function selectSample(rowID) {
-    console.log('click!! ' + rowID);
-    window.location.href = '/samples/show.php?id=' + rowID;
-}
+    function selectSample(rowID) {
+        console.log('click!! ' + rowID);
+        window.location.href = '/samples/show.php?id=' + rowID;
+    }
 
-function addSample(e) {
-    e.preventDefault();
-    console.log('ADD SAMPLE');
-}
+    function addSample(e) {
+        e.preventDefault();
+        console.log('ADD SAMPLE');
+    }
 </script>
 
 <?php
