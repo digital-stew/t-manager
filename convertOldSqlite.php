@@ -34,7 +34,7 @@ while ($sample = $res->fetchArray()) {
                 $stm->bindValue(1, $fileUUID . '.webp', SQLITE3_TEXT);
                 $stm->bindValue(2, $sample['rowid'], SQLITE3_TEXT);
                 $stm->bindValue(3, $imageName, SQLITE3_TEXT);
-                $stm->bindValue(4, 'superUser', SQLITE3_TEXT);
+                $stm->bindValue(4, $sample['printer'], SQLITE3_TEXT);
                 $stm->bindValue(5, time(), SQLITE3_TEXT);
                 $res2 = $stm->execute();
 

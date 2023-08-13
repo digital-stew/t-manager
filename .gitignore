@@ -2,5 +2,6 @@
 
 assets/images/samples/original/*.jpg
 assets/images/samples/webp/*.webp
-
+node_modules/
+vendor/
 

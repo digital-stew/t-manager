@@ -18,8 +18,8 @@
     --th-color: white;
     --nth-child-1: #eee;
     --nth-child-2: rgb(241, 215, 198);
-    --tr-hover-color: blue;
-    --tr-hover-background: green;
+    --tr-hover-color: white;
+    --tr-hover-background: lightgrey;
     --textarea-background-color: none;
     --textarea-color: none;
 }
@@ -80,11 +80,6 @@ h5 {
     border-radius: 10px;
 }
 
-/* .navbar p {
-    text-decoration: none;
-    padding-right: 3rem;
-} */
-
 .navbar a:hover {
     background-color: var(--navbar-hover);
 }
@@ -96,20 +91,16 @@ table {
 
 th {
     padding: 15px;
-    background-color: #111;
     color: var(--th-color);
+    background-color: #111;
 }
 td {
     border: 1px solid black;
     text-align: center;
     min-width: 100px;
-    /* padding-inline: auto; */
 }
 td img {
-    /* margin-block: 1rem; */
-    place-content: center;
-    /* background-color: red; */
-    /* inset: 0; */
+    vertical-align: middle;
 }
 tr:nth-child(even) {
     background-color: var(--nth-child-1);
@@ -118,10 +109,15 @@ tr:nth-child(even) {
 tr:nth-child(odd) {
     background-color: var(--nth-child-2);
 }
+#table th:nth-of-type(1) {
+    border-top-left-radius: 10px;
+}
+th:nth-of-type(5) {
+    border-top-right-radius: 10px;
+}
 
 tr:hover {
     cursor: pointer;
-    /* color: rebeccapurple; */
     color: var(--tr-hover-color);
     background-color: var(--tr-hover-background);
 }
@@ -154,14 +150,13 @@ tr:hover {
     font-family: "Montserrat", sans-serif;
     position: relative;
     border: 2px solid rgba(0, 0, 0, 0.2);
-    padding: 1em;
-    /* margin-bottom: 10px; */
+    padding: 1rem;
+    margin-bottom: 10px;
     border-radius: 25px;
     position: relative;
     animation: fadeIn 2s;
 }
-.prev,
-.next {
+.imageButton {
     all: unset;
     cursor: pointer;
     position: absolute;
@@ -177,72 +172,38 @@ tr:hover {
     user-select: none;
     border: none;
 }
-.next:hover,
-.prev:hover {
+.imageButton:hover {
     scale: 1.5;
 }
-.prev {
-    left: 0;
-}
-.next {
-    right: 0;
-}
+
 .imageWrapper {
     display: flex;
-    /* justify-content: left; */
-    /* background-color: blue; */
     height: 80%;
     position: relative;
-    /* width: 20%; */
-    /* margin: 0; */
 }
 
 .sample__wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 10% 80%;
-    /* align-items: center; */
-    /* align-content: center; */
-    /* place-items: center; */
-
+    font-size: large;
     width: 80%;
-    /* max-height: 500px; */
-    /* place-items: top; */
-    /* place-content: top; */
 }
 
-.sample__imageWrapper {
+.sample_show_imageWrapper {
     grid-row: 2;
     grid-column: 1;
     display: flex;
     justify-content: center;
-    /* max-height: 80vh; */
-    /* min-height: 200px; */
-    /* width: min-content; */
     margin: 0;
-    /* width: 100%; */
     object-fit: scale-down;
     max-width: 600px;
     min-width: 300px;
     min-height: 300px;
-    position: relative;
+    /* position: relative; */
     margin: auto;
 }
-.imageCount {
-    position: absolute;
-    left: 5%;
-}
-.sample__imageWrapper img {
-    object-fit: scale-down;
-    /* object-fit: fill; */
-    width: 80%;
-}
 
-.sample_show_data {
-    text-align: end;
-    padding: 5rem;
-    text-align: center;
-}
 .sample_show_titleBar {
     grid-column: 1 / -1;
     grid-row: 1;
@@ -275,6 +236,7 @@ tr:hover {
 .sample__add__form button {
     transform: translateX(50%);
 }
+
 .wide-center {
     width: 100%;
     text-align: center;
@@ -285,7 +247,15 @@ tr:hover {
     /* justify-self: flex-start; */
     margin: 1rem;
 }
-
+input[type="text"],
+input[type="password"],
+input[type="search"] {
+    border-radius: 5px;
+    border-width: thin;
+}
+input[type="search"] {
+    text-align: center;
+}
 .loginForm {
     margin-block: auto;
 }
@@ -293,4 +263,6 @@ tr:hover {
 .loginForm > button {
     width: 100%;
     margin-top: 1rem;
+}
+button {
 }

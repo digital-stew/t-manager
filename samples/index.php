@@ -50,16 +50,17 @@ if (isset($_GET['search'])) {
 ?>
 
 
-<div>
+<div class="box samples_index_search-wrapper"
+    style="display:flex;margin-block: 1rem;flex-direction: column;gap: 0.5rem;">
     <input onkeyup="updateSamplesList()" type="search" id="search" placeholder="search..." />
+    <button onclick="replaceElement('tableWrapper', '/api/samples/add.php')">add new sample</button>
 </div>
-<div class="error"></div>
-<button onclick="replaceElement('tableWrapper', '/api/samples/add.php')">add new sample</button>
-<div id="tableWrapper" class="box">
+<div id="tableWrapper" class="box" style="padding-inline: 2rem;">
+    <h2 id="recentSamples">recent samples</h2>
     <table id="table">
         <thead>
             <tr>
-                <th onclick="">id</th>
+                <th>id</th>
                 <th>name</th>
                 <th>number</th>
                 <th>date</th>
@@ -95,7 +96,7 @@ if (isset($_GET['search'])) {
 
 <script>
 function clear() {
-    document.getElementById('search').value = '';
+    //document.getElementById('search').value = '';
 }
 
 function setError() {
@@ -119,6 +120,7 @@ function updateSamplesList() {
         if (res.ok) {
             const reply = await res.text();
             tbody.innerHTML = reply;
+            document.getElementById('recentSamples').innerText = '';
             HRtimestamp();
             history.pushState(null, "", "/samples?search=" + searchText);
 
