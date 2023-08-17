@@ -47,48 +47,57 @@ if (isset($_GET['search'])) {
     EOD;
     $res = $db->query($sql) or die('sql error');
 }
+
 ?>
 
 
-<nav class="navbar-bottom">
-    <h4>Samples</h4>
-    <input onkeyup="updateSamplesList()" type="search" id="search" placeholder="search..." />
-    <hr>
-    <button onclick="replaceElement('show', '/api/samples/add.php')">add new sample</button>
-</nav>
-<!-- <div id="tableWrapper" class="box" style="padding-inline: 2rem;"> -->
-<!-- <h2 id="recentSamples">recent samples</h2> -->
-<table id="show">
-    <thead>
-        <tr>
-            <th>id</th>
-            <th>name</th>
-            <th>number</th>
-            <th>date</th>
-            <th>image</th>
+<div class="layout">
 
-        </tr>
-    </thead>
-    <tbody id="searchResults">
-        <?php
-        while ($row = $res->fetchArray()) {
-            $link = '/assets/images/samples/webp/' . $row['image'];
-            echo "
+    <h1>Samples</h1>
+    <button onclick="replaceElement('show', '/api/samples/add.php')">add new sample</button>
+    <hr>
+    <div class="sideBySide">
+        <section class="tableSection">
+            <input onkeyup="updateSamplesList()" type="search" id="search" placeholder="search..." class="border" style="margin-block: 1rem;" />
+            <table id="show" class="border">
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>name</th>
+                        <th>number</th>
+                        <th>date</th>
+                        <th>image</th>
+
+                    </tr>
+                </thead>
+                <tbody id="searchResults">
+                    <?php
+                    while ($row = $res->fetchArray()) {
+                        $link = '/assets/images/samples/webp/' . $row['image'];
+                        echo "
             <tr onclick='selectSample({$row['rowid']})'>
                 <td>{$row['rowid']}</td>
                 <td>{$row['name']}</td>
-                <td>{$row['original_filename']}</td>
-                <td class='timestamp'>{$row['date']}</td>
+                <td>{$row['number']}</td>
+                <td class='timestamp' style='width:100px;'>{$row['date']}</td>
                 <td><img src='{$link}' alt='' style='width:100px;height:100px;'>
             </td>
-            </tr>";
-        }
-        ?>
+        </tr>";
+                    }
+                    ?>
 
-    </tbody>
-</table>
-<!-- </div> -->
+                </tbody>
+            </table>
+        </section>
 
+        <div class="sampleWrap" id="sampleWrap">
+            <section id="sampleData" class="show_sample_section">
+
+            </section>
+        </div>
+    </div>
+
+</div>
 
 
 
@@ -97,20 +106,11 @@ if (isset($_GET['search'])) {
 
 
 <script>
-    function clear() {
-        //document.getElementById('search').value = '';
-    }
+    // if GET?id send request for it and display
+    const queryParams = new URLSearchParams(window.location.search);
+    const queryID = queryParams.get('id');
+    if (queryID && document.getElementById('sampleData').innerText == '') selectSample(queryID)
 
-    // function setError() {
-    //     let element = document.querySelector('.error')
-    //     element.innerText = 'error';
-    //     element.classList.add('animate');
-    //     setTimeout(() => {
-    //         element.innerText = '';
-    //         element.classList.remove('animate');
-    //     }, 2000)
-
-    // }
 
     function updateSamplesList() {
         const timeout = setTimeout(async () => {
@@ -135,14 +135,100 @@ if (isset($_GET['search'])) {
     }
 
 
-    function selectSample(rowID) {
-        console.log('click!! ' + rowID);
-        window.location.href = '/samples/show.php?id=' + rowID;
+    async function selectSample(rowID) {
+        await replaceElement('sampleWrap', '/api/samples/show.php?id=' + rowID);
+        getSampleImages();
+        moveToCenter();
+
+        //Get the request parameters
+        const queryParams = new URLSearchParams(window.location.search);
+        const queryID = queryParams.get('id');
+        queryParams.set('id', rowID);
+        // Replace the current query string with the updated parameters
+        const newUrl = `${window.location.pathname}?${queryParams.toString()}`;
+        // Change the URL without triggering a page refresh
+        window.history.pushState({}, '', newUrl);
+
+
     }
 
-    function addSample(e) {
-        e.preventDefault();
-        console.log('ADD SAMPLE');
+
+    //============== sample data show (right side) =================
+    let imageNumber = 0; //what image to show
+    let images
+    let imageCountElement
+    let image
+
+    function getSampleImages() {
+        try {
+            images = JSON.parse(document.getElementById('sampleData').dataset.images); // pass image array to client
+
+        } catch (error) {
+            return
+        }
+        imageCountElement = document.getElementById('count')
+        image = document.getElementById('sampleImage');
+    }
+
+    function imageUp() {
+        if (imageNumber >= images.length - 1) return;
+        imageNumber++;
+        imageCountElement.innerText = imageNumber + 1
+        image.src = "/assets/images/samples/webp/" + images[imageNumber];
+    }
+
+    function imageDown() {
+        if (imageNumber <= 0) return;
+        imageNumber--;
+        imageCountElement.innerText = imageNumber + 1
+
+        image.src = "/assets/images/samples/webp/" + images[imageNumber];
+    }
+
+    function moveToCenter() {
+        let wrapper = document.getElementById('sampleWrap');
+        if (!wrapper) return
+        let offset = window.scrollY;
+        if (offset > 100) offset -= 100
+        wrapper.style.top = offset + "px";
+    }
+    //============================================================
+    async function editSample(id) {
+        await replaceElement('sampleWrap', '/api/samples/edit.php?id=' + id);
+        getSampleImages()
+    }
+    async function deleteImage() {
+        const queryParams = new URLSearchParams(window.location.search);
+        const queryID = queryParams.get('id');
+        const image = document.getElementById('sampleImage').src
+
+        // Split the inputString into an array of substrings
+        const substrings = image.split("/");
+
+        // Get the last result using array indexing
+        const filename = substrings[substrings.length - 1];
+
+        let formData = new FormData();
+        formData.append('removeImage', filename)
+        const req = await fetch('/api/samples/edit.php?id=' + queryID, {
+            method: 'POST',
+            body: formData
+        })
+
+        const res = await req.text();
+        if (res == 'image=removed') {
+            //get image size
+            //imgWidth = document.getElementById('sampleImage').naturalWidth
+            //imgHeight = document.getElementById('sampleImage').naturalHeight
+            console.log(imgWidth, imgHeight);
+            images[imageNumber] = "Cross_red_circle.svg"
+
+            //2 copy to make work 1 in "assets/images/Cross_red_circle.svg" + "assets/images/samples/webp/Cross_red_circle.svg"
+            document.getElementById('sampleImage').src = "/assets/images/Cross_red_circle.svg"
+            document.getElementById('sampleImage').style.width = 500 + 'px'
+            // document.getElementById('sampleImage').height = imgHeight
+        }
+        return false
     }
 </script>
 

@@ -6,6 +6,6 @@ function auth($level)
             if (isset($_SESSION['userName'])) return true;
             break;
     }
-    die('not auth');
+    die('{"error":"not logged in"}');
     return false;
 }

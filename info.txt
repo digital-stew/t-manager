@@ -24,6 +24,6 @@ notes
 printer
 
 
-sudo apt install php-gd
 apt install apache2
 apt install libapache2-mod-php
+apt install php-gd

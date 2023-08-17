@@ -29,7 +29,7 @@ $res = $stm->execute();
 
 //$db->close();
 ?>
-<table id="show">
+<table id="show" class="border">
     <thead>
         <tr>
             <th>id</th>

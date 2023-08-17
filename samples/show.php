@@ -45,92 +45,93 @@ while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
             <span id="count">1</span> <span id="imageAmount">/<?= sizeof($images) ?></span>
         </div>
         <button style="left: 0;" class="imageButton" onclick="imageDown()">&lt;</button>
-        <img id="sampleImage" src="/assets/images/samples/webp/<?= $sample['webp_filename'] ?>" alt="sample" style="border-radius: 10px;width: 80%;">
+        <img id="sampleImage" src="/assets/images/samples/webp/<?= $sample['webp_filename'] ?>" alt="sample"
+            style="border-radius: 10px;width: 80%;">
         <button style="right: 0;" class="imageButton" onclick="imageUp()">&gt;</button>
     </div>
     <div style="text-align: center;padding: 3rem;" id="sampleData">
         <?php if (strlen($sample['printdata'])) : ?>
-            <h3>front</h3>
-            <p><?= str_replace("dry", $FLASH_IMAGE_LINK, $sample['printdata'])  ?></p>
+        <h3>front</h3>
+        <p><?= str_replace("dry", $FLASH_IMAGE_LINK, $sample['printdata'])  ?></p>
         <?php endif ?>
 
         <?php if (strlen($sample['printdataback'])) : ?>
-            <h3>back</h3>
-            <p><?= str_replace("dry", $FLASH_IMAGE_LINK, $sample['printdataback'])  ?></p>
+        <h3>back</h3>
+        <p><?= str_replace("dry", $FLASH_IMAGE_LINK, $sample['printdataback'])  ?></p>
         <?php endif ?>
 
         <?php if (strlen($sample['printdataother'])) : ?>
-            <h3>other</h3>
-            <p><?= str_replace("dry", $FLASH_IMAGE_LINK, $sample['printdataother'])  ?></p>
+        <h3>other</h3>
+        <p><?= str_replace("dry", $FLASH_IMAGE_LINK, $sample['printdataother'])  ?></p>
         <?php endif ?>
 
         <?php if (strlen($sample['notes'])) : ?>
-            <h3>notes</h3>
-            <p><?= $sample['notes'] ?></p>
+        <h3>notes</h3>
+        <p><?= $sample['notes'] ?></p>
         <?php endif ?>
 
         <?php if ($_SESSION['userName'] == $sample['printer']) : ?>
-            <button onclick="editSample()">edit</button>
+        <button onclick="editSample()">edit</button>
         <?php endif ?>
 
     </div>
 </div>
 <script>
-    let images = JSON.parse('<?= json_encode($images) ?>'); // pass image array to client
-    let imageCountElement = document.getElementById('count')
-    let imageNumber = 0; //what image to show
-    let image = document.getElementById('sampleImage');
+let images = JSON.parse('<?= json_encode($images) ?>'); // pass image array to client
+let imageCountElement = document.getElementById('count')
+let imageNumber = 0; //what image to show
+let image = document.getElementById('sampleImage');
 
-    async function removeImage() {
-        let form = new FormData();
-        form.append('removeImage', 'true');
-        form.append('image', images[imageNumber])
+async function removeImage() {
+    let form = new FormData();
+    form.append('removeImage', 'true');
+    form.append('image', images[imageNumber])
 
-        const req = await fetch('/api/samples/edit.php?id=<?= $id ?>', {
-            method: 'POST',
-            body: form
-        })
-        const res = await req.text()
+    const req = await fetch('/api/samples/edit.php?id=<?= $id ?>', {
+        method: 'POST',
+        body: form
+    })
+    const res = await req.text()
 
-        if (res === "image=removed") images = images.map((image, index) => {
-            if (imageNumber == index) return image;
-        })
-        image.src = '';
-        let imageAmount = document.getElementById('imageAmount')
-        imageAmount.innerText = '/' + (imageAmount.innerText.slice(1) - 1);
+    if (res === "image=removed") images = images.map((image, index) => {
+        if (imageNumber == index) return image;
+    })
+    image.src = '';
+    let imageAmount = document.getElementById('imageAmount')
+    imageAmount.innerText = '/' + (imageAmount.innerText.slice(1) - 1);
+}
+
+function imageUp() {
+    if (imageNumber >= images.length - 1) return;
+    imageNumber++;
+    imageCountElement.innerText = imageNumber + 1
+    image.src = "/assets/images/samples/webp/" + images[imageNumber];
+}
+
+function imageDown() {
+    if (imageNumber <= 0) return;
+    imageNumber--;
+    imageCountElement.innerText = imageNumber + 1
+
+    image.src = "/assets/images/samples/webp/" + images[imageNumber];
+}
+async function editSample() {
+    let div = document.getElementById('sampleData')
+    const res = await fetch("/api/samples/edit.php?id=<?php echo $id; ?>")
+    if (res.ok) {
+        const reply = await res.text();
+        div.innerHTML = reply;
+    } else {
+        //setError();
+        console.log('error');
     }
+}
 
-    function imageUp() {
-        if (imageNumber >= images.length - 1) return;
-        imageNumber++;
-        imageCountElement.innerText = imageNumber + 1
-        image.src = "/assets/images/samples/webp/" + images[imageNumber];
-    }
+function updateSample(x) {
+    console.log('update sample');
 
-    function imageDown() {
-        if (imageNumber <= 0) return;
-        imageNumber--;
-        imageCountElement.innerText = imageNumber + 1
-
-        image.src = "/assets/images/samples/webp/" + images[imageNumber];
-    }
-    async function editSample() {
-        let div = document.getElementById('sampleData')
-        const res = await fetch("/api/samples/edit.php?id=<?php echo $id; ?>")
-        if (res.ok) {
-            const reply = await res.text();
-            div.innerHTML = reply;
-        } else {
-            //setError();
-            console.log('error');
-        }
-    }
-
-    function updateSample(x) {
-        console.log('update sample');
-
-        console.log(x);
-    }
+    console.log(x);
+}
 </script>
 
 <?php

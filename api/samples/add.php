@@ -2,10 +2,11 @@
 session_start();
 require $_SERVER['DOCUMENT_ROOT'] . '/functions.php';
 auth('user');
+
 $db = new SQLite3($_SERVER['DOCUMENT_ROOT'] . '/db.sqlite');
 
 if (isset($_POST['add'])) {
-    if ($_POST['name'] == '' or $_POST['number']) die('no name or number');
+    if ($_POST['name'] == '' or $_POST['number'] == '') die('no name or number');
     if ($_FILES['files']['tmp_name'][0] == '') die('no files');
     $sql = <<<EOD
     INSERT INTO samples (
@@ -74,7 +75,7 @@ if (isset($_POST['add'])) {
 
         $i++;
     }
-    header('Location: /samples/show.php?id=' . $lastID);
+    header('Location: /samples?id=' . $lastID);
 }
 ?>
 
