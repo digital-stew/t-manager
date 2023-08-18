@@ -26,6 +26,7 @@ while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
 if ($_SESSION['userName'] != $sample['printer']) die('{"error":"you are not the printer sorry"}');
 
 if (isset($_POST["update"]) && isset($_GET["id"])) {
+    die('testing');
     //BUG!! ALWAYS ADD IMAGE AFTER EDIT
     $sql = <<<EOD
     UPDATE samples
@@ -34,16 +35,17 @@ if (isset($_POST["update"]) && isset($_GET["id"])) {
     EOD;
 
     $stm = $db->prepare($sql) or die('sql error');
-    $stm->bindValue(1, $_POST['front'], SQLITE3_TEXT);
-    $stm->bindValue(2, $_POST['back'], SQLITE3_TEXT);
-    $stm->bindValue(3, $_POST['other'], SQLITE3_TEXT);
-    $stm->bindValue(4, $_POST['notes'], SQLITE3_TEXT);
-    $stm->bindValue(5, $_POST['name'], SQLITE3_TEXT);
-    $stm->bindValue(6, $_POST['number'], SQLITE3_TEXT);
-    $stm->bindValue(7, $_POST['otherref'], SQLITE3_TEXT);
-    $stm->bindValue(8, $id, SQLITE3_TEXT);
+    $stm->bindValue(1, $_POST['front'], SQLITE3_TEXT) or die('sql error');
+    $stm->bindValue(2, $_POST['back'], SQLITE3_TEXT) or die('sql error');
+    $stm->bindValue(3, $_POST['other'], SQLITE3_TEXT) or die('sql error');
+    $stm->bindValue(4, $_POST['notes'], SQLITE3_TEXT) or die('sql error');
+    $stm->bindValue(5, $_POST['name'], SQLITE3_TEXT) or die('sql error');
+    $stm->bindValue(6, $_POST['number'], SQLITE3_TEXT) or die('sql error');
+    $stm->bindValue(7, $_POST['otherref'], SQLITE3_TEXT) or die('sql error');
+    $stm->bindValue(8, $id, SQLITE3_TEXT) or die('sql error');
 
     $res = $stm->execute() or die('sql error');
+
 
 
     //handle the files
@@ -75,11 +77,11 @@ if (isset($_POST["update"]) && isset($_GET["id"])) {
             VALUES (?,?,?,?,?)
         EOD;
         $stm = $db->prepare($sql) or die('sql error');
-        $stm->bindValue(1, $fileUUID . '.webp', SQLITE3_TEXT);
-        $stm->bindValue(2, $lastID, SQLITE3_TEXT);
-        $stm->bindValue(3, $originalFileName, SQLITE3_TEXT);
-        $stm->bindValue(4, $_SESSION['userName'], SQLITE3_TEXT);
-        $stm->bindValue(5, time(), SQLITE3_TEXT);
+        $stm->bindValue(1, $fileUUID . '.webp', SQLITE3_TEXT) or die('sql error');
+        $stm->bindValue(2, $_GET['id'], SQLITE3_TEXT) or die('sql error');
+        $stm->bindValue(3, $originalFileName, SQLITE3_TEXT) or die('sql error');
+        $stm->bindValue(4, $_SESSION['userName'], SQLITE3_TEXT) or die('sql error');
+        $stm->bindValue(5, time(), SQLITE3_TEXT) or die('sql error');
         $res = $stm->execute() or die('sql error');
 
         $i++;
@@ -105,6 +107,8 @@ if (isset($_POST['delete']) && isset($_GET["id"])) {
     header('Location: /samples');
     die();
 }
+
+
 
 $db->close();
 ?>

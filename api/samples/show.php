@@ -80,6 +80,6 @@ while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
 
     <div>
 
-        <button onclick="editSample('<?= $sample['rowid'] ?>')">Edit</button>
+        <button onclick="getEditSample('<?= $sample['rowid'] ?>')">Edit</button>
     </div>
 </div>

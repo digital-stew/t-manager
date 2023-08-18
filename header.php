@@ -4,17 +4,6 @@ session_start();
 $db = new SQLite3($_SERVER['DOCUMENT_ROOT'] . '/db.sqlite');
 include $_SERVER['DOCUMENT_ROOT'] . '/functions.php';
 
-// Set the content type header for images
-//header('Content-Type: image/webp'); // Adjust the content type according to your image type
-
-// Set cache headers to cache the image for a specific period (e.g., 1 week)
-$expires = 604800; // 1 week in seconds
-//header('Cache-Control: public, max-age=' . $expires);
-//header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $expires) . ' GMT');
-
-// Output the image content
-//readfile('path_to_your_image.jpg'); // Replace 'path_to_your_image.jpg' with the actual path to your image
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,9 +21,6 @@ $expires = 604800; // 1 week in seconds
 
 <body>
     <nav class="navbar-top">
-        <!-- <div class="imageWrapper">
-            <img src="/assets/images/logo-light.png" alt="company logo">
-        </div> -->
 
         <?php if (isset($_SESSION['userName'])) : ?>
             <div>
@@ -99,9 +85,6 @@ $expires = 604800; // 1 week in seconds
                 document.getElementById(element).outerHTML = reply
                 HRtimestamp()
             }
-            // if (reply === 'not auth') return setError('not logged in')
-
-
         }
 
         function HRtimestamp() {
