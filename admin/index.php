@@ -1,41 +1,34 @@
 <?php
-require $_SERVER['DOCUMENT_ROOT'].'/header.php';
-$res = $db->query('SELECT * FROM users');
 ?>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin</title>
+        <link rel="stylesheet" href="/assets/styles.css">
+    </head>
+    <body>
 
-<div class="box">
-    <div id="addNewUser">
-        <table>
-            <thead>
-                <tr>
-                    <th>id</th>
-                    <th>name</th>
-                    <th>e-mail</th>
-                    <th>department</th>
-                    <th>level</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php 
-                while ($row = $res->fetchArray()){ 
-                    echo "
-                    <tr>
-                    <td>{$row['id']}</td>
-                    <td>{$row['user']}</td>
-                    <td>{$row['email']}</td>
-                    <td>{$row['department']}</td>
-                    <td>{$row['userlevel']}</td>
-                    <td>{$row['password']}</td>
-                    </tr>    
-                    "; 
-                } 
-                ?>
-            </tbody>
-        </table>
-        <button onclick="replaceElement('addNewUser','/api/admin/newUser.php')">add new user</button>
-    </div>
-</div>
+        <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php'; ?>
 
-<script>
-
-</script>
+        <div class="layout">
+            <h1>Admin</h1>
+            <button onclick="replaceElement('show', '/admin/users.php')">Users</button>
+            <button onclick="replaceElement('show', '#')">Maintenance Log</button>
+            <hr>
+            <div class="sideBySide">
+                <section class="tableSection">
+                    <table id="show" class="border">
+                        <!-- placeholder for new data -->
+                    </table>
+                </section>
+                <div class="sampleWrap" id="">
+                    <section id="adminLeft" class="show_sample_section">
+                        <!-- placeholder for new data -->
+                    </section>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

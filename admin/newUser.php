@@ -1,4 +1,5 @@
 <?php
+//TODO
  $db = new SQLite3('../../db.sqlite');
 
 if (isset($_POST["newUser"])){
