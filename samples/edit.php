@@ -24,7 +24,7 @@ if (isset($_POST['delete']) && isset($_GET["id"])) {
 
 ?>
 <div class="sampleWrap" id="sampleWrap">
-    <form enctype="multipart/form-data" action="/api/samples/edit.php?id=<?= $sample['id'] ?>" method="POST" id="sampleUpdateForm">
+    <form enctype="multipart/form-data" action="/samples/edit.php?id=<?= $sample['id'] ?>" method="POST" id="sampleUpdateForm">
         <section id="sampleData" class="show_sample_section" data-images='<?= json_encode($sample['images']) ?>'>
 
             <div class="newBox">

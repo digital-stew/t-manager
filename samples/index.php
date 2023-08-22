@@ -15,8 +15,8 @@ if (isset($_GET['search'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Samples</title>
     <link rel="stylesheet" href="/assets/styles.css">
-    <script src="/samples/samples.js" defer></script>
     <script src="/assets/globalFunctions.js" defer></script>
+    <script src="/samples/samples.js" defer></script>
 </head>
 
 <body>
@@ -59,6 +59,8 @@ if (isset($_GET['search'])) {
             </div>
         </div>
     </div>
+
+
 </body>
 
 </html>
