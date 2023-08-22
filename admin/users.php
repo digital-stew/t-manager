@@ -1,27 +1,26 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] .'/models/Admin.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Admin.php';
 $Admin = new Admin();
 
-
-if(isset($_GET['getUser']) && isset($_GET['id'])){
+if (isset($_GET['getUser']) && isset($_GET['id'])) {
     $user = $Admin->getUser($_GET['id']);
     $html = <<<EOD
-    <section class='newBox' id="adminLeft">
+    <form class='newBox' id="adminLeft" method="POST" action="/admin/users.php?id={$user['id']}">
             <h4>{$user['name']}</h4>
             <p>Id:  {$user['id']}</p>
             <p>Email: {$user['email']}</p>
             <p>Department: {$user['department']}</p>
             <p>User Level: {$user['userLevel']}</p>
-            <button>Change password</button>
-            <button onclick="replaceElement('adminLeft', '/admin/users.php?editUser=true&id={$user['id']}')" >Edit</button>
-            <button>Delete</button>
-    </section>
+            <button type="button">Change password</button>
+            <button type="button" onclick="replaceElement('adminLeft', '/admin/users.php?editUser=true&id={$user['id']}')" >Edit</button>
+            <button type='submit' name="deleteUser">Delete</button>
+    </form>
     EOD;
     echo $html;
     die();
 }
 
-if(isset($_GET['editUser']) && isset($_GET['id'])){
+if (isset($_GET['editUser']) && isset($_GET['id'])) {
     $user = $Admin->getUser($_GET['id']);
     $html = <<<EOD
     <section class='newBox' id="adminLeft">
@@ -38,43 +37,73 @@ if(isset($_GET['editUser']) && isset($_GET['id'])){
                 <option value="admin">Admin</option>
             </select></p>
             <button>Save</button>
-            <button>Delete</button>
     </section>
     EOD;
     echo $html;
     die();
 }
 
-if(isset($_GET['newUser'])) {
-    // TODO
-    echo 'new user';
+if (isset($_GET['addUser'])) {
+    $html = <<<EOD
+    <section id="adminLeft" class="show_sample_section">
+        <form action="/admin/users.php" method="post" class="newBox border">
+            <h3>add new user</h3>
+            <input type="text" name="userName" placeholder="Name"> <br style="margin-bottom: 1rem;">
+            <input type="text" name="email" placeholder="Email"> <br style="margin-bottom: 1rem;">
+            <h3>Password</h3>
+            <input autoComplete="new-password"  type="password" name="password1" placeholder="Password"> <br>
+            <input autoComplete="new-password" type="password" name="password2" placeholder="again"> <br>
+            <h3>User Level</h3>
+            <select name="userLevel">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+            <h3>Department</h3>
+            <select name="department">
+                <option value="print">Print</option>
+                <option value="stores">Stores</option>
+                <option value="office">Office</option>
+            </select>
+            <button type="submit" name="addUser">add new user</button>
+        </form>
+    </section>
+    EOD;
+    echo $html;
+    die();
 }
-if(isset($_GET['deleteUser'])) {
-    // TODO
-    echo 'new user';
+
+if (isset($_POST['addUser'])) {
+    $Admin->addUser($_POST['userName'], $_POST['email'], $_POST['password1'], $_POST['password2'], $_POST['userLevel'], $_POST['department']);
+    die();
+}
+if (isset($_POST['deleteUser']) && isset($_GET['id'])) {
+    $Admin->deleteUser($_GET['id']);
+    die();
 }
 $allUsers = $Admin->getAllUsers();
 ?>
-<table id="show" class="border">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>E-mail</th>
-            <th>Department</th>
-            <th>User Level</th>
-        </tr>
-    </thead>
-    <tbody id="searchResults">
-        <button>test</button>
-        <?php foreach ($allUsers as $user): ?>
-            <tr onclick="replaceElement('adminLeft', '/admin/users.php?getUser=true&id=<?=$user['id']?>')">
-                <td><?=$user['id']?></td>
-                <td><?=$user['name']?></td>
-                <td><?=$user['email']?></td>
-                <td><?=$user['department']?></td>
-                <td><?=$user['userLevel']?></td>
+<div id="show" class="newBox">
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>E-mail</th>
+                <th>Department</th>
+                <th>User Level</th>
             </tr>
+        </thead>
+        <tbody id="searchResults">
+            <?php foreach ($allUsers as $user) : ?>
+                <tr onclick="replaceElement('adminLeft', '/admin/users.php?getUser=true&id=<?= $user['id'] ?>')">
+                    <td><?= $user['id'] ?></td>
+                    <td><?= $user['name'] ?></td>
+                    <td><?= $user['email'] ?></td>
+                    <td><?= $user['department'] ?></td>
+                    <td><?= $user['userLevel'] ?></td>
+                </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
+    <button onclick="replaceElement('adminLeft', '/admin/users.php?addUser=true')">Add new user</button>
+</div>

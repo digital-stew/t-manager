@@ -1,19 +1,25 @@
 <?php
-session_start();
-require $_SERVER['DOCUMENT_ROOT'] .'/models/sample.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/sample.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
+
+$Auth = new Auth();
+$Auth->isLoggedIn();
 $Sample = new sample();
 $sample = $Sample->get($_GET["id"]);
 
 if ($_SESSION['userName'] != $sample['printer']) die('{"error":"you are not the printer sorry"}');
 
 if (isset($_POST["update"]) && isset($_GET["id"])) {
-    $Sample->update($_GET['id'], $_POST['front'], $_POST['back'], $_POST['other'], $_POST['notes'], $_POST['name'], $_POST['number'], $_POST['otherref'],$_FILES['files']);
+    $Sample->update($_GET['id'], $_POST['front'], $_POST['back'], $_POST['other'], $_POST['notes'], $_POST['name'], $_POST['number'], $_POST['otherref'], $_FILES['files']);
+    die();
 }
 if (isset($_POST['removeImage']) && isset($_GET["id"])) {
     $Sample->removeImage($_POST['removeImage']);
+    die();
 }
 if (isset($_POST['delete']) && isset($_GET["id"])) {
-   $Sample->remove($_GET['id']);
+    $Sample->remove($_GET['id']);
+    die();
 }
 
 ?>

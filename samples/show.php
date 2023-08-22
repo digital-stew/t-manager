@@ -1,5 +1,7 @@
 <?php
-require $_SERVER['DOCUMENT_ROOT'] . '/models/sample.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/sample.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/models/errorHandler.php';
+session_start();
 $Sample = new sample();
 $sample = $Sample->get($_GET['id']);
 $FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='width:50px;height:50px;vertical-align:middle;' >";
@@ -12,6 +14,7 @@ $FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='widt
             <p><?= $sample['number'] ?></p>
             <p class="timestamp"><?= $sample['date'] ?></p>
             <p><?= $sample['printer'] ?></p>
+            <button onclick="getEditSample('<?= $sample['id'] ?>')">Edit</button>
 
         </div>
 
@@ -51,7 +54,4 @@ $FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='widt
             </div>
         <?php endif ?>
     </section>
-    <div>
-        <button onclick="getEditSample('<?= $sample['id'] ?>')">Edit</button>
-    </div>
 </div>

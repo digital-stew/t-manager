@@ -1,5 +1,6 @@
 <?php
-function customError($errno, $errstr, $file, $line) {
+function customError($errno, $errstr, $file, $line)
+{
   echo "<div class='error'>
     Error: $errno <br/>
     $errstr <br/>
@@ -13,4 +14,3 @@ function customError($errno, $errstr, $file, $line) {
 //set error handler
 // trigger_error('error text', E_USER_ERROR);
 set_error_handler("customError", E_ALL);
-//echo($test);
