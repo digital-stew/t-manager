@@ -1,8 +1,9 @@
 <?php
 session_start();
+
 ?>
 
-<nav class="navbar-top">
+<nav class="navbar">
 
     <?php if (isset($_SESSION['userName'])) : ?>
         <div>
@@ -22,15 +23,16 @@ session_start();
 
     <ul class="linkList">
         <li><a href="/samples">Samples</a></li>
-        <li><a href="#">Ink</a></li>
-        <li><a href="/admin">admin</a></li>
+        <!-- <li><a href="#">Ink</a></li> -->
+        <?php if (isset($_SESSION['userName']) && $_SESSION['userLevel'] == 'admin') : ?>
+            <li><a href="/admin">admin</a></li>
+        <?php endif ?>
     </ul>
-    <div id="error" class="error"></div>
+    <dialog id="modal"></dialog>
 </nav>
 
 <script>
     <?php if (!isset($_SESSION['userName'])) : ?>
-
         const loginForm = document.getElementById('loginForm');
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();

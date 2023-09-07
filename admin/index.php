@@ -15,25 +15,22 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
 
 <body>
 
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php'; ?>
+    <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php';
+    $Auth = new Auth();
+    $Auth->isAdmin();
+    ?>
+    <div>
 
-    <div class="layout">
-        <h1>Admin</h1>
-        <button onclick="replaceElement('show', '/admin/users.php')">Users</button>
-        <hr>
-        <div class="sideBySide">
-            <section class="tableSection">
-                <table id="show" class="border">
-                    <!-- placeholder for new data -->
-                </table>
-            </section>
-            <div class="sampleWrap" id="">
-                <section id="adminLeft" class="show_sample_section">
-                    <!-- placeholder for new data -->
-                </section>
-            </div>
+        <div style="height: min-content;">
+            <h1>Admin</h1>
+            <button onclick="replaceElement('adminView','/admin/users.php')">Users</button>
+            <hr>
         </div>
+        <section id="adminView">
+            <!-- placeholder -->
+        </section>
     </div>
+
 </body>
 
 </html>

@@ -18,17 +18,19 @@ class Auth extends Database
             return "login=false";
         }
     }
-    function isLoggedIn()
+    function isLoggedIn(): bool
     {
-        session_start();
-        if (!isset($_SESSION['userName'])) trigger_error("Not logged in", E_USER_ERROR);
+        if (!isset($_SESSION['userName'])) {
+            die('not logged in');
+            return false;
+        };
         return true;
     }
-    function isAdmin()
+    function isAdmin(): bool
     {
         $this->isLoggedIn();
         if ($_SESSION['userLevel'] == 'admin') return true;
-        trigger_error("Not Admin", E_USER_ERROR);
+        die('not admin');
         return false;
     }
 }

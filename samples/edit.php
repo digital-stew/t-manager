@@ -1,24 +1,26 @@
 <?php
+// ========================MODAL============================
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/sample.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
-
+session_start();
 $Auth = new Auth();
 $Auth->isLoggedIn();
 $Sample = new sample();
 $sample = $Sample->get($_GET["id"]);
-
-if ($_SESSION['userName'] != $sample['printer']) die('{"error":"you are not the printer sorry"}');
+if ($_SESSION['userName'] != $sample['printer']) die('You are not the original printer');
 
 if (isset($_POST["update"]) && isset($_GET["id"])) {
-    $Sample->update($_GET['id'], $_POST['front'], $_POST['back'], $_POST['other'], $_POST['notes'], $_POST['name'], $_POST['number'], $_POST['otherref'], $_FILES['files']);
+    $res = $Sample->update($_GET['id'], $_POST['front'], $_POST['back'], $_POST['other'], $_POST['notes'], $_POST['name'], $_POST['number'], $_POST['otherref'], $_FILES['files']);
+    if ($res) header('Location: /samples?flashUser=sample updated&id=' . $_GET["id"]);
     die();
 }
 if (isset($_POST['removeImage']) && isset($_GET["id"])) {
-    $Sample->removeImage($_POST['removeImage']);
+    $res = $Sample->removeImage($_POST['removeImage']);
     die();
 }
 if (isset($_POST['delete']) && isset($_GET["id"])) {
-    $Sample->remove($_GET['id']);
+    $res = $Sample->remove($_GET['id']);
+    if ($res) header('Refresh:0 url=/samples?flashUser=Sample Deleted');
     die();
 }
 
@@ -27,11 +29,7 @@ if (isset($_POST['delete']) && isset($_GET["id"])) {
     <form enctype="multipart/form-data" action="/samples/edit.php?id=<?= $sample['id'] ?>" method="POST" id="sampleUpdateForm">
         <section id="sampleData" class="show_sample_section" data-images='<?= json_encode($sample['images']) ?>'>
 
-            <div class="newBox">
 
-                <button type="submit" name="update">Update</button>
-                <button type="submit" name="delete">Delete</button>
-            </div>
 
             <div class="newBox">
                 <h4>Info</h4>
@@ -61,18 +59,22 @@ if (isset($_POST['delete']) && isset($_GET["id"])) {
             </div>
             <div class="sample_show_imageWrapper newBox border">
                 <div style="position: absolute;left: 0;top:0;color: white;">
-                    <span id="count">1</span> <span id="imageAmount">/<?= sizeof($sample['images']) ?></span>
+                    <span id="modal_count">1</span> <span id="imageAmount">/<?= sizeof($sample['images']) ?></span>
                 </div>
                 <button type="button" style="left: 0;" class="imageButton" onclick="imageDown()">&lt;</button>
-                <img id="sampleImage" src="/assets/images/samples/webp/<?= $sample['images'][0] ?>" alt="sample" style="border-radius: 10px;width: 80%;margin: auto;">
+                <img id="modal_sampleImage" src="/assets/images/samples/webp/<?= $sample['images'][0] ?>" alt="sample" style="border-radius: 10px;width: 80%;margin: auto;">
                 <button type="button" style="right: 0;" class="imageButton" onclick="imageUp()">&gt;</button>
-                <button type="button" onclick="deleteImage()">remove image</button>
+                <button type="button" onclick="confirm('This will permanently delete this image') && deleteImage()">remove image</button>
             </div>
             <div class="newBox">
                 <h4>Add files</h4>
                 <input type="file" name="files[]" id="" multiple>
+                <h4></h4>
+                <button type="submit" name="update">Update</button>
+                <button type="button" onclick="closeModal();">Close</button>
+                <h4></h4>
+                <button type="submit" name="delete">Delete</button>
             </div>
-
 
         </section>
     </form>

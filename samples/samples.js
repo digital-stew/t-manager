@@ -1,10 +1,10 @@
 HRtimestamp();
 // if GET?id send request for it and display
-const queryParams = new URLSearchParams(window.location.search);
+//const queryParams = new URLSearchParams(window.location.search);
 const queryID = queryParams.get("id");
-if (queryID && document.getElementById("sampleData").innerText == "")
+if (queryID && document.getElementById("sampleData").innerText == "") {
   selectSample(queryID);
-
+}
 // from user search
 function updateSamplesList() {
   const timeout = setTimeout(async () => {
@@ -28,7 +28,7 @@ function updateSamplesList() {
 
 //click on a sample
 async function selectSample(rowID) {
-  await replaceElement("sampleWrap", "/samples/show.php?id=" + rowID);
+  await replaceElement("sampleData", "/samples/show.php?id=" + rowID);
   getSampleImages();
   moveToCenter();
 
@@ -62,31 +62,34 @@ function getSampleImages() {
 function imageUp() {
   if (imageNumber >= images.length - 1) return;
   imageNumber++;
+  //update view
   imageCountElement.innerText = imageNumber + 1;
   image.src = "/assets/images/samples/webp/" + images[imageNumber];
+  //update edit modal
+  document.getElementById("modal_count").innerText = imageNumber + 1;
+  document.getElementById("modal_sampleImage").src =
+    "/assets/images/samples/webp/" + images[imageNumber];
 }
 
 function imageDown() {
   if (imageNumber <= 0) return;
   imageNumber--;
+  //update view
   imageCountElement.innerText = imageNumber + 1;
-
   image.src = "/assets/images/samples/webp/" + images[imageNumber];
+  //update edit modal
+  document.getElementById("modal_count").innerText = imageNumber + 1;
+  document.getElementById("modal_sampleImage").src =
+    "/assets/images/samples/webp/" + images[imageNumber];
 }
 
-// moved clicked on sample into user view regardless of Y window position
+// move clicked on sample into user view regardless of Y window position
 function moveToCenter() {
-  let wrapper = document.getElementById("sampleWrap");
+  let wrapper = document.getElementById("sampleData");
   if (!wrapper) return;
   let offset = window.scrollY;
   if (offset > 100) offset -= 100;
   wrapper.style.top = offset + "px";
-}
-
-// click edit sample button
-async function getEditSample(id) {
-  await replaceElement("sampleWrap", "/samples/edit.php?id=" + id);
-  getSampleImages(); // decode the new json
 }
 
 async function deleteImage() {

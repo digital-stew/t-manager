@@ -56,13 +56,10 @@ class Admin extends Database
         );
     }
 
-    function addUser($userName, $email, $passWd1, $passWd2, $userLevel, $department)
+    function addUser($userName, $email, $password, $userLevel, $department): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
-        if ($userName == '' || $userName == null) die('need user name');
-        if ($passWd1 == '' || $passWd2 == '') die('passwords cant be blank');
-        if ($passWd1 !== $passWd2) die('passwords must match');
 
         $sql = <<<EOD
             INSERT INTO users
@@ -79,16 +76,18 @@ class Admin extends Database
             )
         EOD;
 
-        $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $userName, SQLITE3_TEXT);
-        $stm->bindValue(2, $email, SQLITE3_TEXT);
-        $stm->bindValue(3, $department, SQLITE3_TEXT);
-        $stm->bindValue(4, $userLevel, SQLITE3_TEXT);
-        $stm->bindValue(5, password_hash($passWd1, PASSWORD_BCRYPT), SQLITE3_TEXT);
-        $res = $stm->execute();
-
-
-        header('Location: /admin');
+        try {
+            $stm = $this->db->prepare($sql);
+            $stm->bindValue(1, $userName, SQLITE3_TEXT);
+            $stm->bindValue(2, $email, SQLITE3_TEXT);
+            $stm->bindValue(3, $department, SQLITE3_TEXT);
+            $stm->bindValue(4, $userLevel, SQLITE3_TEXT);
+            $stm->bindValue(5, password_hash($password, PASSWORD_BCRYPT), SQLITE3_TEXT);
+            $res = $stm->execute();
+            if ($res) return true;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     function editUser()
@@ -98,13 +97,18 @@ class Admin extends Database
         $Auth->isAdmin();
     }
 
-    function deleteUser($id)
+    function deleteUser($id): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
-        $stm = $this->db->prepare("DELETE FROM users WHERE id = ?");
-        $stm->bindValue(1, $id, SQLITE3_TEXT);
-        $stm->execute();
-        header('Location: /admin');
+        try {
+            $stm = $this->db->prepare("DELETE FROM users WHERE id = ?");
+            $stm->bindValue(1, $id, SQLITE3_TEXT);
+            $stm->execute();
+            //header('Location: /admin');
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }

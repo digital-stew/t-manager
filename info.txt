@@ -1,3 +1,17 @@
+how to install:
+
+apt install apache2
+apt install libapache2-mod-php
+apt install php-gd
+
+increase php upload size to allow picture uploads /etc/php/8.1/cli/php.ini
+
+
+bugs:
+
+
+database notes:
+
 orders:
 name
 number
@@ -22,8 +36,3 @@ printdataback
 printdataother
 notes
 printer
-
-
-apt install apache2
-apt install libapache2-mod-php
-apt install php-gd

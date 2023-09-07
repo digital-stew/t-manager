@@ -1,7 +1,12 @@
 <?php
+session_start();
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Admin.php';
 $Admin = new Admin();
+$Auth = new Auth();
+$Auth->isAdmin();
 
+//============modal======================
 if (isset($_GET['getUser']) && isset($_GET['id'])) {
     $user = $Admin->getUser($_GET['id']);
     $html = <<<EOD
@@ -12,14 +17,17 @@ if (isset($_GET['getUser']) && isset($_GET['id'])) {
             <p>Department: {$user['department']}</p>
             <p>User Level: {$user['userLevel']}</p>
             <button type="button">Change password</button>
-            <button type="button" onclick="replaceElement('adminLeft', '/admin/users.php?editUser=true&id={$user['id']}')" >Edit</button>
+            <button type="button" onclick="showModal('/admin/users.php?editUser=true&id={$user['id']}')" >Edit</button>
             <button type='submit' name="deleteUser">Delete</button>
+            <h4></h4>
+            <button type='button' onclick="closeModal();">Back</button>
     </form>
     EOD;
     echo $html;
     die();
 }
 
+//============modal======================
 if (isset($_GET['editUser']) && isset($_GET['id'])) {
     $user = $Admin->getUser($_GET['id']);
     $html = <<<EOD
@@ -37,12 +45,14 @@ if (isset($_GET['editUser']) && isset($_GET['id'])) {
                 <option value="admin">Admin</option>
             </select></p>
             <button>Save</button>
+            <button type='button' onclick="closeModal();">Cancel</button>
     </section>
     EOD;
     echo $html;
     die();
 }
 
+//============modal======================
 if (isset($_GET['addUser'])) {
     $html = <<<EOD
     <section id="adminLeft" class="show_sample_section">
@@ -65,6 +75,7 @@ if (isset($_GET['addUser'])) {
                 <option value="office">Office</option>
             </select>
             <button type="submit" name="addUser">add new user</button>
+            <button type="button" onclick="closeModal();">cancel</button>
         </form>
     </section>
     EOD;
@@ -73,37 +84,56 @@ if (isset($_GET['addUser'])) {
 }
 
 if (isset($_POST['addUser'])) {
-    $Admin->addUser($_POST['userName'], $_POST['email'], $_POST['password1'], $_POST['password2'], $_POST['userLevel'], $_POST['department']);
+    if (strlen($_POST['userName']) < 4) {
+        header('Location: /admin?flashUser=username too short. > 4');
+        die();
+    }
+    if (strlen($_POST['userName']) > 10) {
+        header('Location: /admin?flashUser=username too long. < 10');
+        die();
+    }
+    if ($_POST['password1'] !== $_POST['password2']) {
+        header('Location: /admin?flashUser=passwords don\'t match');
+        die();
+    }
+    $res = $Admin->addUser($_POST['userName'], $_POST['email'], $_POST['password1'], $_POST['userLevel'], $_POST['department']);
+    if ($res) header('Location: /admin?flashUser=user saved');
     die();
 }
+
 if (isset($_POST['deleteUser']) && isset($_GET['id'])) {
-    $Admin->deleteUser($_GET['id']);
+    $res = $Admin->deleteUser($_GET['id']);
+    if ($res) header('Location: /admin?flashUser=user deleted');
     die();
 }
+
 $allUsers = $Admin->getAllUsers();
 ?>
-<div id="show" class="newBox">
-    <table>
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>E-mail</th>
-                <th>Department</th>
-                <th>User Level</th>
-            </tr>
-        </thead>
-        <tbody id="searchResults">
-            <?php foreach ($allUsers as $user) : ?>
-                <tr onclick="replaceElement('adminLeft', '/admin/users.php?getUser=true&id=<?= $user['id'] ?>')">
-                    <td><?= $user['id'] ?></td>
-                    <td><?= $user['name'] ?></td>
-                    <td><?= $user['email'] ?></td>
-                    <td><?= $user['department'] ?></td>
-                    <td><?= $user['userLevel'] ?></td>
+<section id="adminView" style="width: fit-content;">
+
+    <div id="show" class="newBox border">
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>E-mail</th>
+                    <th>Department</th>
+                    <th>User Level</th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <button onclick="replaceElement('adminLeft', '/admin/users.php?addUser=true')">Add new user</button>
-</div>
+            </thead>
+            <tbody id="searchResults">
+                <?php foreach ($allUsers as $user) : ?>
+                    <tr onclick="showModal('/admin/users.php?getUser=true&id=<?= $user['id'] ?>')">
+                        <td><?= $user['id'] ?></td>
+                        <td><?= $user['name'] ?></td>
+                        <td><?= $user['email'] ?></td>
+                        <td><?= $user['department'] ?></td>
+                        <td><?= $user['userLevel'] ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <button onclick="showModal('/admin/users.php?addUser=true')">Add new user</button>
+    </div>
+</section>

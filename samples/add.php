@@ -1,10 +1,10 @@
 <?php
+// ========================MODAL============================
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/sample.php';
-
+session_start();
 $Auth = new Auth();
 $Auth->isLoggedIn();
-
 if (isset($_POST['add'])) {
     $Sample = new sample();
     $Sample->add($_POST['name'],  $_POST['number'],  $_POST['otherref'],  $_POST['front'],  $_POST['back'],  $_POST['other'],  $_POST['notes'], $_SESSION['userName'], $_FILES['files']);
@@ -12,7 +12,7 @@ if (isset($_POST['add'])) {
 }
 ?>
 
-<form id="show" enctype="multipart/form-data" action="/samples/add.php" method="POST" class="box sample__add__form">
+<form id="show" enctype="multipart/form-data" action="/samples/add.php" method="POST" class="box" style="display: grid;grid-template-columns: 1fr 1fr;gap: 1rem;">
     <div>
         <h3>Job Data</h3>
         <hr>
@@ -42,7 +42,8 @@ if (isset($_POST['add'])) {
         <label for="notes">Notes</label>
         <input type="text" name="notes" id="notes" class="wide-center"> <br />
 
+        <button type="submit" name="add">Save</button>
+        <button type="button" onclick="closeModal();">cancel</button>
     </div>
-    <button type="submit" name="add">Save</button>
 
 </form>

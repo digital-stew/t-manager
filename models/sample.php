@@ -4,7 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Database.php';
 
 class sample extends Database
 {
-    function get($id)
+    function get(string $id): array| bool
     {
         $sql = <<<EOD
         SELECT samples.*, sample_images.webp_filename
@@ -13,35 +13,40 @@ class sample extends Database
             ON samples.rowid = sample_images.sample_id
             WHERE rowid = ?;
         EOD;
-        $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $id);
-        $res = $stm->execute();
+        try {
+            $stm = $this->db->prepare($sql);
+            $stm->bindValue(1, $id);
+            $res = $stm->execute();
 
-        $sample = $res->fetchArray(SQLITE3_ASSOC); // get all sample details including first image
+            $sample = $res->fetchArray(SQLITE3_ASSOC); // get all sample details including first image
 
-        $sample['images'] = array(); // create array to hold image names
+            $sample['images'] = array(); // create array to hold image names
 
-        array_push($sample['images'], $sample['webp_filename']); // push the first image
+            array_push($sample['images'], $sample['webp_filename']); // push the first image
 
-        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
-            array_push($sample['images'], $row['webp_filename']); // push the rest
+            while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+                array_push($sample['images'], $row['webp_filename']); // push the rest
+            }
+
+            return array(
+                'id' => $sample['rowid'],
+                'name' => $sample['name'],
+                'number' => $sample['number'],
+                'date' => $sample['date'],
+                'otherRef' => $sample['otherref'],
+                'frontData' => $sample['printdata'],
+                'backData' => $sample['printdataback'],
+                'otherData' => $sample['printdataother'],
+                'notes' => $sample['notes'],
+                'printer' => $sample['printer'],
+                'images' => $sample['images'],
+            );
+        } catch (Exception $e) {
+            return false;
         }
-
-        return array(
-            'id' => $sample['rowid'],
-            'name' => $sample['name'],
-            'number' => $sample['number'],
-            'date' => $sample['date'],
-            'otherRef' => $sample['otherref'],
-            'frontData' => $sample['printdata'],
-            'backData' => $sample['printdataback'],
-            'otherData' => $sample['printdataother'],
-            'notes' => $sample['notes'],
-            'printer' => $sample['printer'],
-            'images' => $sample['images'],
-        );
     }
-    function search(string $search, int $limit = 100)
+
+    function search(string $search, int $limit = 100): array|bool
     {
         $sql = <<<EOD
             SELECT
@@ -61,37 +66,42 @@ class sample extends Database
                 samples.name LIKE ? OR
                 samples.otherref LIKE ? OR
                 samples.number LIKE ?
-            ORDER BY samples.date DESC
+            ORDER BY samples.rowid DESC
             LIMIT ?;
         EOD;
 
-        $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, '%' . $search . '%', SQLITE3_TEXT);
-        $stm->bindValue(2, '%' . $search . '%', SQLITE3_TEXT);
-        $stm->bindValue(3, '%' . $search . '%', SQLITE3_TEXT);
-        $stm->bindValue(4, $limit, SQLITE3_TEXT);
-        $res = $stm->execute();
+        try {
+            $stm = $this->db->prepare($sql);
+            $stm->bindValue(1, '%' . $search . '%', SQLITE3_TEXT);
+            $stm->bindValue(2, '%' . $search . '%', SQLITE3_TEXT);
+            $stm->bindValue(3, '%' . $search . '%', SQLITE3_TEXT);
+            $stm->bindValue(4, $limit, SQLITE3_TEXT);
+            $res = $stm->execute();
 
-        $searchResults = [];
-        while ($sample = $res->fetchArray()) {
-            $sample = array(
-                'id' => $sample['rowid'],
-                'name' => $sample['name'] ?? '',
-                'number' => $sample['number'] ?? '',
-                'date' => $sample['date'],
-                'otherRef' => $sample['otherref'] ?? '',
-                'frontData' => $sample['printdata'] ?? '',
-                'backData' => $sample['printdataback'] ?? '',
-                'otherData' => $sample['printdataother'] ?? '',
-                'notes' => $sample['notes'] ?? '',
-                'printer' => $sample['printer'] ?? '',
-                'image' => $sample['image']
-            );
-            array_push($searchResults, $sample);
+            $searchResults = [];
+            while ($sample = $res->fetchArray()) {
+                $sample = array(
+                    'id' => $sample['rowid'],
+                    'name' => $sample['name'] ?? '',
+                    'number' => $sample['number'] ?? '',
+                    'date' => $sample['date'],
+                    'otherRef' => $sample['otherref'] ?? '',
+                    'frontData' => $sample['printdata'] ?? '',
+                    'backData' => $sample['printdataback'] ?? '',
+                    'otherData' => $sample['printdataother'] ?? '',
+                    'notes' => $sample['notes'] ?? '',
+                    'printer' => $sample['printer'] ?? '',
+                    'image' => $sample['image']
+                );
+                array_push($searchResults, $sample);
+            }
+            return $searchResults;
+        } catch (Exception $e) {
+            return $e;
         }
-        return $searchResults;
     }
-    function update(string $id, string $frontData, string $backData, string $otherData, string $notes, string $name, string $number, string $otherRef, array $files)
+
+    function update(string $id, string $frontData, string $backData, string $otherData, string $notes, string $name, string $number, string $otherRef, array $files): bool
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
@@ -101,37 +111,38 @@ class sample extends Database
             WHERE rowid = ?
             EOD;
 
-        $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $frontData, SQLITE3_TEXT);
-        $stm->bindValue(2, $backData, SQLITE3_TEXT);
-        $stm->bindValue(3, $otherData, SQLITE3_TEXT);
-        $stm->bindValue(4, $notes, SQLITE3_TEXT);
-        $stm->bindValue(5, $name, SQLITE3_TEXT);
-        $stm->bindValue(6, $number, SQLITE3_TEXT);
-        $stm->bindValue(7, $otherRef, SQLITE3_TEXT);
-        $stm->bindValue(8, $id, SQLITE3_TEXT);
+        try {
+            $stm = $this->db->prepare($sql);
+            $stm->bindValue(1, $frontData, SQLITE3_TEXT);
+            $stm->bindValue(2, $backData, SQLITE3_TEXT);
+            $stm->bindValue(3, $otherData, SQLITE3_TEXT);
+            $stm->bindValue(4, $notes, SQLITE3_TEXT);
+            $stm->bindValue(5, $name, SQLITE3_TEXT);
+            $stm->bindValue(6, $number, SQLITE3_TEXT);
+            $stm->bindValue(7, $otherRef, SQLITE3_TEXT);
+            $stm->bindValue(8, $id, SQLITE3_TEXT);
 
-        $stm->execute();
+            $stm->execute();
 
-        //handle the files
-        $i = 0; //iterator
-        foreach ($files['name'] as $originalFileName) {
-            if ($originalFileName == '') continue; //BUG FIX always tries even when no files
+            //handle the files
+            $i = 0; //iterator
+            foreach ($files['name'] as $originalFileName) {
+                if ($originalFileName == '') continue; //BUG FIX always tries even when no files
 
-            $fileExt = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
-            $fileUUID = uniqid();
-            switch ($fileExt) {
-                case 'jpg':
-                    $image = imagecreatefromjpeg($files['tmp_name'][$i]);
-                    $webpData = imagewebp($image, $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/webp/' . $fileUUID . '.webp', 100);
-                    break;
-                default:
-                    die('cant convert file ' . $originalFileName);
-            }
+                $fileExt = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
+                $fileUUID = uniqid();
+                switch ($fileExt) {
+                    case 'jpg':
+                        $image = imagecreatefromjpeg($files['tmp_name'][$i]);
+                        $webpData = imagewebp($image, $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/webp/' . $fileUUID . '.webp', 100);
+                        break;
+                    default:
+                        die('cant convert file ' . $originalFileName);
+                }
 
-            move_uploaded_file($files['tmp_name'][$i], $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/original/' . $originalFileName);
+                move_uploaded_file($files['tmp_name'][$i], $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/original/' . $originalFileName);
 
-            $sql = <<<EOD
+                $sql = <<<EOD
             INSERT INTO sample_images(
                 webp_filename,
                 sample_id,
@@ -141,19 +152,24 @@ class sample extends Database
                 )
                 VALUES (?,?,?,?,?)
             EOD;
-            $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, $fileUUID . '.webp', SQLITE3_TEXT);
-            $stm->bindValue(2, $_GET['id'], SQLITE3_TEXT);
-            $stm->bindValue(3, $originalFileName, SQLITE3_TEXT);
-            $stm->bindValue(4, $_SESSION['userName'], SQLITE3_TEXT);
-            $stm->bindValue(5, time(), SQLITE3_TEXT);
-            $res = $stm->execute();
+                $stm = $this->db->prepare($sql);
+                $stm->bindValue(1, $fileUUID . '.webp', SQLITE3_TEXT);
+                $stm->bindValue(2, $_GET['id'], SQLITE3_TEXT);
+                $stm->bindValue(3, $originalFileName, SQLITE3_TEXT);
+                $stm->bindValue(4, $_SESSION['userName'], SQLITE3_TEXT);
+                $stm->bindValue(5, time(), SQLITE3_TEXT);
+                $res = $stm->execute();
 
-            $i++;
+                $i++;
+            }
+            //header('Location: /samples?id=' . $id);
+            return true;
+        } catch (Exception $e) {
+            return false;
         }
-        header('Location: /samples?id=' . $id);
     }
-    function add(string $name, string $number, string $otherRef, string $frontData, string $backData, string $otherData, string $notes, string $userName, array $files)
+
+    function add(string $name, string $number, string $otherRef, string $frontData, string $backData, string $otherData, string $notes, string $userName, array $files): bool
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
@@ -173,40 +189,38 @@ class sample extends Database
             )
             VALUES (?,?,?,?,?,?,?,?,?)
             EOD;
+        try {
+            $stm = $this->db->prepare($sql);
+            $stm->bindValue(1, $name, SQLITE3_TEXT);
+            $stm->bindValue(2, $number, SQLITE3_TEXT);
+            $stm->bindValue(3, $otherRef, SQLITE3_TEXT);
+            $stm->bindValue(4, time(), SQLITE3_TEXT);
+            $stm->bindValue(5, $frontData, SQLITE3_TEXT);
+            $stm->bindValue(6, $backData, SQLITE3_TEXT);
+            $stm->bindValue(7, $otherData, SQLITE3_TEXT);
+            $stm->bindValue(8, $notes, SQLITE3_TEXT);
+            $stm->bindValue(9, $userName, SQLITE3_TEXT);
+            $res = $stm->execute();
 
-        $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $name, SQLITE3_TEXT);
-        $stm->bindValue(2, $number, SQLITE3_TEXT);
-        $stm->bindValue(3, $otherRef, SQLITE3_TEXT);
-        $stm->bindValue(4, time(), SQLITE3_TEXT);
-        $stm->bindValue(5, $frontData, SQLITE3_TEXT);
-        $stm->bindValue(6, $backData, SQLITE3_TEXT);
-        $stm->bindValue(7, $otherData, SQLITE3_TEXT);
-        $stm->bindValue(8, $notes, SQLITE3_TEXT);
-        $stm->bindValue(9, $userName, SQLITE3_TEXT);
-        $res = $stm->execute();
+            $lastID = $this->db->query("SELECT last_insert_rowid();")->fetchArray()['last_insert_rowid()'];
 
-        $lastID = $this->db->query("SELECT last_insert_rowid();")->fetchArray()['last_insert_rowid()'];
+            //handle the files
+            $i = 0; //iterator
+            foreach ($files['name'] as $originalFileName) {
+                $fileExt = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
+                $fileUUID = uniqid();
+                switch ($fileExt) {
+                    case 'jpg':
+                        $image = imagecreatefromjpeg($files['tmp_name'][$i]);
+                        $webpData = imagewebp($image, $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/webp/' . $fileUUID . '.webp', 100);
+                        break;
+                    default:
+                        die('cant convert file ' . $originalFileName);
+                }
 
-        //handle the files
-        $i = 0; //iterator
-        foreach ($files['name'] as $originalFileName) {
-            $fileExt = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
-            $fileUUID = uniqid();
-            switch ($fileExt) {
-                case 'jpg':
-                    $image = imagecreatefromjpeg($files['tmp_name'][$i]);
-                    $webpData = imagewebp($image, $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/webp/' . $fileUUID . '.webp', 100);
-                    break;
-                default:
-                    die('cant convert file ' . $originalFileName);
-            }
+                move_uploaded_file($files['tmp_name'][$i], $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/original/' . $originalFileName);
 
-
-
-            move_uploaded_file($files['tmp_name'][$i], $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/original/' . $originalFileName);
-
-            $sql = <<<EOD
+                $sql = <<<EOD
             INSERT INTO sample_images(
                 webp_filename,
                 sample_id,
@@ -216,33 +230,49 @@ class sample extends Database
                 )
                 VALUES (?,?,?,?,?)
             EOD;
-            $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, $fileUUID . '.webp', SQLITE3_TEXT);
-            $stm->bindValue(2, $lastID, SQLITE3_TEXT);
-            $stm->bindValue(3, $originalFileName, SQLITE3_TEXT);
-            $stm->bindValue(4, $_SESSION['userName'], SQLITE3_TEXT);
-            $stm->bindValue(5, time(), SQLITE3_TEXT);
-            $res = $stm->execute();
+                $stm = $this->db->prepare($sql);
+                $stm->bindValue(1, $fileUUID . '.webp', SQLITE3_TEXT);
+                $stm->bindValue(2, $lastID, SQLITE3_TEXT);
+                $stm->bindValue(3, $originalFileName, SQLITE3_TEXT);
+                $stm->bindValue(4, $_SESSION['userName'], SQLITE3_TEXT);
+                $stm->bindValue(5, time(), SQLITE3_TEXT);
+                $res = $stm->execute();
 
-            $i++;
+                $i++;
+            }
+            header('Location: /samples?id=' . $lastID);
+            return true;
+        } catch (Exception $e) {
+            return false;
         }
-        header('Location: /samples?id=' . $lastID);
     }
-    function remove(string $id)
+
+    function remove(string $id): bool
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
-        $stm = $this->db->prepare("DELETE FROM samples WHERE rowid = ?");
-        $stm->bindValue(1, $id, SQLITE3_TEXT);
-        $stm->execute();
-        header('Location: /samples');
+        try {
+            $stm = $this->db->prepare("DELETE FROM samples WHERE rowid = ?");
+            $stm->bindValue(1, $id, SQLITE3_TEXT);
+            $stm->execute();
+            //header('Location: /samples');
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
     }
-    function removeImage(string $image)
+
+    function removeImage(string $image): bool
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
-        $stm = $this->db->prepare("DELETE FROM sample_images WHERE webp_filename = ?"); // BUG!! add and sample id
-        $stm->bindValue(1, $image, SQLITE3_TEXT) or die('sql error bind');
-        $stm->execute();
+        try {
+            $stm = $this->db->prepare("DELETE FROM sample_images WHERE webp_filename = ?");
+            $stm->bindValue(1, $image, SQLITE3_TEXT);
+            $stm->execute();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }

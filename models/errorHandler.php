@@ -4,11 +4,12 @@ function customError($errno, $errstr, $file, $line)
   echo "<div class='error'>
     Error: $errno <br/>
     $errstr <br/>
-  <!--  $file <br/> -->
-  <!-- $line <br/> -->
+   $file <br/>
+  $line <br/>
+
 </div>
     ";
-  die();
+  //die();
 }
 
 //set error handler
