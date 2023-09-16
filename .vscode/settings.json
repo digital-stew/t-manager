@@ -5,6 +5,8 @@
     "printdata",
     "printdataback",
     "printdataother",
+    "qrbox",
+    "Qrcode",
     "rowid",
     "userlevel"
   ]

@@ -42,6 +42,17 @@ function closeModal() {
   modal.close();
 }
 
+function toggleNavbar() {
+  let menu = document.getElementById("navbar");
+  if (menu.style.display === "flex") {
+    menu.style.display = "none";
+    menu.style.width = "0";
+  } else {
+    menu.style.display = "flex";
+    menu.style.width = "var(--navbar-width)";
+  }
+}
+
 function flashUser(text) {
   const element = document.getElementById("modal");
   element.innerText = text;

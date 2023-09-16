@@ -33,7 +33,7 @@ if (isset($_GET['search'])) {
     <div style="display: grid;grid-template-columns: 40% 60%;">
         <section style="display: flex;flex-direction: column;">
             <input onkeyup="updateSamplesList()" type="search" id="search" placeholder="search..." class="border" style="margin-block: 1rem;" />
-            <table id="show" class="border">
+            <table id="show" class="border sampleTable">
                 <thead>
                     <tr>
                         <th>id</th>
@@ -65,9 +65,7 @@ if (isset($_GET['search'])) {
         </div>
 
     </div>
+
 </body>
 
 </html>
-<?php
-$_SERVER['DOCUMENT_ROOT'] . '/footer.php';
-?>

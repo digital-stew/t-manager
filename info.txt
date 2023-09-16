@@ -8,6 +8,7 @@ increase php upload size to allow picture uploads /etc/php/8.1/cli/php.ini
 
 
 bugs:
+sidebar not removed properly on small screens
 
 
 database notes:

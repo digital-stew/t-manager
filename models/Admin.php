@@ -90,11 +90,50 @@ class Admin extends Database
         }
     }
 
-    function editUser()
+    function editUser($id, $email, $department, $userLevel)
     {
-        // TODO
         $Auth = new Auth();
         $Auth->isAdmin();
+
+        $sql = <<<EOD
+        UPDATE users
+        SET email =?, department = ?, userlevel = ?
+        WHERE id = ?
+        EOD;
+
+        try {
+            $stm = $this->db->prepare($sql);
+            $stm->bindValue(1, $email, SQLITE3_TEXT);
+            $stm->bindValue(2, $department, SQLITE3_TEXT);
+            $stm->bindValue(3, $userLevel, SQLITE3_TEXT);
+            $stm->bindValue(4, $id, SQLITE3_TEXT);
+            $res = $stm->execute();
+            if ($res) return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    function adminChangeUserPassword($id, $password): bool
+    {
+        $Auth = new Auth();
+        $Auth->isAdmin();
+
+        $sql = <<<EOD
+            UPDATE users
+            SET password = ?
+            WHERE id = ?
+        EOD;
+
+        try {
+            $stm = $this->db->prepare($sql);
+            $stm->bindValue(1, password_hash($password, PASSWORD_BCRYPT), SQLITE3_TEXT);
+            $stm->bindValue(2, $id, SQLITE3_TEXT);
+            $res = $stm->execute();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     function deleteUser($id): bool

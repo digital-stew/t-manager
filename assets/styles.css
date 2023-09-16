@@ -1,9 +1,9 @@
 :root {
   --body-text-color: grey;
   --body-background-image: linear-gradient(to right, #111, #111);
-  --navbar-background-image: #222
+  --navbar-background-image: #222;
   --navbar-a-color: #34495e;
-  --navbar-hover: rgba(0, 0, 0, 0.2);
+  --navbar-hover: rgba(0, 0, 0, 0.4);
   --navbar-width: 200px;
   --box-background: #e6e6e6;
 
@@ -15,6 +15,7 @@
   --textarea-background-color: none;
   --textarea-color: none;
 }
+
 * {
   box-sizing: border-box;
 }
@@ -87,6 +88,26 @@ h6 {
 }
 
 /* -------------------NAVBAR------------------------------*/
+.burgerMenu {
+  position: absolute;
+  z-index: 101;
+  top: 0.5rem;
+  left: 1rem;
+  width: 30px;
+  padding: 0;
+  margin: 0;
+  height: 30px;
+  transition: all 2s ease-in-out;
+}
+.burgerMenu span {
+  position: relative;
+  display: block;
+  margin-block: 5px;
+  width: 30px;
+  height: 3px;
+  background-color: var(--body-text-color);
+  z-index: 102;
+}
 .navbar {
   margin: 0;
   display: flex;
@@ -97,8 +118,9 @@ h6 {
   width: var(--navbar-width);
   border-right: 2px solid black;
   grid-column: 1 /2;
-  background: var(--navbar-background-image);
-  /* top: 0; */
+  padding-top: 3rem;
+  background: var(--body-background-image);
+  z-index: 100;
 }
 .linkList::before {
   content: "";
@@ -119,7 +141,7 @@ h6 {
   all: unset;
   text-decoration: none;
   text-align: center;
-  color: var(--navbar-a-color);
+  /* color: var(--navbar-a-color); */
   padding-block: 1rem;
   display: block;
   transition: all 500ms;
@@ -150,12 +172,6 @@ td {
   text-align: center;
   /* padding-inline: 1rem; */
 }
-td:nth-child(5) {
-  width: 50px;
-}
-td:nth-child(1) {
-  width: 50px;
-}
 td img {
   vertical-align: middle;
 }
@@ -170,11 +186,19 @@ tr:hover {
   color: var(--tr-hover-color);
   background-color: var(--tr-hover-background);
 }
+
+/* sample table */
+.sampleTable td:nth-child(5) {
+  width: 50px;
+}
+.sampleTable td:nth-child(1) {
+  width: 50px;
+}
 /* ====================================================== */
 
 .animate,
 .fadeIn {
-  animation: fadeIn 3s forwards;
+  animation: fadeIn 2s forwards;
 }
 
 @keyframes fadeIn {
@@ -268,11 +292,18 @@ button,
 button:hover {
   border-radius: 15px;
 }
-/* ===================helpers */
+/* ===================helpers================= */
 .border {
   border: 20px solid #333;
   border-radius: 10px;
 }
+
+label {
+  display: inline-flex;
+  flex-direction: column;
+  /* background-color: red; */
+}
+
 /* ===================modal================= */
 dialog {
   background-image: var(--body-background-image);
@@ -281,20 +312,24 @@ dialog {
 dialog::backdrop {
   background-color: rgba(0, 0, 0, 0.6);
 }
+/* =============================================== */
 
 @media (max-width: 1500px) {
-  :root {
-    --navbar-width: 0px;
+  body {
+    grid-template-columns: 1fr;
   }
-  .navbar-top {
-    width: 0;
+  body > * {
+    grid-column: 1;
+  }
+  .navbar {
     display: none;
   }
+  .burgerMenu {
+    display: block;
+  }
 }
-
-@media (max-width: 500px) {
-  body {
-    background-image: none;
-    grid-template-columns: 1fr;
+@media (min-width: 1500px) {
+  .burgerMenu {
+    display: none;
   }
 }
