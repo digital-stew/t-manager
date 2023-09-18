@@ -6,7 +6,6 @@ $locations = $Stock->getLocations();
 $types = $Stock->getTypes();
 $sizes = $Stock->getSizes();
 $colors = $Stock->getColors();
-//$searchResults = $Stock->search('M', 'M');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -34,15 +33,10 @@ $colors = $Stock->getColors();
                     <option value="<?= $location ?>"><?= $location ?></option>
                 <?php endforeach ?>
             </select>
+            <hr>
         <?php endif ?>
-        <hr>
-    </div>
 
-
-    <div style="margin-inline: auto;text-align: center;">
-        <!-- <input type="search" id="search" placeholder="search..." class="border" style="margin-inline: auto;" /> -->
-        <div style="display:flex; justify-content: space-around;gap:1rem;">
-
+        <div style="margin-inline: auto;margin-bottom: 1rem;text-align: center;">
             <label>color
                 <select name="colorSelect" id="colorSelect" onchange="searchStock();">
                     <option value="all">all</option>
@@ -80,10 +74,11 @@ $colors = $Stock->getColors();
             </label>
 
         </div>
-        <!-- <button onclick="searchStock()">search</button> <br> -->
+
+        <hr>
     </div>
 
-    <table id="" class="border">
+    <table id="" class="border" style="align-self: flex-start;">
         <thead>
             <tr>
                 <th>code</th>
@@ -95,20 +90,9 @@ $colors = $Stock->getColors();
             </tr>
         </thead>
         <tbody id="searchResults">
-            <?php foreach ($searchResults as $result) : ?>
-                <tr>
-                    <td><?= $result['code'] ?></td>
-                    <td><?= $result['color'] ?></td>
-                    <td><?= $result['size'] ?></td>
-                    <td><?= $result['type'] ?></td>
-                    <td><?= $result['location'] ?></td>
-                    <td><?= $result['amount'] ?></td>
-                </tr>
-            <?php endforeach; ?>
-
+            <!-- placeholder -->
         </tbody>
     </table>
-
 
     <dialog id="scannerModal" style="text-align: center;">
         <div id="qr-reader" style="width: 500px"></div>

@@ -131,6 +131,12 @@ class Stock extends Database
             case '4XL':
                 $size = '4XL';
                 break;
+            case '5XL':
+                $size = '5XL';
+                break;
+            case '6XL':
+                $size = '6XL';
+                break;
         }
 
         if ($type == '') die('cant parse type');
@@ -374,7 +380,7 @@ class Stock extends Database
 
     function getSizes(): array
     {
-        return ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+        return ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'];
     }
 
     function getColors(): array

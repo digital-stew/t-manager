@@ -7,12 +7,15 @@ if (isset($_GET['add']) && isset($_GET['code'])) {
         <form action="/stores/add.php" method="post">
             <h4>Add stock</h4>
             <h5>{$_GET['location']}</h5>
-            <p>{$_GET['code']}</p>
+            <label>
+                code
+                <input name="code" type="text" value="{$_GET['code']}">
+            </label>
+            <br>
             <label>
                 amount
                 <input name="amount" type="text">
             </label>
-            <input type="hidden" name="code" value="{$_GET['code']}">
             <input type="hidden" name="location" value="{$_GET['location']}">
             <button type="submit" style="width: 80%;">Save</button><br>
             <button type="button" onclick="closeModal();" style="width: 80%;">Cancel</button>

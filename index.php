@@ -31,8 +31,9 @@
             <p>
                 This program is still very much in alpha
             </p>
-            <p>Any suggestions, complaints or feature requests <button onclick="location.href='mailto:stewart@tux-systems.co.uk';">send here</button> </p>
+            <p>Any suggestions, complaints, feature requests or bugs <button onclick="location.href='mailto:stewart@tux-systems.co.uk';">send here</button> stewart@tux-systems.co.uk</p>
             <p>
+
                 <!-- <?php echo $phpLines / 2; ?> lines of php code <br> -->
                 <!-- <?php echo $jsLines / 2; ?> lines of javascript code <br> -->
             </p>
@@ -43,7 +44,10 @@
             <section class="border" style="padding: 2rem;">
                 <h4>not operational ...yet</h4>
                 <p>stock - auto location</p>
-                <p></p>
+                <p>samples - add pictures directly from app so phones don't get cluttered up with pictures</p>
+                <p>full logging</p>
+                <p>user options - password change ...etc</p>
+                <p>upload, parsing and inserting of fanatic .xlsx to database </p>
             </section>
 
             <section class="border" style="padding: 2rem;">
@@ -51,7 +55,12 @@
                 <p>cant click on samples on mobile</p>
                 <p>port error on scanner cam - non critical</p>
             </section>
-
+            <section class="border" style="padding: 2rem;">
+                <h4>last update</h4>
+                <p>sizes now go up to 6XL</p>
+                <p>qr code scanning now user editable</p>
+                <p>fixed slight formatting error on stores.php when page fills up</p>
+            </section>
         </div>
 
 
