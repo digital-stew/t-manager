@@ -28,18 +28,20 @@ function updateSamplesList() {
 
 //click on a sample
 async function selectSample(rowID) {
-  await replaceElement("sampleData", "/samples/show.php?id=" + rowID);
+  //console.log("images");
+  //await replaceElement("sampleData", "/samples/show.php?id=" + rowID);
+  await showModal("/samples/show.php?id=" + rowID);
   getSampleImages();
-  moveToCenter();
+  //moveToCenter();
 
   //Get the request parameters
-  const queryParams = new URLSearchParams(window.location.search);
-  const queryID = queryParams.get("id");
-  queryParams.set("id", rowID);
+  //const queryParams = new URLSearchParams(window.location.search);
+  //const queryID = queryParams.get("id");
+  //queryParams.set("id", rowID);
   // Replace the current query string with the updated parameters
-  const newUrl = `${window.location.pathname}?${queryParams.toString()}`;
+  //const newUrl = `${window.location.pathname}?${queryParams.toString()}`;
   // Change the URL without triggering a page refresh
-  window.history.pushState({}, "", newUrl);
+  // window.history.pushState({}, "", newUrl);
 }
 
 //============== sample data show (right side) =================
@@ -53,6 +55,7 @@ function getSampleImages() {
   try {
     images = JSON.parse(document.getElementById("sampleData").dataset.images); // pass image array to client
   } catch (error) {
+    console.log(error);
     return;
   }
   imageCountElement = document.getElementById("count");
@@ -66,9 +69,9 @@ function imageUp() {
   imageCountElement.innerText = imageNumber + 1;
   image.src = "/assets/images/samples/webp/" + images[imageNumber];
   //update edit modal
-  document.getElementById("modal_count").innerText = imageNumber + 1;
-  document.getElementById("modal_sampleImage").src =
-    "/assets/images/samples/webp/" + images[imageNumber];
+  // document.getElementById("modal_count").innerText = imageNumber + 1;
+  // document.getElementById("modal_sampleImage").src =
+  //"/assets/images/samples/webp/" + images[imageNumber];
 }
 
 function imageDown() {
@@ -78,9 +81,9 @@ function imageDown() {
   imageCountElement.innerText = imageNumber + 1;
   image.src = "/assets/images/samples/webp/" + images[imageNumber];
   //update edit modal
-  document.getElementById("modal_count").innerText = imageNumber + 1;
-  document.getElementById("modal_sampleImage").src =
-    "/assets/images/samples/webp/" + images[imageNumber];
+  //document.getElementById("modal_count").innerText = imageNumber + 1;
+  // document.getElementById("modal_sampleImage").src =
+  // "/assets/images/samples/webp/" + images[imageNumber];
 }
 
 // move clicked on sample into user view regardless of Y window position

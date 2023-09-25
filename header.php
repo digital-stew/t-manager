@@ -27,13 +27,11 @@ session_start();
         <li><a href="/">Home</a></li>
         <li><a href="/samples">Samples</a></li>
         <li><a href="/stores">Stores</a></li>
+        <li><a href="/fanaticOrders">Fanatic orders</a></li>
         <?php if (isset($_SESSION['userName']) && $_SESSION['userLevel'] == 'admin') : ?>
             <li><a href="/admin">admin</a></li>
         <?php endif ?>
     </ul>
-    <h4 style="margin-top: auto;">
-        alpha
-    </h4>
 </nav>
 
 <dialog id="modal" style="text-align: center;"></dialog>

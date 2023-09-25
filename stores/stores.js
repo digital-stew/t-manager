@@ -1,34 +1,38 @@
-var resultContainer = document.getElementById("qr-reader-results");
-var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", {
-  fps: 10,
-  qrbox: 250,
-});
+// var resultContainer = document.getElementById("qr-reader-results");
+// var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", {
+//   fps: 10,
+//   qrbox: 250,
+// });
+const html5QrCode = new Html5Qrcode("qr-reader");
+const config = { fps: 10, qrbox: { width: 130, height: 130 } };
+
 searchStock();
 //html5QrcodeScanner.render(onScanSuccess);
 let addOrRemove = "add";
 
 function addStockButton() {
   addOrRemove = "add";
-  html5QrcodeScanner.render(onScanSuccess, onScanFail);
-  if (html5QrcodeScanner.getState() == 3) html5QrcodeScanner.resume(); //state 3 = paused --- state 1 = ready
+  html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
   document.getElementById("scannerModal").showModal();
 }
 
 function removeStockButton() {
   addOrRemove = "remove";
-  html5QrcodeScanner.render(onScanSuccess, onScanFail);
-  if (html5QrcodeScanner.getState() == 3) html5QrcodeScanner.resume(); //state 3 = paused --- state 1 = ready
+  html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
   document.getElementById("scannerModal").showModal();
 }
 
+function closeCamModal() {
+  html5QrCode.stop();
+  document.getElementById("scannerModal").close();
+}
 function onScanFail() {
   //console.log("scan fail");
   return;
 }
 
 async function onScanSuccess(decodedText, decodedResult) {
-  html5QrcodeScanner.pause();
-  document.getElementById("scannerModal").close();
+  closeCamModal();
   stockLocation = document.getElementById("addRemoveLocationSelect").value;
   showModal(
     `/stores/${addOrRemove}.php?${addOrRemove}=true&code=${decodedText}&location=${stockLocation}`

@@ -7,7 +7,7 @@ $sample = $Sample->get($_GET['id']);
 $FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='width:50px;height:50px;vertical-align:middle;' >";
 ?>
 
-<section id="sampleData" style="position: absolute;width: 100%;" class="" data-images='<?= json_encode($sample['images']) ?>'>
+<section id="sampleData" style="width: 100%;" data-images='<?= json_encode($sample['images']) ?>'>
 
     <?php if ($sample['images'][0] != '') : ?>
         <div class="sample_show_imageWrapper newBox border" style="margin-inline: auto; margin-block: 1rem;">
@@ -20,7 +20,7 @@ $FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='widt
         </div>
     <?php endif ?>
 
-    <div style="display: flex;justify-content: center;gap: 1rem;">
+    <div style="display: flex;justify-content: center;gap: 1rem;flex-wrap: wrap;">
 
         <div class="newBox">
             <h4>Info</h4>
@@ -61,6 +61,10 @@ $FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='widt
             </div>
         <?php endif ?>
 
+    </div>
+
+    <div>
+        <button type="button" onclick="closeModal();" style="width: 90%;">Close</button>
     </div>
 
 </section>

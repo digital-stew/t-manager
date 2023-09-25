@@ -17,7 +17,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5">
     <title>Home</title>
     <link rel="stylesheet" href="/assets/styles.css">
     <script src="/assets/globalFunctions.js" defer></script>
@@ -25,46 +25,36 @@
 
 <body>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php'; ?>
-
-    <div style="display: grid;place-content: center;text-align: center;">
-        <div class="border" style="padding: 1rem;">
-            <p>
-                This program is still very much in alpha
-            </p>
-            <p>Any suggestions, complaints, feature requests or bugs <button onclick="location.href='mailto:stewart@tux-systems.co.uk';">send here</button> stewart@tux-systems.co.uk</p>
-            <p>
-
-                <!-- <?php echo $phpLines / 2; ?> lines of php code <br> -->
-                <!-- <?php echo $jsLines / 2; ?> lines of javascript code <br> -->
-            </p>
-
-        </div>
-        <div style="display: flex;justify-content: center;gap:3rem;margin-top: 3rem;">
-
-            <section class="border" style="padding: 2rem;">
-                <h4>not operational ...yet</h4>
-                <p>stock - auto location</p>
-                <p>samples - add pictures directly from app so phones don't get cluttered up with pictures</p>
-                <p>full logging</p>
-                <p>user options - password change ...etc</p>
-                <p>upload, parsing and inserting of fanatic .xlsx to database </p>
-            </section>
-
-            <section class="border" style="padding: 2rem;">
-                <h4>bugs</h4>
-                <p>cant click on samples on mobile</p>
-                <p>port error on scanner cam - non critical</p>
-            </section>
-            <section class="border" style="padding: 2rem;">
-                <h4>last update</h4>
-                <p>sizes now go up to 6XL</p>
-                <p>qr code scanning now user editable</p>
-                <p>fixed slight formatting error on stores.php when page fills up</p>
-            </section>
-        </div>
-
-
+    <div class="border" style="padding: 1rem;text-align: center;">
+        <p>
+            This program is still very much in alpha
+        </p>
+        <p>Any suggestions, complaints, feature requests or bugs <button onclick="location.href='mailto:stewart@tux-systems.co.uk';">send here</button> stewart@tux-systems.co.uk</p>
     </div>
+
+    <div style="display: flex;justify-content: center;gap:3rem;margin-top: 3rem;flex-wrap: wrap;height: min-content;">
+
+        <section class="border" style="padding: 2rem;">
+            <h4>not operational ...yet</h4>
+            <p>auto location</p>
+            <p>samples - add pictures directly from app so phones don't get cluttered up with pictures</p>
+            <p>full logging</p>
+            <p>user options - password change ...etc</p>
+            <p>pick orders</p>
+        </section>
+
+        <section class="border" style="padding: 2rem;">
+            <h4>bugs</h4>
+            <p>none reported. wow!!</p>
+        </section>
+        <section class="border" style="padding: 2rem;">
+            <h4>last update</h4>
+            <p>mobile version complete (i think)</p>
+            <p>user clicked samples now open in own modal</p>
+            <p>bigger scanning box for qr scanner</p>
+        </section>
+    </div>
+
 </body>
 
 </html>

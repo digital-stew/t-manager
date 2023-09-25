@@ -150,6 +150,34 @@ class Stock extends Database
         ];
     }
 
+    function searchCode($code)
+    {
+        $sql = <<<EOD
+        SELECT *
+        FROM stock
+        WHERE code LIKE ?
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $code . '%');
+        $res = $stm->execute();
+        // $isInDatabase = $res->fetchArray();
+        $searchResults = [];
+        while ($result = $res->fetchArray()) {
+            $result = [
+                'id' => $result['id'],
+                'code' => $result['code'],
+                'color' => $result['color'],
+                'size' => $result['size'],
+                'type' => $result['type'],
+                'location' => $result['location'],
+                'amount' => $result['amount']
+            ];
+            array_push($searchResults, $result);
+        }
+        return $searchResults;
+        // return $isInDatabase;
+    }
+
     function search($color = 'all', $size = 'all', $type = 'all', $location = 'all'): array
     {
 

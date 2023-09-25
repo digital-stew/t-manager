@@ -18,7 +18,7 @@ if (isset($_GET['add']) && isset($_GET['code'])) {
             </label>
             <input type="hidden" name="location" value="{$_GET['location']}">
             <button type="submit" style="width: 80%;">Save</button><br>
-            <button type="button" onclick="closeModal();" style="width: 80%;">Cancel</button>
+            <button type="button" onclick="closeCamModal();" style="width: 80%;">Cancel</button>
         </form>
     EOD;
     die($html);

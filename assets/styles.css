@@ -19,12 +19,7 @@
 * {
   box-sizing: border-box;
 }
-.sideBySide {
-  display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
-  gap: 1rem;
-  position: relative;
-}
+
 .show_sample_section {
   display: flex;
   gap: 2rem;
@@ -71,7 +66,7 @@ body {
   color: var(--body-text-color);
   display: grid;
   grid-template-columns: var(--navbar-width) 1fr;
-  /* grid-template-rows: 1fr; */
+  grid-template-rows: 200px 1fr;
   min-height: 100vh;
 }
 body > * {

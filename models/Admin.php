@@ -78,7 +78,7 @@ class Admin extends Database
 
         try {
             $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, $userName, SQLITE3_TEXT);
+            $stm->bindValue(1, strtolower($userName), SQLITE3_TEXT);
             $stm->bindValue(2, $email, SQLITE3_TEXT);
             $stm->bindValue(3, $department, SQLITE3_TEXT);
             $stm->bindValue(4, $userLevel, SQLITE3_TEXT);

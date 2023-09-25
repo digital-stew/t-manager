@@ -14,7 +14,7 @@ if (isset($_GET['search'])) {
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5">
     <title>Samples</title>
     <link rel="stylesheet" href="/assets/styles.css">
     <script src="/assets/globalFunctions.js" defer></script>
@@ -30,7 +30,8 @@ if (isset($_GET['search'])) {
         <?php endif ?>
         <hr>
     </div>
-    <div style="display: grid;grid-template-columns: 40% 60%;">
+
+    <div>
         <section style="display: flex;flex-direction: column;">
             <input onkeyup="updateSamplesList()" type="search" id="search" placeholder="search..." class="border" style="margin-block: 1rem;" />
             <table id="show" class="border sampleTable">
@@ -46,6 +47,7 @@ if (isset($_GET['search'])) {
                 <tbody id="searchResults">
                     <?php foreach ($searchResults as $sample) : ?>
                         <tr onclick="selectSample(<?= $sample['id'] ?>)">
+                            <!-- <tr onclick="showModal('/samples/show.php?id=<?= $sample['id'] ?>');"> -->
                             <td><?= $sample['id'] ?></td>
                             <td><?= $sample['name'] ?></td>
                             <td><?= $sample['number'] ?></td>
@@ -57,12 +59,6 @@ if (isset($_GET['search'])) {
                 </tbody>
             </table>
         </section>
-
-        <div style="position: relative;">
-            <section id="sampleData">
-                <!-- placeholder  -->
-            </section>
-        </div>
 
     </div>
 
