@@ -34,6 +34,10 @@ async function showModal(link) {
   //element.appendChild(closeButton);
   HRtimestamp();
   element.showModal();
+  // element.addEventListener("click", (event) => {
+  //  let rect = event.target.getBoundingClientRect();
+  //closeModal();
+  // });
 }
 
 function closeModal() {

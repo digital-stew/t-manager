@@ -1,15 +1,14 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/FanaticOrders.php';
-
 $FanaticOrders = new FanaticOrders();
 //$colors = $Stock->getColors();
-
+session_start();
 
 if (isset($_POST['code'])) {
     $FanaticOrders = new FanaticOrders();
     $newOrderID =  $FanaticOrders->addOrder($_POST['code']);
     //if ($echoOrder) die('ok');
-    // else die('error');
+    //else die('error');
     die();
 }
 

@@ -12,132 +12,39 @@ class Stock extends Database
         $color = '';
         $size = '';
 
-        switch ($splitCode[0]) {  // type
-
-            case '202M':
-                $type = 'core crew sweatshirt - mens';
-                break;
-            case '202W':
-                $type = 'core crew sweatshirt - womans';
-                break;
-            case '208M':
-                $type = 'core ss tee - mens';
-                break;
-            case '208W':
-                $type = 'core ss tee (relaxed fit) - womans';
-                break;
-            case '210M':
-                $type = 'core LS tee - mens';
-                break;
-            case '211M':
-                $type = 'core hoodie - mens';
-                break;
-            case '211W':
-                $type = 'core hoodie (relaxed fit) - womans';
-                break;
-            case '212M':
-                $type = 'core sweat short - mens';
-                break;
-            case '221M':
-                $type = 'core jogger - mens';
-                break;
+        //      test type
+        $sql = <<<EOD
+            SELECT id, newCode, oldCode, type
+            FROM stockCodes_type
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $res = $stm->execute();
+        while ($row = $res->fetchArray()) {
+            if ($splitCode[0] == $row['newCode']) $type = $row['type'];
         }
 
-        switch ($splitCode[1]) { // color
-            case '590F':
-                $color = 'aqua / new aqua';
-                break;
-            case '127A':
-                $color = 'black / black';
-                break;
-            case '4034':
-                $color = 'brown / classic brown';
-                break;
-            case '2854':
-                $color = 'claret / Rhododendron';
-                break;
-            case '0565':
-                $color = 'dark green / dark green';
-                break;
-            case '008N':
-                $color = 'game red / samba';
-                break;
-            case '0599':
-                $color = 'gold / yellow gold';
-                break;
-            case '008O': // O is NOT a zero 
-                $color = 'kelly green / jolly green';
-                break;
-            case '00R9':
-                $color = 'khaki / safari';
-                break;
-            case 'EX53':
-                $color = 'navy / maritime navy';
-                break;
-            case '008R':
-                $color = 'orange / orangeade';
-                break;
-            case '9117':
-                $color = 'pink / silver pink';
-                break;
-            case '0501':
-                $color = 'purple / dark purple';
-                break;
-            case '00E6':
-                $color = 'purple rose / purple rose';
-                break;
-            case '0484':
-                $color = 'uniform red / athletic red';
-                break;
-            case '861G':
-                $color = 'royal / blue chip';
-                break;
-            case '008S':
-                $color = 'sky / boy blue';
-                break;
-            case '00U2':
-                $color = 'sports grey / sports grey heather';
-                break;
-            case '1811':
-                $color = 'teal / active blue';
-                break;
-            case '0042':
-                $color = 'white / white';
-                break;
+        //      test color
+        $sql = <<<EOD
+            SELECT id, newCode, oldCode, color
+            FROM stockCodes_color
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $res = $stm->execute();
+        while ($row = $res->fetchArray()) {
+            if ($splitCode[1] == $row['newCode']) $color = $row['color'];
         }
 
-        switch ($splitCode[2]) { //size
-            case 'XS0':
-                $size = 'XS';
-                break;
-            case 'S00':
-                $size = 'S';
-                break;
-            case 'M00':
-                $size = 'M';
-                break;
-            case 'L00':
-                $size = 'L';
-                break;
-            case 'XL0':
-                $size = 'XL';
-                break;
-            case '2XL':
-                $size = '2XL';
-                break;
-            case '3XL':
-                $size = '3XL';
-                break;
-            case '4XL':
-                $size = '4XL';
-                break;
-            case '5XL':
-                $size = '5XL';
-                break;
-            case '6XL':
-                $size = '6XL';
-                break;
+        //      test size
+        $sql = <<<EOD
+            SELECT id, code, size
+            FROM stockCodes_size
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $res = $stm->execute();
+        while ($row = $res->fetchArray()) {
+            if ($splitCode[2] == $row['code']) $size = $row['size'];
         }
+
 
         if ($type == '') die('cant parse type');
         if ($color == '') die('cat parse color');
@@ -393,47 +300,69 @@ class Stock extends Database
 
     function getTypes(): array
     {
-        return [
-            'core crew sweatshirt - mens',
-            'core crew sweatshirt - womans',
-            'core ss tee - mens',
-            'core ss tee (relaxed fit) - womans',
-            'core LS tee - mens',
-            'core hoodie - mens',
-            'core hoodie (relaxed fit) - womans',
-            'core sweat short - mens',
-            'core jogger - mens'
-        ];
+        $sql = <<<EOD
+            SELECT id, newCode, oldCode, type
+            FROM stockCodes_type
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $res = $stm->execute();
+
+        $types = [];
+        while ($row = $res->fetchArray()) {
+            $newType = array(
+                'id' => $row['id'],
+                'newCode' => $row['newCode'],
+                'oldCode' => $row['oldCode'],
+                'type' => $row['type']
+            );
+            array_push($types, $newType);
+        }
+
+        return $types;
     }
 
     function getSizes(): array
     {
-        return ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'];
+        $sql = <<<EOD
+            SELECT id, code, size
+            FROM stockCodes_size
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $res = $stm->execute();
+
+        $sizes = [];
+        while ($row = $res->fetchArray()) {
+            $newSize = array(
+                'id' => $row['id'],
+                'code' => $row['code'],
+                'size' => $row['size']
+            );
+            array_push($sizes, $newSize);
+        }
+
+        return $sizes;
     }
 
     function getColors(): array
     {
-        return [
-            'aqua / new aqua',
-            'black / black',
-            'brown / classic brown',
-            'claret / Rhododendron',
-            'dark green / dark green',
-            'game red / samba',
-            'gold / yellow gold',
-            'kelly green / jolly green',
-            'khaki / safari',
-            'navy / maritime navy',
-            'orange / orangeade',
-            'pink / silver pink',
-            'purple / dark purple',
-            'purple rose / purple rose',
-            'uniform red / athletic red',
-            'royal / blue chip',
-            'sky / boy blue',
-            'sports grey / sports grey heather',
-            'teal / active blue',
-            'white / white'
-        ];
+        $sql = <<<EOD
+            SELECT id, newCode, oldCode, color
+            FROM stockCodes_color
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $res = $stm->execute();
+
+        $colors = [];
+        while ($row = $res->fetchArray()) {
+            $newColor = array(
+                'id' => $row['id'],
+                'newCode' => $row['newCode'],
+                'oldCode' => $row['oldCode'],
+                'color' => $row['color'],
+            );
+            array_push($colors, $newColor);
+        }
+
+        return $colors;
     }
 }

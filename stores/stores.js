@@ -1,13 +1,8 @@
-// var resultContainer = document.getElementById("qr-reader-results");
-// var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", {
-//   fps: 10,
-//   qrbox: 250,
-// });
 const html5QrCode = new Html5Qrcode("qr-reader");
 const config = { fps: 10, qrbox: { width: 130, height: 130 } };
 
 searchStock();
-//html5QrcodeScanner.render(onScanSuccess);
+
 let addOrRemove = "add";
 
 function addStockButton() {

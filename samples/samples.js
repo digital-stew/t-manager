@@ -44,7 +44,7 @@ async function selectSample(rowID) {
   // window.history.pushState({}, "", newUrl);
 }
 
-//============== sample data show (right side) =================
+//============== sample data show =================
 // initialize global variables
 let imageNumber = 0; // what image to show
 let images; // array to hold image names as strings

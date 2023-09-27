@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,11 +22,14 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
     <div>
         <div style="height: min-content;">
             <h1>Admin</h1>
-            <button onclick="replaceElement('adminView','/admin/users.php')">Users</button>
             <hr>
         </div>
-        <section id="adminView">
-            <!-- placeholder -->
+        <section style="display: flex; flex-wrap: wrap;gap: 2rem;justify-content: center;">
+
+            <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/users.php'; ?>
+            <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_type.php'; ?>
+            <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_color.php'; ?>
+            <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_size.php'; ?>
         </section>
     </div>
 

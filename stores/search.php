@@ -1,8 +1,8 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
+
 $Stock = new Stock();
 $searchResults = $Stock->search($_GET['color'], $_GET['size'], $_GET['type'], $_GET['location']);
-//echo $searchResults;
 ?>
 
 <?php foreach ($searchResults as $result) : ?>

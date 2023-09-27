@@ -20,7 +20,7 @@ if (isset($_POST['removeImage']) && isset($_GET["id"])) {
 }
 if (isset($_POST['delete']) && isset($_GET["id"])) {
     $res = $Sample->remove($_GET['id']);
-    if ($res) header('Refresh:0 url=/samples?flashUser=Sample Deleted');
+    if ($res) header('location: /samples?flashUser=Sample Deleted');
     die();
 }
 
@@ -73,7 +73,7 @@ if (isset($_POST['delete']) && isset($_GET["id"])) {
                 <button type="submit" name="update">Update</button>
                 <button type="button" onclick="closeModal();">Close</button>
                 <h4></h4>
-                <button type="submit" name="delete">Delete</button>
+                <button type="submit" onclick="return confirm('This will permanently delete this sample')" name="delete">Delete</button>
             </div>
 
         </section>

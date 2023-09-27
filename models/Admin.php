@@ -76,21 +76,18 @@ class Admin extends Database
             )
         EOD;
 
-        try {
-            $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, strtolower($userName), SQLITE3_TEXT);
-            $stm->bindValue(2, $email, SQLITE3_TEXT);
-            $stm->bindValue(3, $department, SQLITE3_TEXT);
-            $stm->bindValue(4, $userLevel, SQLITE3_TEXT);
-            $stm->bindValue(5, password_hash($password, PASSWORD_BCRYPT), SQLITE3_TEXT);
-            $res = $stm->execute();
-            if ($res) return true;
-        } catch (Exception $e) {
-            return false;
-        }
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, strtolower($userName), SQLITE3_TEXT);
+        $stm->bindValue(2, $email, SQLITE3_TEXT);
+        $stm->bindValue(3, $department, SQLITE3_TEXT);
+        $stm->bindValue(4, $userLevel, SQLITE3_TEXT);
+        $stm->bindValue(5, password_hash($password, PASSWORD_BCRYPT), SQLITE3_TEXT);
+        $res = $stm->execute();
+        if ($res) return true;
+        else return false;
     }
 
-    function editUser($id, $email, $department, $userLevel)
+    function editUser(string $id, string $email, string $department, string $userLevel): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
@@ -101,21 +98,19 @@ class Admin extends Database
         WHERE id = ?
         EOD;
 
-        try {
-            $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, $email, SQLITE3_TEXT);
-            $stm->bindValue(2, $department, SQLITE3_TEXT);
-            $stm->bindValue(3, $userLevel, SQLITE3_TEXT);
-            $stm->bindValue(4, $id, SQLITE3_TEXT);
-            $res = $stm->execute();
-            if ($res) return true;
-        } catch (Exception $e) {
-            return false;
-        }
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $email, SQLITE3_TEXT);
+        $stm->bindValue(2, $department, SQLITE3_TEXT);
+        $stm->bindValue(3, $userLevel, SQLITE3_TEXT);
+        $stm->bindValue(4, $id, SQLITE3_TEXT);
+        $res = $stm->execute();
+        if ($res) return true;
+        else return false;
     }
 
     function adminChangeUserPassword($id, $password): bool
     {
+        //working?
         $Auth = new Auth();
         $Auth->isAdmin();
 
@@ -125,29 +120,154 @@ class Admin extends Database
             WHERE id = ?
         EOD;
 
-        try {
-            $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, password_hash($password, PASSWORD_BCRYPT), SQLITE3_TEXT);
-            $stm->bindValue(2, $id, SQLITE3_TEXT);
-            $res = $stm->execute();
-            return true;
-        } catch (Exception $e) {
-            return false;
-        }
+
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, password_hash($password, PASSWORD_BCRYPT), SQLITE3_TEXT);
+        $stm->bindValue(2, $id, SQLITE3_TEXT);
+        $res = $stm->execute();
+        if ($res) return true;
+        else return false;
     }
 
     function deleteUser($id): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
-        try {
-            $stm = $this->db->prepare("DELETE FROM users WHERE id = ?");
-            $stm->bindValue(1, $id, SQLITE3_TEXT);
-            $stm->execute();
-            //header('Location: /admin');
-            return true;
-        } catch (Exception $e) {
-            return false;
-        }
+
+        $sql = "DELETE FROM users WHERE id = ?";
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $id, SQLITE3_TEXT);
+        $stm->execute();
+        if ($stm) return true;
+        else return false;
+    }
+
+    function addStockColor(string $newCode, string $oldCode, string $color): bool
+    {
+        $Auth = new Auth();
+        $Auth->isAdmin();
+
+        if (!isset($newCode) || $newCode == '') return false;
+        if (!isset($oldCode) || $oldCode == '') return false;
+        if (!isset($color) || $color == '') return false;
+
+        $sql = <<<EOD
+            INSERT INTO stockCodes_color
+            (
+                newCode,
+                oldCode,
+                color
+            )
+            VALUES
+            (
+                ?,?,?
+            )
+        EOD;
+
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $newCode, SQLITE3_TEXT);
+        $stm->bindValue(2, $oldCode, SQLITE3_TEXT);
+        $stm->bindValue(3, $color, SQLITE3_TEXT);
+        $res = $stm->execute();
+        if ($res) return true;
+        else return false;
+    }
+
+    function deleteStockColor(string $id): bool
+    {
+        $Auth = new Auth();
+        $Auth->isAdmin();
+
+        $sql = "DELETE FROM stockCodes_color WHERE id = ?";
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $id, SQLITE3_TEXT);
+        $stm->execute();
+        if ($stm) return true;
+        else return false;
+    }
+
+    function addStockType(string $newCode, string $oldCode, string $type): bool
+    {
+        $Auth = new Auth();
+        $Auth->isAdmin();
+
+        if (!isset($newCode) || $newCode == '') return false;
+        if (!isset($oldCode) || $oldCode == '') return false;
+        if (!isset($type) || $type == '') return false;
+
+        $sql = <<<EOD
+            INSERT INTO stockCodes_type
+            (
+                newCode,
+                oldCode,
+                type
+            )
+            VALUES
+            (
+                ?,?,?
+            )
+        EOD;
+
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $newCode, SQLITE3_TEXT);
+        $stm->bindValue(2, $oldCode, SQLITE3_TEXT);
+        $stm->bindValue(3, $type, SQLITE3_TEXT);
+        $res = $stm->execute();
+        if ($res) return true;
+        else return false;
+    }
+
+    function deleteStockType(string $id): bool
+    {
+        $Auth = new Auth();
+        $Auth->isAdmin();
+
+        $sql = "DELETE FROM stockCodes_type WHERE id = ?";
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $id, SQLITE3_TEXT);
+        $stm->execute();
+        if ($stm) return true;
+        else return false;
+    }
+
+    function addStockSize(string $code, string $size): bool
+    {
+        $Auth = new Auth();
+        $Auth->isAdmin();
+
+        if (!isset($code) || $code == '') return false;
+        if (!isset($size) || $size == '') return false;
+
+        $sql = <<<EOD
+            INSERT INTO stockCodes_size
+            (
+                code,
+                size
+            )
+            VALUES
+            (
+                ?,?
+            )
+        EOD;
+
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $code, SQLITE3_TEXT);
+        $stm->bindValue(2, $size, SQLITE3_TEXT);
+        $res = $stm->execute();
+        if ($res) return true;
+        else return false;
+    }
+
+    function deleteStockSize(string $id): bool
+    {
+        $Auth = new Auth();
+        $Auth->isAdmin();
+
+        $sql = "DELETE FROM stockCodes_size WHERE id = ?";
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $id, SQLITE3_TEXT);
+        $stm->execute();
+        if ($stm) return true;
+        else return false;
     }
 }

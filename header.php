@@ -1,6 +1,7 @@
 <?php
 session_start();
-
+//define("ERROR_MSG", 'ERROR!! contact admin if problem persists');
+//const ERROR_MSG = 'ERROR!! contact admin if problem persists';
 ?>
 <div id="burgerMenu" class="burgerMenu" onclick="toggleNavbar();">
     <span></span>

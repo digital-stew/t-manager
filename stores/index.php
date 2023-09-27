@@ -38,63 +38,61 @@ $colors = $Stock->getColors();
         <hr>
     </div>
 
-    <div style="margin-inline: auto;margin-bottom: 1rem;text-align: center;">
-        <label>color
-            <select name="colorSelect" id="colorSelect" onchange="searchStock();">
-                <option value="all">all</option>
-                <?php foreach ($colors as $color) : ?>
-                    <option value="<?= $color ?>"><?= $color ?></option>
-                <?php endforeach ?>
-            </select>
-        </label>
+    <section>
+        <div style="margin-inline: auto;margin-bottom: 1rem;text-align: center;">
+            <label>color
+                <select name="colorSelect" id="colorSelect" onchange="searchStock();">
+                    <option value="all">all</option>
+                    <?php foreach ($colors as $color) : ?>
+                        <option value="<?= $color['color'] ?>"><?= $color['color'] ?></option>
+                    <?php endforeach ?>
+                </select>
+            </label>
 
-        <label>size
-            <select name="sizeSelect" id="sizeSelect" onchange="searchStock();">
-                <option value="all">all</option>
-                <?php foreach ($sizes as $size) : ?>
-                    <option value="<?= $size ?>"><?= $size ?></option>
-                <?php endforeach ?>
-            </select>
-        </label>
+            <label>size
+                <select name="sizeSelect" id="sizeSelect" onchange="searchStock();">
+                    <option value="all">all</option>
+                    <?php foreach ($sizes as $size) : ?>
+                        <option value="<?= $size['size'] ?>"><?= $size['size'] ?></option>
+                    <?php endforeach ?>
+                </select>
+            </label>
 
-        <label>type
-            <select name="typeSelect" id="typeSelect" onchange="searchStock();">
-                <option value="all">all</option>
-                <?php foreach ($types as $type) : ?>
-                    <option value="<?= $type ?>"><?= $type ?></option>
-                <?php endforeach ?>
-            </select>
-        </label>
+            <label>type
+                <select name="typeSelect" id="typeSelect" onchange="searchStock();">
+                    <option value="all">all</option>
+                    <?php foreach ($types as $typeArray) : ?>
+                        <option value="<?= $typeArray['type'] ?>"><?= $typeArray['type'] ?></option>
+                    <?php endforeach ?>
+                </select>
+            </label>
 
-        <label>location
-            <select name="locationSelect" id="locationSelect" onchange="searchStock();">
-                <option value="all">all</option>
-                <?php foreach ($locations as $location) : ?>
-                    <option value="<?= $location ?>"><?= $location ?></option>
-                <?php endforeach ?>
-            </select>
-        </label>
+            <label>location
+                <select name="locationSelect" id="locationSelect" onchange="searchStock();">
+                    <option value="all">all</option>
+                    <?php foreach ($locations as $location) : ?>
+                        <option value="<?= $location ?>"><?= $location ?></option>
+                    <?php endforeach ?>
+                </select>
+            </label>
+        </div>
 
-    </div>
-
-
-
-
-    <table class="border" style="align-self: flex-start;">
-        <thead>
-            <tr>
-                <th>code</th>
-                <th>color</th>
-                <th>size</th>
-                <th>type</th>
-                <th>location</th>
-                <th>amount</th>
-            </tr>
-        </thead>
-        <tbody id="searchResults">
-            <!-- placeholder -->
-        </tbody>
-    </table>
+        <table class="border" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>code</th>
+                    <th>color</th>
+                    <th>size</th>
+                    <th>type</th>
+                    <th>location</th>
+                    <th>amount</th>
+                </tr>
+            </thead>
+            <tbody id="searchResults">
+                <!-- placeholder -->
+            </tbody>
+        </table>
+    </section>
 
     <dialog id="scannerModal" style="text-align: center;">
         <div id="qr-reader" style="width: 200px"></div>
