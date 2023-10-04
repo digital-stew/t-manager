@@ -13,6 +13,10 @@ class Auth extends Database
         if (password_verify($password, $user['password'])) {
             $_SESSION['userName'] = $user['user'];
             $_SESSION['userLevel'] = $user['userlevel'];
+
+            //set location
+            $_SESSION['location'] = "hawkins";
+
             return "login=ok";
         } else {
             return "login=false";

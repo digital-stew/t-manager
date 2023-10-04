@@ -43,7 +43,7 @@ class FanaticOrders extends Database
 
     function getStockCode(string $code)
     {
-
+        // returns 208W861G
         $splitCode = explode('-', $code);
 
         $type = '';
@@ -90,6 +90,23 @@ class FanaticOrders extends Database
         $parsedCode = $this->parseCode($code);
 
         $sql = <<<EOD
+            SELECT *
+            FROM forders
+            WHERE code = ?;
+        EOD;
+
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $parsedCode['orderCode'], SQLITE3_TEXT);
+        //$stm->bindValue(2, $parsedCode['orderName'], SQLITE3_TEXT);
+        $res = $stm->execute();
+        $row = $res->fetchArray();
+
+
+        $tmp = 0;
+
+        if ($row) return (string)$row['id'];
+
+        $sql = <<<EOD
             INSERT INTO forders (
                 code,
                 name,
@@ -123,7 +140,7 @@ class FanaticOrders extends Database
     {
 
         $sql = <<<EOD
-            SELECT forders.*, forders_sizes.amount, forders_sizes.size
+            SELECT forders.*, forders_sizes.amount, forders_sizes.size, forders_sizes.picked
             FROM forders
                 LEFT JOIN forders_sizes
                 ON forders.id = forders_sizes.forder_id
@@ -140,10 +157,12 @@ class FanaticOrders extends Database
         $order['status'] = $firstRes['status'];
 
         $order['sizes'] = [$firstRes['size'] => $firstRes['amount']];
+        $order['picked'] = [$firstRes['size'] => $firstRes['picked']];
 
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
 
             $order['sizes'] += [$row['size'] => $row['amount']];
+            $order['picked'] += [$row['size'] => $row['picked']];
         }
         return $order;
     }
@@ -153,11 +172,11 @@ class FanaticOrders extends Database
         $sql = <<<EOD
             SELECT *
             FROM forders
-            WHERE status  = ?;
+            
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $status, SQLITE3_TEXT);
+        //$stm->bindValue(1, $status, SQLITE3_TEXT);
         $res = $stm->execute();
 
         $searchResults = [];
@@ -174,9 +193,82 @@ class FanaticOrders extends Database
         return $searchResults;
     }
 
-    function pickOrder()
+    function pickSize($orderId, $size, $amount, $stockCode, $userLocation)
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
+
+        //get the entry about to be edited
+        $sql = <<<EOD
+            SELECT id, forder_id, size, amount, status, picked
+            FROM forders_sizes
+            WHERE forder_id = ? AND size = ?;
+        EOD;
+
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $orderId, SQLITE3_TEXT);
+        $stm->bindValue(2, $size, SQLITE3_TEXT);
+        $res = $stm->execute();
+        $currentEntry = $res->fetchArray();
+
+        //check if can take that amount
+        if ($currentEntry['amount'] - $amount < 0) return 'below zero';
+
+        //set stock status
+        $status = $currentEntry['status'];
+        if ($currentEntry['amount'] == $currentEntry['picked'] + $amount) $status = 'complete';
+        if ($currentEntry['amount'] > $currentEntry['picked'] + $amount) $status = 'short';
+
+        //update the order
+        $sql = <<<EOD
+            UPDATE forders_sizes
+            SET picked = ?, status = ?
+            WHERE id = ?;
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $currentEntry['picked'] + $amount);
+        $stm->bindValue(2, $status);
+        $stm->bindValue(3, $currentEntry['id'], SQLITE3_TEXT);
+        $res = $stm->execute();
+
+        //remove the stock
+
+        $Stock = new Stock();
+        $Stock->removeStock($stockCode, $userLocation, $amount);
+
+
+        $this->updateOrderStatus($currentEntry['forder_id']);
+
+        if ($res) return 'ok';
+    }
+
+    function updateOrderStatus($id)
+    {
+        $status = 'pending';
+
+        //get the order
+        $order = $this->getOrder($id);
+
+        //check for short
+        foreach (array_keys($order['sizes']) as $sizeValue) {
+            if ($order['sizes'][$sizeValue] - $order['picked'][$sizeValue] > 0) $status = 'short';
+        };
+
+        //check for complete
+        $allComplete = true;
+        foreach (array_keys($order['sizes']) as $sizeValue) {
+            if ((int)$order['sizes'][$sizeValue] - (int)$order['picked'][$sizeValue] != 0) $allComplete = false;
+        };
+        if ($allComplete) $status = 'complete';
+
+        $sql = <<<EOD
+            UPDATE forders
+            SET status = ?
+            WHERE id = ?;
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $status);
+        $stm->bindValue(2, $id, SQLITE3_TEXT);
+        $res = $stm->execute();
     }
 }

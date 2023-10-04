@@ -54,6 +54,6 @@ $stockCode = $FanaticOrders->getStockCode($order['code']);
             </tr>
         </tbody>
     </table>
-    <button type="button" onclick="closeModal();">pick order</button> <br>
+    <button type="button" onclick="window.location = '/fanaticOrders/pickOrder.php?id=<?= $order['id'] ?>';">pick order</button> <br>
     <button type="button" onclick="closeModal();">cancel</button>
 </section>

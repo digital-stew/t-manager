@@ -32,6 +32,8 @@ async function addOrderToPick(code) {
     body: formData,
   });
   const res = await req.text();
-  if (res === "ok") window.location = "/fanaticOrders/pickOrder.php";
   console.log(res);
+  if (parseFloat(res) == res) {
+    window.location = "/fanaticOrders/pickOrder.php?id=" + res;
+  }
 }
