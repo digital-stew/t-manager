@@ -37,4 +37,13 @@ class Auth extends Database
         die('not admin');
         return false;
     }
+    function getLocations(): array
+    {
+        return ['hawkins', 'fleetwood', 'cornwall'];
+    }
+    function setLocation($newLocation)
+    {
+        $this->isLoggedIn();
+        $_SESSION['location'] = $newLocation;
+    }
 }

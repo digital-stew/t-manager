@@ -1,6 +1,8 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Database.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
+
 class Admin extends Database
 {
 
@@ -83,6 +85,8 @@ class Admin extends Database
         $stm->bindValue(4, $userLevel, SQLITE3_TEXT);
         $stm->bindValue(5, password_hash($password, PASSWORD_BCRYPT), SQLITE3_TEXT);
         $res = $stm->execute();
+        $Log = new Log();
+        $Log->add("ADD", "user", null, $userName);
         if ($res) return true;
         else return false;
     }
@@ -104,6 +108,8 @@ class Admin extends Database
         $stm->bindValue(3, $userLevel, SQLITE3_TEXT);
         $stm->bindValue(4, $id, SQLITE3_TEXT);
         $res = $stm->execute();
+        $Log = new Log();
+        $Log->add("EDIT", "user", $id);
         if ($res) return true;
         else return false;
     }
@@ -125,6 +131,8 @@ class Admin extends Database
         $stm->bindValue(1, password_hash($password, PASSWORD_BCRYPT), SQLITE3_TEXT);
         $stm->bindValue(2, $id, SQLITE3_TEXT);
         $res = $stm->execute();
+        $Log = new Log();
+        $Log->add("EDIT", "user", $id, "change password");
         if ($res) return true;
         else return false;
     }
@@ -138,6 +146,8 @@ class Admin extends Database
         $stm = $this->db->prepare($sql);
         $stm->bindValue(1, $id, SQLITE3_TEXT);
         $stm->execute();
+        $Log = new Log();
+        $Log->add("DELETE", "user", $id);
         if ($stm) return true;
         else return false;
     }
@@ -169,6 +179,8 @@ class Admin extends Database
         $stm->bindValue(2, $oldCode, SQLITE3_TEXT);
         $stm->bindValue(3, $color, SQLITE3_TEXT);
         $res = $stm->execute();
+        $Log = new Log();
+        $Log->add("ADD", "stock", null, "color: " . $color);
         if ($res) return true;
         else return false;
     }
@@ -182,6 +194,8 @@ class Admin extends Database
         $stm = $this->db->prepare($sql);
         $stm->bindValue(1, $id, SQLITE3_TEXT);
         $stm->execute();
+        $Log = new Log();
+        $Log->add("DELETE", "stock", $id, "color");
         if ($stm) return true;
         else return false;
     }
@@ -213,6 +227,8 @@ class Admin extends Database
         $stm->bindValue(2, $oldCode, SQLITE3_TEXT);
         $stm->bindValue(3, $type, SQLITE3_TEXT);
         $res = $stm->execute();
+        $Log = new Log();
+        $Log->add("ADD", "stock", null, "type: " . $type);
         if ($res) return true;
         else return false;
     }
@@ -226,6 +242,8 @@ class Admin extends Database
         $stm = $this->db->prepare($sql);
         $stm->bindValue(1, $id, SQLITE3_TEXT);
         $stm->execute();
+        $Log = new Log();
+        $Log->add("DELETE", "stock", $id, "type");
         if ($stm) return true;
         else return false;
     }
@@ -254,6 +272,8 @@ class Admin extends Database
         $stm->bindValue(1, $code, SQLITE3_TEXT);
         $stm->bindValue(2, $size, SQLITE3_TEXT);
         $res = $stm->execute();
+        $Log = new Log();
+        $Log->add('ADD', 'stock', null, "size: " . $size);
         if ($res) return true;
         else return false;
     }
@@ -267,6 +287,8 @@ class Admin extends Database
         $stm = $this->db->prepare($sql);
         $stm->bindValue(1, $id, SQLITE3_TEXT);
         $stm->execute();
+        $Log = new Log();
+        $Log->add("DELETE", "stock", $id, "size");
         if ($stm) return true;
         else return false;
     }

@@ -36,9 +36,7 @@ $phpLines = shell_exec("find . -type f -name '*.php' | xargs wc -l | awk '{ tota
 
         <section class="border" style="padding: 2rem;">
             <h4>not operational ...yet</h4>
-            <p>auto location (when log in?)</p>
             <p>samples - add pictures directly from app so phones don't get cluttered up with pictures</p>
-            <p>full logging</p>
             <p>user options - password change ...etc</p>
             <p>clicking modal backdrop closes the modal</p>
             <p>"color" yes i know. spell check shouts at me will change when complete</p>
@@ -52,9 +50,10 @@ $phpLines = shell_exec("find . -type f -name '*.php' | xargs wc -l | awk '{ tota
         </section>
         <section class="border" style="padding: 2rem;">
             <h4>last update</h4>
-            <p>pick orders</p>
+            <p>location</p>
+            <p>logging</p>
         </section>
-        <p>shit this is getting big: <?= $phpLines ?> lines of php code!!</p>
+        <!-- <p>shit this is getting big: <?= $phpLines ?> lines of php code!!</p> -->
     </div>
 
 </body>

@@ -15,6 +15,7 @@ if (isset($_POST["update"]) && isset($_GET["id"])) {
     die();
 }
 if (isset($_POST['removeImage']) && isset($_GET["id"])) {
+    //die($_POST['removeImage']);
     $res = $Sample->removeImage($_POST['removeImage']);
     die();
 }
@@ -32,6 +33,7 @@ if (isset($_POST['delete']) && isset($_GET["id"])) {
 
 
             <div class="newBox">
+                <input type="hidden" id="id" value="<?= $sample['id'] ?>">
                 <h4>Info</h4>
                 <h3>Name</h3>
                 <p><input type="text" name="name" placeholder="Empty" value="<?= $sample['name'] ?>"></p>
@@ -64,7 +66,7 @@ if (isset($_POST['delete']) && isset($_GET["id"])) {
                 <button type="button" style="left: 0;" class="imageButton" onclick="imageDown()">&lt;</button>
                 <img id="modal_sampleImage" src="/assets/images/samples/webp/<?= $sample['images'][0] ?>" alt="sample" style="border-radius: 10px;width: 80%;margin: auto;">
                 <button type="button" style="right: 0;" class="imageButton" onclick="imageUp()">&gt;</button>
-                <button type="button" onclick="confirm('This will permanently delete this image') && deleteImage()">remove image</button>
+                <button type="button" onclick="return confirm('This will permanently delete this image') && deleteImage()">remove image</button>
             </div>
             <div class="newBox">
                 <h4>Add files</h4>

@@ -28,7 +28,7 @@ function onScanFail() {
 
 async function onScanSuccess(decodedText, decodedResult) {
   closeCamModal();
-  stockLocation = document.getElementById("addRemoveLocationSelect").value;
+  stockLocation = document.getElementById("currentLocationSelect").value;
   showModal(
     `/stores/${addOrRemove}.php?${addOrRemove}=true&code=${decodedText}&location=${stockLocation}`
   );

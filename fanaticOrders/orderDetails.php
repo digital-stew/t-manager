@@ -1,6 +1,9 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/FanaticOrders.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
+session_start();
+$Auth = new Auth();
 
 $FanaticOrders = new FanaticOrders();
 $order = $FanaticOrders->getOrder($_GET['id']);
@@ -22,7 +25,7 @@ $stockCode = $FanaticOrders->getStockCode($order['code']);
     <table class="border" style="text-align: center;margin-inline: auto;width: 100%;">
         <thead>
             <tr>
-                <th>garment</th>
+                <th><?= $order['garment'] ?></th>
                 <?php foreach (array_keys($order['sizes']) as $size) : ?>
                     <th> <?= $size ?> </th>
                 <?php endforeach ?>
@@ -30,9 +33,15 @@ $stockCode = $FanaticOrders->getStockCode($order['code']);
         </thead>
         <tbody>
             <tr>
-                <td><?= $order['garment'] ?></td>
+                <td>ordered</td>
                 <?php foreach (array_keys($order['sizes']) as $size) : ?>
                     <td> <?= $order['sizes'][$size] ?> </td>
+                <?php endforeach ?>
+            </tr>
+            <tr>
+                <td>picked</td>
+                <?php foreach (array_keys($order['picked']) as $size) : ?>
+                    <td> <?= $order['picked'][$size] ?> </td>
                 <?php endforeach ?>
             </tr>
             <tr>
@@ -54,6 +63,8 @@ $stockCode = $FanaticOrders->getStockCode($order['code']);
             </tr>
         </tbody>
     </table>
-    <button type="button" onclick="window.location = '/fanaticOrders/pickOrder.php?id=<?= $order['id'] ?>';">pick order</button> <br>
+    <?php if (isset($_SESSION['userName'])) : ?>
+        <button type="button" onclick="window.location = '/fanaticOrders/pickOrder.php?id=<?= $order['id'] ?>';">pick order</button> <br>
+    <?php endif ?>
     <button type="button" onclick="closeModal();">cancel</button>
 </section>

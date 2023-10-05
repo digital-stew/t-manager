@@ -1,13 +1,14 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 
 class sample extends Database
 {
     function get(string $id): array| bool
     {
         $sql = <<<EOD
-        SELECT samples.*, sample_images.webp_filename
+        SELECT samples.*, sample_images.webp_filename, sample_images.original_filename
         FROM samples
             LEFT JOIN sample_images
             ON samples.rowid = sample_images.sample_id
@@ -21,11 +22,14 @@ class sample extends Database
             $sample = $res->fetchArray(SQLITE3_ASSOC); // get all sample details including first image
 
             $sample['images'] = array(); // create array to hold image names
+            $sample['originalNames'] = array(); // create array to hold image names
 
             array_push($sample['images'], $sample['webp_filename']); // push the first image
+            array_push($sample['originalNames'], $sample['original_filename']); // push the first image
 
             while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
                 array_push($sample['images'], $row['webp_filename']); // push the rest
+                array_push($sample['originalNames'], $row['original_filename']); // push the rest
             }
 
             return array(
@@ -40,6 +44,7 @@ class sample extends Database
                 'notes' => $sample['notes'],
                 'printer' => $sample['printer'],
                 'images' => $sample['images'],
+                'originalNames' => $sample['originalNames'],
             );
         } catch (Exception $e) {
             return false;
@@ -163,13 +168,15 @@ class sample extends Database
                 $i++;
             }
             //header('Location: /samples?id=' . $id);
+            $Log = new Log();
+            $Log->add("EDIT", "sample", $id, $number);
             return true;
         } catch (Exception $e) {
             return false;
         }
     }
 
-    function add(string $name, string $number, string $otherRef, string $frontData, string $backData, string $otherData, string $notes, string $userName, array $files): bool
+    function add(string $name, string $number, string $otherRef, string $frontData, string $backData, string $otherData, string $notes, string $userName, $files): bool
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
@@ -241,6 +248,8 @@ class sample extends Database
                 $i++;
             }
             header('Location: /samples?id=' . $lastID);
+            $Log = new Log();
+            $Log->add("ADD", "sample", $lastID, $number);
             return true;
         } catch (Exception $e) {
             return false;
@@ -256,6 +265,8 @@ class sample extends Database
             $stm->bindValue(1, $id, SQLITE3_TEXT);
             $stm->execute();
             //header('Location: /samples');
+            $Log = new Log();
+            $Log->add("DELETE", "sample", $id);
             return true;
         } catch (Exception $e) {
             return false;
@@ -270,6 +281,8 @@ class sample extends Database
             $stm = $this->db->prepare("DELETE FROM sample_images WHERE webp_filename = ?");
             $stm->bindValue(1, $image, SQLITE3_TEXT);
             $stm->execute();
+            $Log = new Log();
+            $Log->add("DELETE", "sample", null, 'image: ' . $image);
             return true;
         } catch (Exception $e) {
             return false;

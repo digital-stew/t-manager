@@ -2,6 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Database.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 
 class FanaticOrders extends Database
 {
@@ -81,12 +82,11 @@ class FanaticOrders extends Database
         return $type . $color;
     }
 
-    function addOrder(string $code)
+    function addOrder(string $code): string
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
 
-        //check if not in database done at database level CHANGE THIS!!
         $parsedCode = $this->parseCode($code);
 
         $sql = <<<EOD
@@ -132,7 +132,10 @@ class FanaticOrders extends Database
         if ($parsedCode['2XL'] > 0) $this->addSize($lastID, '2XL', $parsedCode['2XL']);
         if ($parsedCode['3XL'] > 0) $this->addSize($lastID, '3XL', $parsedCode['3XL']);
 
-        if ($parsedCode) return $lastID;
+        $Log = new Log();
+        $Log->add("ADD", "order", $lastID, $parsedCode['orderName']);
+
+        if ($parsedCode) return (string)$lastID;
         else return false;
     }
 
@@ -236,6 +239,8 @@ class FanaticOrders extends Database
         $Stock = new Stock();
         $Stock->removeStock($stockCode, $userLocation, $amount);
 
+        $Log = new Log();
+        $Log->add("PICK", "order", $orderId, $size);
 
         $this->updateOrderStatus($currentEntry['forder_id']);
 

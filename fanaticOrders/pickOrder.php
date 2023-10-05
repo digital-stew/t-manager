@@ -1,5 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/FanaticOrders.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
+
 //$colors = $Stock->getColors();
 
 if (isset($_POST['code'])) {
@@ -44,7 +46,8 @@ if (isset($_POST['skipPick'])) {
 
 <body>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php';
-
+    $Auth = new Auth();
+    $Auth->isLoggedIn();
     $FanaticOrders = new FanaticOrders();
     $Stock = new Stock();
 
@@ -163,7 +166,7 @@ if (isset($_POST['skipPick'])) {
         const json = '<?php echo json_encode($order) ?>';
 
 
-        const stockCode = "<?= $stockCode ?>";
+        const stockCode = "<?= $stockCodeP1 ?>";
     </script>
 </body>
 

@@ -1,8 +1,10 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
 
 $Stock = new Stock();
-$locations = $Stock->getLocations();
+$Auth = new Auth();
+$locations = $Auth->getLocations();
 $types = $Stock->getTypes();
 $sizes = $Stock->getSizes();
 $colors = $Stock->getColors();
@@ -28,12 +30,7 @@ $colors = $Stock->getColors();
         <?php if (isset($_SESSION['userName'])) : ?>
             <button onclick="addStockButton()">add</button>
             <button onclick="removeStockButton()">remove</button>
-            <label for="addRemoveLocationSelect">location</label>
-            <select name="addRemoveLocationSelect" id="addRemoveLocationSelect">
-                <?php foreach ($locations as $location) : ?>
-                    <option value="<?= $location ?>"><?= $location ?></option>
-                <?php endforeach ?>
-            </select>
+
         <?php endif ?>
         <hr>
     </div>

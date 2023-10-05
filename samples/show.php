@@ -7,7 +7,7 @@ $sample = $Sample->get($_GET['id']);
 $FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='width:50px;height:50px;vertical-align:middle;' >";
 ?>
 
-<section id="sampleData" style="width: 100%;" data-images='<?= json_encode($sample['images']) ?>'>
+<section id="sampleData" style="width: 100%;" data-images='<?= json_encode($sample['images']) ?>' data-originalNames='<?= json_encode($sample['originalNames']) ?>'>
 
     <?php if ($sample['images'][0] != '') : ?>
         <div class="sample_show_imageWrapper newBox border" style="margin-inline: auto; margin-block: 1rem;">
@@ -15,10 +15,11 @@ $FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='widt
                 <span id="count">1</span> <span id="imageAmount">/<?= sizeof($sample['images']) ?></span>
             </div>
             <button style="left: 0;" class="imageButton" onclick="imageDown()">&lt;</button>
-            <img id="sampleImage" src="/assets/images/samples/webp/<?= $sample['images'][0] ?>" alt="sample" style="border-radius: 10px;width: 80%;margin: auto;">
+            <img ondblclick="showFullScreenImage();" id="sampleImage" src="/assets/images/samples/webp/<?= $sample['images'][0] ?>" alt="sample" style="border-radius: 10px;width: 80%;margin: auto;">
             <button style="right: 0;" class="imageButton" onclick="imageUp()">&gt;</button>
         </div>
     <?php endif ?>
+
 
     <div style="display: flex;justify-content: center;gap: 1rem;flex-wrap: wrap;">
 
@@ -35,7 +36,7 @@ $FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='widt
 
         </div>
 
-        <div id="sampleData" class="newBox border">
+        <div id="sampleDat" class="newBox border">
             <h4>Print data</h4>
 
             <?php if (strlen($sample['frontData'])) : ?>

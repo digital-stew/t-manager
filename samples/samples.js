@@ -85,7 +85,10 @@ function imageDown() {
   // document.getElementById("modal_sampleImage").src =
   // "/assets/images/samples/webp/" + images[imageNumber];
 }
-
+function showFullScreenImage() {
+  const image = document.getElementById("sampleImage").src;
+  window.location = image;
+}
 // move clicked on sample into user view regardless of Y window position
 function moveToCenter() {
   let wrapper = document.getElementById("sampleData");
@@ -97,13 +100,15 @@ function moveToCenter() {
 
 async function deleteImage() {
   const queryParams = new URLSearchParams(window.location.search);
-  const queryID = queryParams.get("id");
+  // const queryID = queryParams.get("id");
+  const queryID = document.getElementById("id").value;
   // get link to image
-  const image = document.getElementById("sampleImage").src;
+  const image = document.getElementById("modal_sampleImage").src;
   // Split the inputString into an array of substrings
   const substrings = image.split("/");
   // Get the last result using array indexing
   const filename = substrings[substrings.length - 1];
+  console.log(filename);
 
   let formData = new FormData();
   formData.append("removeImage", filename);

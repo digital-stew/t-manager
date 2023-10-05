@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 
 class Stock extends Database
 {
@@ -176,7 +177,8 @@ class Stock extends Database
             $stm->bindValue(5, $parsedCode['size']);
             $stm->bindValue(6, $location);
             $res = $stm->execute();
-
+            $Log = new Log();
+            $Log->add("ADD", "stock", null, "code: {$code} location: {$location} amount: {$amount}");
             if ($res) return true;
         } else { // if code not exist in database
             $sql = <<<EOD
@@ -199,6 +201,8 @@ class Stock extends Database
             $stm->bindValue(5, $location);
             $stm->bindValue(6, $amount);
             $res = $stm->execute();
+            $Log = new Log();
+            $Log->add("ADD", "stock", null, "code: {$code} location: {$location} amount: {$amount}");
             if ($res) return true;
         }
 
@@ -259,7 +263,8 @@ class Stock extends Database
             $stm->bindValue(5, $location);
             $stm->execute();
         }
-
+        $Log = new Log();
+        $Log->add("REMOVE", "stock", null, "code: {$code} location: {$location} amount: {$amount}");
         if ($res) return true;
         return false;
     }
@@ -291,11 +296,6 @@ class Stock extends Database
         } else {
             return false;
         }
-    }
-
-    function getLocations(): array
-    {
-        return ['hawkins', 'fleetwood', 'cornwall'];
     }
 
     function getTypes(): array
