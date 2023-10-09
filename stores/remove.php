@@ -6,14 +6,14 @@ if (isset($_GET['remove']) && isset($_GET['code'])) {
     $html = <<<EOD
         <form action="/stores/remove.php" method="post" autocomplete="off">
             <h4>Remove stock</h4>
-            <h5>{$_GET['location']}</h5>
+            <h5>{$_SESSION['location']}</h5>
             <h5>{$_GET['code']}</h5>
             <br>
             <label>
                 amount
                 <input name="amount" type="text">
             </label>
-            <input type="hidden" name="location" value="{$_GET['location']}">
+            <input type="hidden" name="location" value="{$_SESSION['location']}">
             <input name="code" type="hidden" value="{$_GET['code']}">
             <button type="submit" style="width: 80%;">Save</button><br>
             <button type="button" onclick="closeModal();" style="width: 80%;">Cancel</button>

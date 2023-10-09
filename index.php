@@ -33,6 +33,7 @@
         </section> -->
         <section class="border" style="padding: 2rem;">
             <h4>last update</h4>
+            <p>manual stock code input</p>
             <p>full date time in log</p>
             <p>longer session times</p>
             <p>user options (click name in sidebar)</p>

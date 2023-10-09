@@ -34,6 +34,14 @@ async function onScanSuccess(decodedText, decodedResult) {
   );
 }
 
+async function manualInput() {
+  closeCamModal();
+  const code = document.getElementById("manualInputCode").value;
+  stockLocation = document.getElementById("currentLocationSelect").value;
+  showModal(
+    `/stores/${addOrRemove}.php?${addOrRemove}=true&code=${code}&location=${stockLocation}`
+  );
+}
 async function searchStock() {
   const color = document.getElementById("colorSelect").value;
   const size = document.getElementById("sizeSelect").value;
