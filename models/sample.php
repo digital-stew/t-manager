@@ -21,7 +21,7 @@ class sample extends Database
 
             $sample = $res->fetchArray(SQLITE3_ASSOC); // get all sample details including first image
 
-            $sample['images'] = array(); // create array to hold image names
+            $sample['images'] = []; // create array to hold image names
             $sample['originalNames'] = array(); // create array to hold image names
 
             array_push($sample['images'], $sample['webp_filename']); // push the first image
@@ -214,12 +214,13 @@ class sample extends Database
             //handle the files
             $i = 0; //iterator
             foreach ($files['name'] as $originalFileName) {
+                if ($originalFileName == '') continue;
                 $fileExt = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
                 $fileUUID = uniqid();
                 switch ($fileExt) {
                     case 'jpg':
                         $image = imagecreatefromjpeg($files['tmp_name'][$i]);
-                        $webpData = imagewebp($image, $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/webp/' . $fileUUID . '.webp', 100);
+                        $webpData = imagewebp($image, $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/webp/' . $fileUUID . '.webp', 50);
                         break;
                     default:
                         die('cant convert file ' . $originalFileName);
@@ -261,6 +262,11 @@ class sample extends Database
         $Auth = new Auth();
         $Auth->isLoggedIn();
         try {
+            //remove images
+            $stm = $this->db->prepare("DELETE FROM sample_images WHERE sample_id = ?");
+            $stm->bindValue(1, $id, SQLITE3_TEXT);
+            $stm->execute();
+            //remove sample
             $stm = $this->db->prepare("DELETE FROM samples WHERE rowid = ?");
             $stm->bindValue(1, $id, SQLITE3_TEXT);
             $stm->execute();
@@ -273,7 +279,7 @@ class sample extends Database
         }
     }
 
-    function removeImage(string $image): bool
+    function removeImage(string $id, string $image): bool
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();

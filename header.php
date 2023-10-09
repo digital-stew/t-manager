@@ -21,15 +21,17 @@ if (isset($_POST['newLocation'])) {
 <nav class="navbar" id="navbar">
     <?php if (isset($_SESSION['userName'])) : ?>
         <div style="display: flex;flex-direction: column;width: 100%;text-align: center;">
-            <h4>welcome <?= $_SESSION['userName'] ?></h4>
+            <a href="/user/index.php">
+                <h4>welcome <?= $_SESSION['userName'] ?></h4>
+            </a>
             <button id="logoutButton" onclick="logout()">logout</button>
 
             <form action="/header.php" method="post">
                 <label for="currentLocationSelect">set location</label>
                 <select onchange="this.form.submit()" name="newLocation" id="currentLocationSelect" style="width: 100%;text-align: center;">
-                    <option value="<?= $_SESSION['location'] ?>"><?= $_SESSION['location'] ?></option>
+                    <!-- <option value="<?= $_SESSION['location'] ?>"><?= $_SESSION['location'] ?></option> -->
                     <?php foreach ($locations as $location) : ?>
-                        <option value="<?= $location ?>"><?= $location ?></option>
+                        <option <?= $_SESSION['location'] == $location ? 'selected' : '' ?> value="<?= $location ?>"><?= $location ?></option>
                     <?php endforeach ?>
                 </select>
             </form>
@@ -54,6 +56,10 @@ if (isset($_POST['newLocation'])) {
             <li><a href="/admin/log.php">log</a></li>
         <?php endif ?>
     </ul>
+
+    <div style="margin-top: auto;">
+        t-manager V0.9
+    </div>
 </nav>
 
 <dialog id="modal" style="text-align: center;"></dialog>

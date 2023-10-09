@@ -61,7 +61,7 @@ class FanaticOrders extends Database
         $res = $stm->execute();
         $row = $res->fetchArray();
 
-        $type = $row['newCode'];
+        $type = $row['newCode'] ?? '';
 
         //      get color
         $sql = <<<EOD
@@ -74,7 +74,7 @@ class FanaticOrders extends Database
         $res = $stm->execute();
         $row = $res->fetchArray();
 
-        $color = $row['newCode'];
+        $color = $row['newCode'] ?? '';
 
         if ($type == '') die('cant parse code type');
         if ($color == '') die('cant parse code color');
@@ -275,5 +275,26 @@ class FanaticOrders extends Database
         $stm->bindValue(1, $status);
         $stm->bindValue(2, $id, SQLITE3_TEXT);
         $res = $stm->execute();
+    }
+
+    function deleteOrder(string $id)
+    {
+        $Auth = new Auth();
+        $Auth->isLoggedIn();
+
+        //remove stock
+        $stm = $this->db->prepare("DELETE FROM forders_sizes WHERE forder_id = ?");
+        $stm->bindValue(1, $id, SQLITE3_TEXT);
+        $stm->execute();
+
+        //remove order
+        $stm = $this->db->prepare("DELETE FROM forders WHERE id = ?");
+        $stm->bindValue(1, $id, SQLITE3_TEXT);
+        $stm->execute();
+
+        $Log = new Log();
+        $Log->add("DELETE", "fanatic order", $id);
+
+        return true;
     }
 }

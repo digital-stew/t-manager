@@ -93,16 +93,14 @@ $stockTypes = $Stock->getTypes();
     <table>
         <thead>
             <tr>
-                <th>Id</th>
-                <th>new code</th>
-                <th>old code</th>
+                <th>new code<br>(on boxes)</th>
+                <th>old code<br>(on orders)</th>
                 <th>type</th>
             </tr>
         </thead>
         <tbody id="searchResults">
             <?php foreach ($stockTypes as $stock) : ?>
                 <tr onclick="showModal('/admin/stockCodes_type.php?typeId=<?= $stock['id'] ?>')">
-                    <td><?= $stock['id'] ?></td>
                     <td><?= $stock['newCode'] ?></td>
                     <td><?= $stock['oldCode'] ?></td>
                     <td><?= $stock['type'] ?></td>

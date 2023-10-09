@@ -4,7 +4,7 @@ session_start();
 $sample = new sample();
 $searchResults = $sample->search($_GET['search']);
 ?>
-<table id="show" class="border">
+<table id="show" class="border sampleTable">
     <thead>
         <tr>
             <th>id</th>
@@ -16,7 +16,7 @@ $searchResults = $sample->search($_GET['search']);
     </thead>
     <tbody id="searchResults">
         <?php foreach ($searchResults as $sample) : ?>
-            <tr onclick="selectSample(<?= $sample['id'] ?>)">
+            <tr onclick="selectSample(<?= $sample['id'] ?>)" <?= str_contains($sample['name'], 'OLD SAMPLE') ? "style='background-color: red'" : '' ?>>
                 <td><?= $sample['id'] ?></td>
                 <td><?= $sample['name'] ?></td>
                 <td><?= $sample['number'] ?></td>

@@ -1,10 +1,12 @@
 HRtimestamp();
 // if GET?id send request for it and display
 //const queryParams = new URLSearchParams(window.location.search);
+
 const queryID = queryParams.get("id");
-if (queryID && document.getElementById("sampleData").innerText == "") {
+if (queryID) {
   selectSample(queryID);
 }
+
 // from user search
 function updateSamplesList() {
   const timeout = setTimeout(async () => {
@@ -27,102 +29,114 @@ function updateSamplesList() {
 }
 
 //click on a sample
+let images;
+let displayImageNumber = 0;
 async function selectSample(rowID) {
-  //console.log("images");
-  //await replaceElement("sampleData", "/samples/show.php?id=" + rowID);
   await showModal("/samples/show.php?id=" + rowID);
-  getSampleImages();
-  //moveToCenter();
-
-  //Get the request parameters
-  //const queryParams = new URLSearchParams(window.location.search);
-  //const queryID = queryParams.get("id");
-  //queryParams.set("id", rowID);
-  // Replace the current query string with the updated parameters
-  //const newUrl = `${window.location.pathname}?${queryParams.toString()}`;
-  // Change the URL without triggering a page refresh
-  // window.history.pushState({}, "", newUrl);
+  images = document.querySelectorAll(".sampleImage");
+  displayImage(displayImageNumber);
 }
 
-//============== sample data show =================
-// initialize global variables
-let imageNumber = 0; // what image to show
-let images; // array to hold image names as strings
-let imageCountElement; // html element holding number of images in array
-let image; // image element
+function displayImage(number) {
+  document.getElementById("sampleImageCount").innerText =
+    displayImageNumber + 1;
 
-function getSampleImages() {
-  try {
-    images = JSON.parse(document.getElementById("sampleData").dataset.images); // pass image array to client
-  } catch (error) {
-    console.log(error);
-    return;
-  }
-  imageCountElement = document.getElementById("count");
-  image = document.getElementById("sampleImage");
+  images.forEach((image, index) => {
+    if (number == index) {
+      images[index].style.display = "block";
+    } else {
+      images[index].style.display = "none";
+    }
+  });
+
+  //download image buttons
+  let imageButtons = document.querySelectorAll(".sampleImageButton");
+  imageButtons.forEach((button, index) => {
+    if (number == index) {
+      button.style.display = "block";
+    } else {
+      button.style.display = "none";
+    }
+  });
 }
 
 function imageUp() {
-  if (imageNumber >= images.length - 1) return;
-  imageNumber++;
-  //update view
-  imageCountElement.innerText = imageNumber + 1;
-  image.src = "/assets/images/samples/webp/" + images[imageNumber];
-  //update edit modal
-  // document.getElementById("modal_count").innerText = imageNumber + 1;
-  // document.getElementById("modal_sampleImage").src =
-  //"/assets/images/samples/webp/" + images[imageNumber];
+  if (displayImageNumber >= images.length - 1) return;
+  displayImageNumber++;
+  displayImage(displayImageNumber);
 }
 
 function imageDown() {
-  if (imageNumber <= 0) return;
-  imageNumber--;
-  //update view
-  imageCountElement.innerText = imageNumber + 1;
-  image.src = "/assets/images/samples/webp/" + images[imageNumber];
-  //update edit modal
-  //document.getElementById("modal_count").innerText = imageNumber + 1;
-  // document.getElementById("modal_sampleImage").src =
-  // "/assets/images/samples/webp/" + images[imageNumber];
+  if (displayImageNumber == 0) return;
+  displayImageNumber--;
+  displayImage(displayImageNumber);
 }
 function showFullScreenImage() {
   const image = document.getElementById("sampleImage").src;
   window.location = image;
 }
-// move clicked on sample into user view regardless of Y window position
-function moveToCenter() {
-  let wrapper = document.getElementById("sampleData");
-  if (!wrapper) return;
-  let offset = window.scrollY;
-  if (offset > 100) offset -= 100;
-  wrapper.style.top = offset + "px";
-}
 
-async function deleteImage() {
-  const queryParams = new URLSearchParams(window.location.search);
-  // const queryID = queryParams.get("id");
-  const queryID = document.getElementById("id").value;
-  // get link to image
-  const image = document.getElementById("modal_sampleImage").src;
-  // Split the inputString into an array of substrings
-  const substrings = image.split("/");
-  // Get the last result using array indexing
-  const filename = substrings[substrings.length - 1];
-  console.log(filename);
-
+async function deleteImage(id, imageName) {
   let formData = new FormData();
-  formData.append("removeImage", filename);
-  const req = await fetch("/samples/edit.php?id=" + queryID, {
+  formData.append("removeImage", imageName);
+
+  const req = await fetch("/samples/edit.php?id=" + id, {
     method: "POST",
     body: formData,
   });
 
   const res = await req.text();
+
   if (res == "image=removed") {
-    images[imageNumber] = "Cross_red_circle.svg";
-    document.getElementById("sampleImage").src =
-      "/assets/images/samples/webp/Cross_red_circle.svg";
-    document.getElementById("sampleImage").style.width = 500 + "px";
+    let editImages = document.querySelectorAll(".sampleEditImage");
+    editImages.forEach((image, index) => {
+      if (image.src.includes(imageName)) {
+        editImages[index].parentElement.style.display = "none";
+      }
+    });
   }
+}
+
+function uploadAnotherImage(e) {
+  let element = document.getElementById("uploadSampleImage");
+  let newNode = element.cloneNode(true);
+  newNode.value = "";
+  document.getElementById("uploadSampleImageContainer").appendChild(newNode);
+}
+
+function printSample(elem) {
+  var header_str =
+    `<html><head><title>` + document.title + "</title></head><body>";
+  var footer_str = "</body></html>";
+  //save old page
+  var oldPage = document.body.innerHTML;
+
+  let html = "";
+
+  const sampleName = document.getElementById("sampleName").innerText;
+  const sampleNumber = document.getElementById("sampleNumber").innerText;
+  const samplePrintData = document.getElementById("samplePrintData").outerHTML;
+
+  html += `<section>`;
+  html += `<h1>${sampleName} ${sampleNumber}</h1>`;
+  html += `</section>`;
+
+  html += `<section class="printData">`;
+  html += samplePrintData;
+  html += `</section>`;
+
+  //get sample images
+  html += `<div>`;
+  document.querySelectorAll(".sampleImage").forEach((image) => {
+    html += `<img loading="eager" class="sampleImage" src=${image.src} alt="sample">`;
+  });
+  html += `</div>`;
+
+  document.body.innerHTML = header_str + html + footer_str;
+
+  window.print();
+
+  //restore old page
+  document.body.innerHTML = oldPage;
   return false;
 }

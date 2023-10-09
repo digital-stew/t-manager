@@ -89,7 +89,6 @@ $stockSizes = $Stock->getSizes();
     <table>
         <thead>
             <tr>
-                <th>Id</th>
                 <th>code</th>
                 <th>size</th>
             </tr>
@@ -97,7 +96,6 @@ $stockSizes = $Stock->getSizes();
         <tbody id="searchResults">
             <?php foreach ($stockSizes as $stock) : ?>
                 <tr onclick="showModal('/admin/stockCodes_size.php?sizeId=<?= $stock['id'] ?>')">
-                    <td><?= $stock['id'] ?></td>
                     <td><?= $stock['code'] ?></td>
                     <td><?= $stock['size'] ?></td>
                 </tr>

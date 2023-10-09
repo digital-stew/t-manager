@@ -95,16 +95,14 @@ $stockColors = $Stock->getColors();
     <table>
         <thead>
             <tr>
-                <th>Id</th>
-                <th>new code</th>
-                <th>old code</th>
+                <th>new code<br>(on boxes)</th>
+                <th>old code<br>(on orders)</th>
                 <th>color</th>
             </tr>
         </thead>
         <tbody id="searchResults">
             <?php foreach ($stockColors as $stock) : ?>
                 <tr onclick="showModal('/admin/stockCodes_color.php?colorId=<?= $stock['id'] ?>')">
-                    <td><?= $stock['id'] ?></td>
                     <td><?= $stock['newCode'] ?></td>
                     <td><?= $stock['oldCode'] ?></td>
                     <td><?= $stock['color'] ?></td>

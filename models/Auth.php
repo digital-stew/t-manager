@@ -15,7 +15,7 @@ class Auth extends Database
             $_SESSION['userLevel'] = $user['userlevel'];
 
             //set location
-            $_SESSION['location'] = "hawkins";
+            $_SESSION['location'] = "t-print";
 
             return "login=ok";
         } else {
@@ -39,11 +39,36 @@ class Auth extends Database
     }
     function getLocations(): array
     {
-        return ['hawkins', 'fleetwood', 'cornwall'];
+        return ['t-print', 'hawkins', 'fleetwood', 'cornwall'];
     }
     function setLocation($newLocation)
     {
         $this->isLoggedIn();
         $_SESSION['location'] = $newLocation;
+    }
+    function changePassword($oldPassword, $newPassword, $userName)
+    {
+
+        //get user
+        $stm = $this->db->prepare("SELECT * FROM users WHERE user = ?");
+        $stm->bindValue(1, $userName, SQLITE3_TEXT);
+        $res = $stm->execute();
+        $user = $res->fetchArray(SQLITE3_ASSOC);
+        if (password_verify($oldPassword, $user['password'])) {
+
+            $sql = <<<EOD
+            UPDATE users
+            SET password =?
+            WHERE id = ?
+            EOD;
+            $stm = $this->db->prepare($sql);
+            $stm->bindValue(1, password_hash($newPassword, PASSWORD_BCRYPT), SQLITE3_TEXT);
+            $stm->bindValue(2, $user['id'], SQLITE3_TEXT);
+            $res = $stm->execute();
+
+            if ($res) return true;
+        } else {
+            return false;
+        }
     }
 }

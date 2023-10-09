@@ -3,6 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
 
 $Stock = new Stock();
 $searchResults = $Stock->search($_GET['color'], $_GET['size'], $_GET['type'], $_GET['location']);
+$totalAmount = 0;
 ?>
 
 <?php foreach ($searchResults as $result) : ?>
@@ -14,4 +15,14 @@ $searchResults = $Stock->search($_GET['color'], $_GET['size'], $_GET['type'], $_
         <td><?= $result['location'] ?></td>
         <td><?= $result['amount'] ?></td>
     </tr>
+    <?php $totalAmount += $result['amount'] ?>
 <?php endforeach; ?>
+
+<tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>total:</td>
+    <td><?= $totalAmount ?></td>
+</tr>

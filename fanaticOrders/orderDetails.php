@@ -12,6 +12,12 @@ $Stock = new Stock();
 $returnArray = [];
 $stockCode = $FanaticOrders->getStockCode($order['code']);
 
+if (isset($_POST['deleteFanaticOrder'])) {
+    $res = $FanaticOrders->deleteOrder($_GET['id']);
+    if ($res) header('Location: /fanaticOrders?flashUser=order deleted');
+    die();
+}
+
 ?>
 <section>
 
@@ -67,4 +73,10 @@ $stockCode = $FanaticOrders->getStockCode($order['code']);
         <button type="button" onclick="window.location = '/fanaticOrders/pickOrder.php?id=<?= $order['id'] ?>';">pick order</button> <br>
     <?php endif ?>
     <button type="button" onclick="closeModal();">cancel</button>
+    <?php if (isset($_SESSION['userName']) && $_SESSION['userLevel'] == 'admin') : ?>
+        <hr>
+        <form action="/fanaticOrders/orderDetails.php?id=<?= $order['id'] ?>" method="post">
+            <button type="submit" onclick="return confirm('Permanently delete this order?')" name="deleteFanaticOrder">delete Order</button> <br>
+        </form>
+    <?php endif ?>
 </section>

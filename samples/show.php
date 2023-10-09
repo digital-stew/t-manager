@@ -5,6 +5,7 @@ session_start();
 $Sample = new sample();
 $sample = $Sample->get($_GET['id']);
 $FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='width:50px;height:50px;vertical-align:middle;' >";
+$imageNumber = 0;
 ?>
 
 <section id="sampleData" style="width: 100%;" data-images='<?= json_encode($sample['images']) ?>' data-originalNames='<?= json_encode($sample['originalNames']) ?>'>
@@ -12,10 +13,14 @@ $FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='widt
     <?php if ($sample['images'][0] != '') : ?>
         <div class="sample_show_imageWrapper newBox border" style="margin-inline: auto; margin-block: 1rem;">
             <div style="position: absolute;left: 0;top:0;color: white;">
-                <span id="count">1</span> <span id="imageAmount">/<?= sizeof($sample['images']) ?></span>
+                <span id="sampleImageCount">1</span> <span id="imageAmount">/<?= sizeof($sample['images']) ?></span>
             </div>
             <button style="left: 0;" class="imageButton" onclick="imageDown()">&lt;</button>
-            <img ondblclick="showFullScreenImage();" id="sampleImage" src="/assets/images/samples/webp/<?= $sample['images'][0] ?>" alt="sample" style="border-radius: 10px;width: 80%;margin: auto;">
+            <?php foreach ($sample['images'] as $image) : ?>
+                <img loading="eager" class="sampleImage" src="/assets/images/samples/webp/<?= $image ?>" alt="sample" style="border-radius: 10px;width: 80%;margin: auto;display: none;">
+                <button class="sampleImageButton" onclick="window.open('/assets/images/samples/original/<?= $sample['originalNames'][$imageNumber] ?>','_blank');" style="display: none;">download high resolution</button>
+                <?php $imageNumber++ ?>
+            <?php endforeach ?>
             <button style="right: 0;" class="imageButton" onclick="imageUp()">&gt;</button>
         </div>
     <?php endif ?>
@@ -25,18 +30,19 @@ $FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='widt
 
         <div class="newBox">
             <h4>Info</h4>
-            <p><?= $sample['name'] ?></p>
-            <p><?= $sample['number'] ?></p>
+            <p id="sampleName"><?= $sample['name'] ?></p>
+            <p id="sampleNumber"><?= $sample['number'] ?></p>
             <p class="timestamp"><?= $sample['date'] ?></p>
             <p><?= $sample['printer'] ?></p>
 
             <?php if (isset($_SESSION['userName']) && $_SESSION['userName'] == $sample['printer']) : ?>
                 <button onclick="showModal('/samples/edit.php?id=<?= $sample['id'] ?>');">Edit</button>
             <?php endif ?>
+            <button onclick="printSample('sampleData');">print</button>
 
         </div>
 
-        <div id="sampleDat" class="newBox border">
+        <div id="samplePrintData" class="newBox">
             <h4>Print data</h4>
 
             <?php if (strlen($sample['frontData'])) : ?>

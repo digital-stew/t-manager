@@ -1,16 +1,5 @@
 <?php
-//$code1 = "212M127AM00"; //  M     a/short sweat
-//$code2 = "211M00U2XS0"; //  XS    core hoodie - mens
-
-//require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
-//$Stock = new Stock();
-
-//$result = $Stock->search();
-//print_r($result);
-
-//$addResult = $Stock->addStock($code2, 'hawkins', 100);
-$phpLines = shell_exec("find . -type f -name '*.php' | xargs wc -l | awk '{ total += $1 } END { print total }'");
-//$jsLines = shell_exec("find . -type f -name '*.js' | xargs wc -l | awk '{ total += $1 } END { print total }'");
+//$phpLines = shell_exec("find . -type f -name '*.php' | xargs wc -l | awk '{ total += $1 } END { print total }'");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,35 +14,30 @@ $phpLines = shell_exec("find . -type f -name '*.php' | xargs wc -l | awk '{ tota
 
 <body>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php'; ?>
-    <div class="border" style="padding: 1rem;text-align: center;">
-        <p>
-            This program is still very much in alpha
-        </p>
-        <p>Any suggestions, complaints, feature requests or bugs <button onclick="location.href='mailto:stewart@tux-systems.co.uk';">send here</button> stewart@tux-systems.co.uk</p>
-    </div>
+    <div class="border" style="display: flex; justify-content: center;align-items: center;">
+        We are currently in the testing phase and actively seeking feedback. If you encounter any errors or bugs, please report them.
+        We also welcome peer reviews and assistance. <a href="/t-manager.zip">
+            <span><button>source</button></span>
+        </a> </div>
 
     <div style="display: flex;justify-content: center;gap:3rem;margin-top: 3rem;flex-wrap: wrap;height: min-content;">
 
         <section class="border" style="padding: 2rem;">
             <h4>not operational ...yet</h4>
-            <p>samples - add pictures directly from app so phones don't get cluttered up with pictures</p>
-            <p>user options - password change ...etc</p>
-            <p>clicking modal backdrop closes the modal</p>
-            <p>"color" yes i know. spell check shouts at me will change when complete</p>
-            <p>add download hi-res pics to samples</p>
-            <p>"DO NOT USE" samples need to show red</p>
+            <p>automatic user location</p>
         </section>
 
-        <section class="border" style="padding: 2rem;">
+        <!-- <section class="border" style="padding: 2rem;">
             <h4>bugs</h4>
-            <p>edit user always defaults to user level to "user"</p>
-        </section>
+            <p>none known</p>
+        </section> -->
         <section class="border" style="padding: 2rem;">
             <h4>last update</h4>
-            <p>location</p>
-            <p>logging</p>
+            <p>full date time in log</p>
+            <p>longer session times</p>
+            <p>user options (click name in sidebar)</p>
+
         </section>
-        <!-- <p>shit this is getting big: <?= $phpLines ?> lines of php code!!</p> -->
     </div>
 
 </body>

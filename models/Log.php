@@ -9,6 +9,7 @@ class Log extends Database
         $sql = <<<EOD
         SELECT *
         FROM log
+        ORDER BY id DESC
         LIMIT 100
         EOD;
         $stm = $this->db->prepare($sql);

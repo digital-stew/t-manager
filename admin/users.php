@@ -149,6 +149,7 @@ if (isset($_GET['editUser']) && isset($_GET['id'])) {
         <br>
         <br>
         <select name="userLevel">
+        <option value="{$user['userLevel']}">{$user['userLevel']}</option>
             <option value="user">User</option>
             <option value="admin">Admin</option>
         </select>
@@ -171,7 +172,6 @@ $allUsers = $Admin->getAllUsers();
     <table>
         <thead>
             <tr>
-                <th>Id</th>
                 <th>Name</th>
                 <th>E-mail</th>
                 <th>Department</th>
@@ -181,7 +181,6 @@ $allUsers = $Admin->getAllUsers();
         <tbody id="searchResults">
             <?php foreach ($allUsers as $user) : ?>
                 <tr onclick="showModal('/admin/users.php?getUser=true&id=<?= $user['id'] ?>')">
-                    <td><?= $user['id'] ?></td>
                     <td><?= $user['name'] ?></td>
                     <td><?= $user['email'] ?></td>
                     <td><?= $user['department'] ?></td>

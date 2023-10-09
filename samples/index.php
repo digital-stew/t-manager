@@ -19,6 +19,8 @@ if (isset($_GET['search'])) {
     <link rel="stylesheet" href="/assets/styles.css">
     <script src="/assets/globalFunctions.js" defer></script>
     <script src="/samples/samples.js" defer></script>
+    <link href="/samples/printSample.css" media="print" rel="stylesheet" />
+
 </head>
 
 <body>
@@ -27,6 +29,7 @@ if (isset($_GET['search'])) {
         <h1>Samples</h1>
         <?php if (isset($_SESSION['userName'])) : ?>
             <button onclick="showModal('/samples/add.php');">add new sample</button>
+
         <?php endif ?>
         <hr>
     </div>

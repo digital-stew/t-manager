@@ -17,6 +17,7 @@ $Auth = new Auth();
     <title>Log</title>
     <link rel="stylesheet" href="/assets/styles.css">
     <script src="/assets/globalFunctions.js" defer></script>
+    <script src="/admin/log.js" defer></script>
 </head>
 
 <body>
@@ -54,7 +55,7 @@ $Auth = new Auth();
                         <td><?= $entry['logID'] ?></td>
                         <td><?= $entry['note'] ?></td>
                         <td><?= $entry['userName'] ?></td>
-                        <td class="timestamp"><?= $entry['timestamp'] ?></td>
+                        <td class='timestamp' data-datetime="true"><?= $entry['timestamp'] ?></td>
                     </tr>
                 <?php endforeach ?>
             </tbody>
@@ -67,7 +68,7 @@ $Auth = new Auth();
         <button onclick="closeCamModal();" style="width: 80%;">cancel</button>
     </dialog>
     <script>
-
+        //HRtimestamp();
     </script>
 </body>
 
