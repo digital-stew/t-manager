@@ -7,7 +7,12 @@ $Auth = new Auth();
 $Auth->isLoggedIn();
 $Sample = new sample();
 $sample = $Sample->get($_GET["id"]);
-if ($_SESSION['userName'] != $sample['printer']) die('You are not the original printer');
+
+if ($_SESSION['userName'] == $sample['printer']) {
+} elseif ($_SESSION['userLevel'] == 'admin') {
+} else {
+    die('You are not the original printer');
+}
 
 if (isset($_POST["update"]) && isset($_GET["id"])) {
     $res = $Sample->update($_GET['id'], $_POST['front'], $_POST['back'], $_POST['other'], $_POST['notes'], $_POST['name'], $_POST['number'], $_POST['otherref'], $_FILES['files']);

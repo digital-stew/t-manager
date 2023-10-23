@@ -35,7 +35,7 @@ $imageNumber = 0;
             <p class="timestamp"><?= $sample['date'] ?></p>
             <p><?= $sample['printer'] ?></p>
 
-            <?php if (isset($_SESSION['userName']) && $_SESSION['userName'] == $sample['printer']) : ?>
+            <?php if (isset($_SESSION['userName']) && $_SESSION['userName'] == $sample['printer'] || $_SESSION['userLevel'] == 'admin') : ?>
                 <button onclick="showModal('/samples/edit.php?id=<?= $sample['id'] ?>');">Edit</button>
             <?php endif ?>
             <button onclick="printSample('sampleData');">print</button>

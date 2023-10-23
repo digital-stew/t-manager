@@ -11,7 +11,7 @@ if (isset($_GET['remove']) && isset($_GET['code'])) {
             <br>
             <label>
                 amount
-                <input name="amount" type="text">
+                <input name="amount" type="number">
             </label>
             <input type="hidden" name="location" value="{$_SESSION['location']}">
             <input name="code" type="hidden" value="{$_GET['code']}">
