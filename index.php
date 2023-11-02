@@ -25,6 +25,8 @@
         <section class="border" style="padding: 2rem;">
             <h4>not operational ...yet</h4>
             <p>automatic user location</p>
+            <p>better print samples</p>
+            <p>BUG: update samples crash on add new picture</p>
         </section>
 
         <!-- <section class="border" style="padding: 2rem;">
@@ -33,8 +35,9 @@
         </section> -->
         <section class="border" style="padding: 2rem;">
             <h4>last update</h4>
-            <p>auto number selection on stock in/out for mobiles</p>
+            <p>BUX FIX: browser hang on no cam</p>
             <p>BUG FIX: samples editable by original printer or admin</p>
+            <p>longer login times</p>
 
         </section>
     </div>

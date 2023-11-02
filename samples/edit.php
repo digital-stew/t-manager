@@ -65,8 +65,9 @@ if (isset($_POST['delete']) && isset($_GET["id"])) {
             </div>
 
             <div class="newBox">
-                <h4>Add files</h4>
-                <input id="uploadSampleImage" oninput=";" type="file" accept="image/*" capture="camera" name="files[]">
+                <!-- BUG handling files -->
+                <!-- <h4>Add files</h4> -->
+                <!-- <input id="uploadSampleImage" type="file" accept="image/*" name="files[]"> -->
 
                 <h4></h4>
                 <button type="submit" name="update">Update</button>

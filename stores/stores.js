@@ -7,20 +7,33 @@ let addOrRemove = "add";
 
 function addStockButton() {
   addOrRemove = "add";
-  html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+  try {
+    html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+  } catch (error) {
+    console.log("no camera");
+  }
   document.getElementById("scannerModal").showModal();
 }
 
 function removeStockButton() {
   addOrRemove = "remove";
-  html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+  try {
+    html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+  } catch (error) {
+    console.log("no camera");
+  }
   document.getElementById("scannerModal").showModal();
 }
 
 function closeCamModal() {
-  html5QrCode.stop();
+  try {
+    html5QrCode.stop();
+  } catch (error) {
+    console.log("cant stop none running camera ");
+  }
   document.getElementById("scannerModal").close();
 }
+
 function onScanFail() {
   //console.log("scan fail");
   return;

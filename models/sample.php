@@ -106,7 +106,7 @@ class sample extends Database
         }
     }
 
-    function update(string $id, string $frontData, string $backData, string $otherData, string $notes, string $name, string $number, string $otherRef, array $files): bool
+    function update(string $id, string $frontData, string $backData, string $otherData, string $notes, string $name, string $number, string $otherRef, $files): bool
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
@@ -129,25 +129,35 @@ class sample extends Database
 
             $stm->execute();
 
+            //TODO fix uploading image
+
             //handle the files
-            $i = 0; //iterator
-            foreach ($files['name'] as $originalFileName) {
-                if ($originalFileName == '') continue; //BUG FIX always tries even when no files
+            //$i = 0; //iterator
+            //foreach ($files['name'] as $originalFileName) {
 
-                $fileExt = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
-                $fileUUID = uniqid();
-                switch ($fileExt) {
-                    case 'jpg':
-                        $image = imagecreatefromjpeg($files['tmp_name'][$i]);
-                        $webpData = imagewebp($image, $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/webp/' . $fileUUID . '.webp', 100);
-                        break;
-                    default:
-                        die('cant convert file ' . $originalFileName);
-                }
+            if ($files['name'] == '') {
+                $Log = new Log();
+                $Log->add("EDIT", "sample", $id, $number);
+                return true;
+            }
 
-                move_uploaded_file($files['tmp_name'][$i], $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/original/' . $originalFileName);
+            $fileExt = pathinfo($files['name'], PATHINFO_EXTENSION);
+            $fileUUID = uniqid();
+            switch ($fileExt) {
+                case 'jpg':
 
-                $sql = <<<EOD
+                    print_r($files);
+                    die();
+                    $image = imagecreatefromjpeg($files['tmp_name']);
+                    $webpData = imagewebp($image, $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/webp/' . $fileUUID . '.webp', 50);
+                    break;
+                default:
+                    die('cant convert file ' . $files['name']);
+            }
+
+            move_uploaded_file($files['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/original/' . $files['name']);
+
+            $sql = <<<EOD
             INSERT INTO sample_images(
                 webp_filename,
                 sample_id,
@@ -157,16 +167,16 @@ class sample extends Database
                 )
                 VALUES (?,?,?,?,?)
             EOD;
-                $stm = $this->db->prepare($sql);
-                $stm->bindValue(1, $fileUUID . '.webp', SQLITE3_TEXT);
-                $stm->bindValue(2, $_GET['id'], SQLITE3_TEXT);
-                $stm->bindValue(3, $originalFileName, SQLITE3_TEXT);
-                $stm->bindValue(4, $_SESSION['userName'], SQLITE3_TEXT);
-                $stm->bindValue(5, time(), SQLITE3_TEXT);
-                $res = $stm->execute();
+            $stm = $this->db->prepare($sql);
+            $stm->bindValue(1, $fileUUID . '.webp', SQLITE3_TEXT);
+            $stm->bindValue(2, $_GET['id'], SQLITE3_TEXT);
+            $stm->bindValue(3, $files['name'], SQLITE3_TEXT);
+            $stm->bindValue(4, $_SESSION['userName'], SQLITE3_TEXT);
+            $stm->bindValue(5, time(), SQLITE3_TEXT);
+            $res = $stm->execute();
 
-                $i++;
-            }
+            //$i++;
+            //}
             //header('Location: /samples?id=' . $id);
             $Log = new Log();
             $Log->add("EDIT", "sample", $id, $number);
