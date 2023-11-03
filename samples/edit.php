@@ -20,7 +20,6 @@ if (isset($_POST["update"]) && isset($_GET["id"])) {
     die();
 }
 if (isset($_POST['removeImage']) && isset($_GET['id'])) {
-    //die($_POST['removeImage']);
     $res = $Sample->removeImage($_GET['id'], $_POST['removeImage']);
     if ($res) die('image=removed');
     die();
@@ -66,8 +65,8 @@ if (isset($_POST['delete']) && isset($_GET["id"])) {
 
             <div class="newBox">
                 <!-- BUG handling files -->
-                <!-- <h4>Add files</h4> -->
-                <!-- <input id="uploadSampleImage" type="file" accept="image/*" name="files[]"> -->
+                <h4>Add files</h4>
+                <input id="uploadSampleImage" type="file" accept="image/*" name="files">
 
                 <h4></h4>
                 <button type="submit" name="update">Update</button>

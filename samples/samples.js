@@ -117,12 +117,23 @@ function printSample(elem) {
   const sampleNumber = document.getElementById("sampleNumber").innerText;
   const samplePrintData = document.getElementById("samplePrintData").outerHTML;
 
+  try {
+    let sampleNotes = document.getElementById("sampleNotes").innerText;
+  } catch (error) {
+    let sampleNotes = "none";
+  }
+
   html += `<section>`;
   html += `<h1>${sampleName} ${sampleNumber}</h1>`;
   html += `</section>`;
 
   html += `<section class="printData">`;
+
   html += samplePrintData;
+  if (sampleNotes != "undefined") html += sampleNotes;
+  html += `</section>`;
+
+  html += `<section>`;
   html += `</section>`;
 
   //get sample images

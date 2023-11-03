@@ -1,6 +1,5 @@
 db.sqlite
 
-
 assets/images/samples/original/*.jpg
 assets/images/samples/webp/*.webp
 assets/images/sample-images/

@@ -64,7 +64,7 @@ $imageNumber = 0;
         <?php if (strlen($sample['notes'])) : ?>
             <div class="newBox border">
                 <h4>notes</h4>
-                <p><?= $sample['notes'] ?></p>
+                <p id="sampleNotes"><?= $sample['notes'] ?></p>
             </div>
         <?php endif ?>
 

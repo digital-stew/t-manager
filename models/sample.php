@@ -129,25 +129,17 @@ class sample extends Database
 
             $stm->execute();
 
-            //TODO fix uploading image
-
-            //handle the files
-            //$i = 0; //iterator
-            //foreach ($files['name'] as $originalFileName) {
-
             if ($files['name'] == '') {
                 $Log = new Log();
                 $Log->add("EDIT", "sample", $id, $number);
                 return true;
             }
 
+            //handle new file
             $fileExt = pathinfo($files['name'], PATHINFO_EXTENSION);
             $fileUUID = uniqid();
             switch ($fileExt) {
                 case 'jpg':
-
-                    print_r($files);
-                    die();
                     $image = imagecreatefromjpeg($files['tmp_name']);
                     $webpData = imagewebp($image, $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/webp/' . $fileUUID . '.webp', 50);
                     break;
@@ -175,9 +167,6 @@ class sample extends Database
             $stm->bindValue(5, time(), SQLITE3_TEXT);
             $res = $stm->execute();
 
-            //$i++;
-            //}
-            //header('Location: /samples?id=' . $id);
             $Log = new Log();
             $Log->add("EDIT", "sample", $id, $number);
             return true;

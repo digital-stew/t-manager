@@ -12,8 +12,12 @@ div {
   justify-content: center;
 }
 img {
-  height: 200px;
+  height: 400px;
 }
+.printData {
+  display: flex;
+}
+
 .printData * {
   padding: 0;
   margin: 0;
