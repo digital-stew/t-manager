@@ -16,17 +16,13 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
 <body>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php'; ?>
     <div>
-
         <h1>user settings for <?= $_SESSION['userName'] ?></h1>
-
         <hr>
     </div>
 
     <div style="display: flex; flex-wrap: wrap;gap: 2rem;justify-content: center;">
-
         <section id="adminView" style="width: fit-content;text-align: center;" class="newBox border">
             <h2>password change</h2>
-
             <form action="/api/login.php" method="post">
                 <input autoComplete="new-password" type="password" name="oldPassword" placeholder="old password"> <br>
                 <hr>
@@ -35,11 +31,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
                 <button>change</button>
             </form>
         </section>
-
     </div>
-
-
-
 </body>
 
 </html>

@@ -5,6 +5,7 @@ session_start();
 $Auth = new Auth();
 $locations = $Auth->getLocations();
 
+//set user location
 if (isset($_POST['newLocation'])) {
     $Auth->setLocation($_POST['newLocation']);
     header("Refresh:0; url=" . $_SERVER['HTTP_REFERER']);
@@ -13,9 +14,9 @@ if (isset($_POST['newLocation'])) {
 
 ?>
 <div id="burgerMenu" class="burgerMenu" onclick="toggleNavbar();">
-    <span></span>
-    <span></span>
-    <span></span>
+    <span></span> <!-- burger menu horizontal line -->
+    <span></span> <!-- burger menu horizontal line -->
+    <span></span> <!-- burger menu horizontal line -->
 </div>
 
 <nav class="navbar" id="navbar">
@@ -58,7 +59,7 @@ if (isset($_POST['newLocation'])) {
     </ul>
 
     <div style="margin-top: auto;">
-        t-manager V0.9.2
+        t-manager V0.9.3
     </div>
 </nav>
 

@@ -1,6 +1,5 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,6 +15,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
 <body>
 
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php';
+
     $Auth = new Auth();
     $Auth->isAdmin();
     ?>
@@ -25,7 +25,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
             <hr>
         </div>
         <section style="display: flex; flex-wrap: wrap;gap: 2rem;justify-content: center;">
-
             <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/users.php'; ?>
             <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_type.php'; ?>
             <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_color.php'; ?>

@@ -8,36 +8,32 @@ increase php upload size to allow picture uploads /etc/php/8.1/cli/php.ini
 /etc/php/8.1/apache2/php.ini
 post_max_size & upload_max_filesize
 
-bugs:
-sidebar not removed properly on small screens
-
-
 database notes:
 
-orders:
-name
-number
-due date
+    orders:
+    name
+    number
+    due date
 
-table sample_images:
-id
-sample_id
-webp_filename
-original_filename
-user
-date
+    table sample_images:
+    id
+    sample_id
+    webp_filename
+    original_filename
+    user
+    date
 
-table samples:
-rowid
-name
-number
-date
-otherref
-printdata
-printdataback
-printdataother
-notes
-printer
+    table samples:
+    rowid
+    name
+    number
+    date
+    otherref
+    printdata
+    printdataback
+    printdataother
+    notes
+    printer
 
 daz job codes:
 NHLGlobal-10 ¦ 1108W-DGN-STU-H2S ¦ Womens Tee Dark Green ¦ 9 XS ¦ 16 S ¦ 18 M ¦ 18 L ¦ 7 XL ¦ 6 2XL ¦ 0 3XL
@@ -47,9 +43,3 @@ NHLGlobal-21 ¦ 1108W-GRY-NHL-MU4 ¦ Womens Tee Sports Grey ¦ 13 XS ¦ 20 S ¦ 
 NHLGlobal-18 ¦ 1108W-GRY-NHL-MU2 ¦ Womens Tee Sports Grey ¦ 13 XS ¦ 20 S ¦ 22 M ¦ 23 L ¦ 12 XL ¦ 10 2XL ¦ 0 3XL
 
 1108W = 208W
-GRY = 
-
-
-stock codes:
-212M 127A M00 M     a/short sweat
-211M 00U2 XS0 XS    core hoodie - mens

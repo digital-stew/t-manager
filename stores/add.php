@@ -1,4 +1,5 @@
 <?php
+// ========================MODAL============================
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
 session_start();
 

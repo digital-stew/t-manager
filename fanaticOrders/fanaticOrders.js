@@ -9,11 +9,16 @@ const qrCodeSuccessCallback = (decodedText, decodedResult) => {
 };
 
 function startCam() {
-  html5QrCode.start(
-    { facingMode: "environment" },
-    config,
-    qrCodeSuccessCallback
-  );
+  try {
+    html5QrCode.start(
+      { facingMode: "environment" },
+      config,
+      qrCodeSuccessCallback
+    );
+  } catch (error) {
+    console.log("no camera");
+  }
+
   document.getElementById("scannerModal").showModal();
 }
 
@@ -25,14 +30,11 @@ function closeCamModal() {
 async function addOrderToPick(code) {
   let formData = new FormData();
   formData.append("code", code);
-  // formData.target = "/fanaticOrders/pickOrder.php";
-  // formData.submit();
   const req = await fetch("/fanaticOrders/pickOrder.php", {
     method: "POST",
     body: formData,
   });
   const res = await req.text();
-  console.log(res);
   if (parseFloat(res) == res) {
     window.location = "/fanaticOrders/pickOrder.php?id=" + res;
   }

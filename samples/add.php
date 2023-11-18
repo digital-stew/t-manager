@@ -5,17 +5,10 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/sample.php';
 session_start();
 $Auth = new Auth();
 $Auth->isLoggedIn();
+
 if (isset($_POST['add'])) {
     $Sample = new sample();
-
     $Sample->add($_POST['name'],  $_POST['number'],  $_POST['otherref'],  $_POST['front'],  $_POST['back'],  $_POST['other'],  $_POST['notes'], $_SESSION['userName'], $_FILES['files']);
-    /*
-    print_r($_FILES['files']);
-    foreach ($_FILES['files']['name'] as $file) {
-        print_r($file);
-        echo '<br>';
-    }
-*/
     die();
 }
 ?>
@@ -33,11 +26,8 @@ if (isset($_POST['add'])) {
             <label for="other">Other reference</label>
             <input type="text" name="otherref" id="other" class="wide-center">
             <br><br>
-            <!-- <input type="file" name="files[]" id="" multiple> -->
-            <!-- <input type="file" id="myfile" name="myfile" accept="image/*;capture=camera" /> -->
             <div id="uploadSampleImageContainer" style="display: grid;place-items: center;gap: 1rem;">
                 <input id="uploadSampleImage" oninput="uploadAnotherImage(this);" type="file" accept="image/*" capture="camera" name="files[]">
-
             </div>
     </div>
     <div>

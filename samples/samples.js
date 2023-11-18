@@ -1,7 +1,8 @@
-HRtimestamp();
-// if GET?id send request for it and display
-//const queryParams = new URLSearchParams(window.location.search);
+let images; // array of image elements
+let displayImageNumber = 0; // variable to hold what image is displayed
+HRtimestamp(); //convert displayed timestamps to human readable
 
+//auto load sample modal eg. shareable link
 const queryID = queryParams.get("id");
 if (queryID) {
   selectSample(queryID);
@@ -10,8 +11,8 @@ if (queryID) {
 // from user search
 function updateSamplesList() {
   const timeout = setTimeout(async () => {
-    let searchText = document.getElementById("search").value;
-    if (searchText === "") return;
+    let searchText = document.getElementById("search").value; //get user imputed search string
+    if (searchText === "") return; //return early if empty
     let tbody = document.getElementById("show");
 
     const res = await fetch("/samples/search.php?search=" + searchText);
@@ -19,7 +20,7 @@ function updateSamplesList() {
       const reply = await res.text();
       tbody.outerHTML = reply;
       HRtimestamp();
-      history.pushState(null, "", "/samples?search=" + searchText);
+      history.pushState(null, "", "/samples?search=" + searchText); //update address bar for link sharing etc
     } else {
       setError();
     }
@@ -29,17 +30,16 @@ function updateSamplesList() {
 }
 
 //click on a sample
-let images;
-let displayImageNumber = 0;
 async function selectSample(rowID) {
+  displayImageNumber = 0; // select sample bug fix
   await showModal("/samples/show.php?id=" + rowID);
-  images = document.querySelectorAll(".sampleImage");
+  images = document.querySelectorAll(".sampleImage"); //get all sample images as html elements
   displayImage(displayImageNumber);
 }
 
 function displayImage(number) {
   document.getElementById("sampleImageCount").innerText =
-    displayImageNumber + 1;
+    displayImageNumber + 1; // display number of image
 
   images.forEach((image, index) => {
     if (number == index) {
@@ -71,6 +71,7 @@ function imageDown() {
   displayImageNumber--;
   displayImage(displayImageNumber);
 }
+
 function showFullScreenImage() {
   const image = document.getElementById("sampleImage").src;
   window.location = image;
@@ -97,21 +98,22 @@ async function deleteImage(id, imageName) {
   }
 }
 
-function uploadAnotherImage(e) {
+function uploadAnotherImage() {
   let element = document.getElementById("uploadSampleImage");
   let newNode = element.cloneNode(true);
   newNode.value = "";
   document.getElementById("uploadSampleImageContainer").appendChild(newNode);
 }
 
+//layout page displaying all images and print data
 function printSample(elem) {
+  var oldPage = document.body.innerHTML; //save old page
+
   var header_str =
     `<html><head><title>` + document.title + "</title></head><body>";
   var footer_str = "</body></html>";
-  //save old page
-  var oldPage = document.body.innerHTML;
 
-  let html = "";
+  let html = ""; //variable to hold printable page
 
   const sampleName = document.getElementById("sampleName").innerText;
   const sampleNumber = document.getElementById("sampleNumber").innerText;
@@ -147,7 +149,6 @@ function printSample(elem) {
 
   window.print();
 
-  //restore old page
-  document.body.innerHTML = oldPage;
+  document.body.innerHTML = oldPage; //restore old page back to user viewable
   return false;
 }

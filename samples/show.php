@@ -1,4 +1,5 @@
 <?php
+// ========================MODAL============================
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/sample.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/models/errorHandler.php';
 session_start();
@@ -44,7 +45,7 @@ $imageNumber = 0;
 
         <div id="samplePrintData" class="newBox">
             <h4>Print data</h4>
-
+            <!-- display print data to user, replace "dry" with flash image and change title with what is preceded ":" if ";" is present -->
             <?php if (strlen($sample['frontData'])) : ?>
                 <h3><?= str_contains($sample['frontData'], ':') ? explode(':', $sample['frontData'])[0] : 'Front';  ?></h3>
                 <p><?= str_contains($sample['frontData'], ':') ?  str_replace("dry", $FLASH_IMAGE_LINK, explode(':', $sample['frontData'])[1]) :  str_replace("dry", $FLASH_IMAGE_LINK, $sample['frontData'])  ?></p>

@@ -87,5 +87,3 @@ function flashUser(text) {
 const queryParams = new URLSearchParams(window.location.search);
 const flash = queryParams.get("flashUser");
 if (flash) flashUser(flash);
-
-//HRtimestamp();

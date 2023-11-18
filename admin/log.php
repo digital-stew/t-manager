@@ -21,19 +21,16 @@ $Auth = new Auth();
 </head>
 
 <body>
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php';
+    <?php
+    require $_SERVER['DOCUMENT_ROOT'] . '/header.php';
     $Auth->isAdmin();
-
     ?>
     <div>
-
         <h1>Log</h1>
         <hr>
     </div>
 
     <section>
-
-
         <table class="border" style="width: 100%;">
             <thead>
                 <tr>
@@ -43,7 +40,6 @@ $Auth = new Auth();
                     <th>note</th>
                     <th>user</th>
                     <th>time</th>
-
                 </tr>
             </thead>
             <tbody id="searchResults">
@@ -67,9 +63,6 @@ $Auth = new Auth();
         <div id="qr-reader-results"></div>
         <button onclick="closeCamModal();" style="width: 80%;">cancel</button>
     </dialog>
-    <script>
-        //HRtimestamp();
-    </script>
 </body>
 
 </html>

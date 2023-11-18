@@ -126,7 +126,6 @@ class Admin extends Database
             WHERE id = ?
         EOD;
 
-
         $stm = $this->db->prepare($sql);
         $stm->bindValue(1, password_hash($password, PASSWORD_BCRYPT), SQLITE3_TEXT);
         $stm->bindValue(2, $id, SQLITE3_TEXT);

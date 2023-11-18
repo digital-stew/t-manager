@@ -35,7 +35,6 @@ function closeCamModal() {
 }
 
 function onScanFail() {
-  //console.log("scan fail");
   return;
 }
 
@@ -55,6 +54,7 @@ async function manualInput() {
     `/stores/${addOrRemove}.php?${addOrRemove}=true&code=${code}&location=${stockLocation}`
   );
 }
+
 async function searchStock() {
   const color = document.getElementById("colorSelect").value;
   const size = document.getElementById("sizeSelect").value;

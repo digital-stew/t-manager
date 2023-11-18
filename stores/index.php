@@ -23,9 +23,10 @@ $colors = $Stock->getColors();
 </head>
 
 <body>
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php'; ?>
-    <div>
 
+    <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php'; ?>
+
+    <div>
         <h1>Stores</h1>
         <?php if (isset($_SESSION['userName'])) : ?>
             <button onclick="addStockButton()">add</button>
