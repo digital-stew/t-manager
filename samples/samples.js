@@ -119,29 +119,29 @@ function printSample(elem) {
   const sampleNumber = document.getElementById("sampleNumber").innerText;
   const samplePrintData = document.getElementById("samplePrintData").outerHTML;
 
+  let sampleNotes;
+
   try {
-    let sampleNotes = document.getElementById("sampleNotes").innerText;
-  } catch (error) {
-    let sampleNotes = "none";
-  }
+    sampleNotes = document.getElementById("sampleNotes").innerText;
+  } catch (error) {}
 
   html += `<section>`;
   html += `<h1>${sampleName} ${sampleNumber}</h1>`;
   html += `</section>`;
 
   html += `<section class="printData">`;
-
   html += samplePrintData;
-  if (sampleNotes != "undefined") html += sampleNotes;
-  html += `</section>`;
-
-  html += `<section>`;
+  if (sampleNotes) {
+    html += `<div><h4>Notes</h4>`;
+    html += sampleNotes;
+    html += `</div>`;
+  }
   html += `</section>`;
 
   //get sample images
-  html += `<div>`;
+  html += `<div class="images">`;
   document.querySelectorAll(".sampleImage").forEach((image) => {
-    html += `<img loading="eager" class="sampleImage" src=${image.src} alt="sample">`;
+    html += `<div><img loading="eager" class="sampleImage" src=${image.src} alt="sample"></div>`;
   });
   html += `</div>`;
 

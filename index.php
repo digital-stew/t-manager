@@ -25,20 +25,19 @@
         <section class="border" style="padding: 2rem;">
             <h4>not operational ...yet</h4>
             <p>automatic user location</p>
-            <p>better print samples</p>
-            <p>auto capitalize stock input strings</p>
         </section>
 
-        <section class="border" style="padding: 2rem;">
+        <!-- <section class="border" style="padding: 2rem;">
             <h4>bugs</h4>
-            <!-- <p>none known</p> -->
-            <p>when add/remove stock on pc pressing enter closes modal but doesn't save</p>
-        </section>
+        </section> -->
 
         <section class="border" style="padding: 2rem;">
             <h4>last update</h4>
             <p>BUX FIX: start images at first image every time a new sample is selected</p>
             <p>BUX FIX: browser hang if no cam and trying to pick order</p>
+            <p>BUG FIX: when add/remove stock on pc pressing enter closes modal but doesn't save</p>
+            <p>auto capitalize stock input strings</p>
+            <p>better print samples</p>
         </section>
     </div>
 </body>

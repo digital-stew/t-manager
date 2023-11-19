@@ -48,6 +48,8 @@ async function showModal(link) {
     // stop modal closing on input selection
     if (event.target.matches("select")) return;
     if (event.target.matches("option")) return;
+    if (event.target.matches("button")) return;
+    if (event.target.matches("input")) return;
 
     if (!isInDialog) {
       closeModal();

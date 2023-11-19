@@ -95,9 +95,11 @@ $colors = $Stock->getColors();
     <dialog id="scannerModal" style="text-align: center;">
         <div id="qr-reader" style="width: 200px;margin-inline: auto;"></div>
         <div id="qr-reader-results"></div>
-        <input type="text" name="manualInputCode" id="manualInputCode">
-        <button type="button" onclick="manualInput();" style="width: 80%;">manual input</button><br>
-        <button onclick="closeCamModal();" style="width: 80%;">cancel</button>
+        <form action="JavaScript:manualInput()">
+            <input type="text" name="manualInputCode" id="manualInputCode">
+            <button type="button" onclick="manualInput();" style="width: 80%;">manual input</button><br>
+            <button type="button" onclick="closeCamModal();" style="width: 80%;">cancel</button>
+        </form>
     </dialog>
 
 </body>

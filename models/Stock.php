@@ -9,6 +9,7 @@ class Stock extends Database
     function parseCode(string $code): array
     {
         if (strlen($code) < 11) die('bad stock code');
+        $code  = strtoupper($code); // auto capitalize user input
         $splitCode = str_split($code, 4);
 
         $type = '';

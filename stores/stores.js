@@ -3,7 +3,7 @@ const config = { fps: 10, qrbox: { width: 130, height: 130 } };
 
 searchStock();
 
-let addOrRemove = "add";
+let addOrRemove = "";
 
 function addStockButton() {
   addOrRemove = "add";
