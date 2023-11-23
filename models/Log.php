@@ -10,7 +10,7 @@ class Log extends Database
         SELECT *
         FROM log
         ORDER BY id DESC
-        LIMIT 100
+        LIMIT 1000
         EOD;
         $stm = $this->db->prepare($sql);
         $res = $stm->execute();

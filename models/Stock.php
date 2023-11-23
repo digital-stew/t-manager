@@ -140,6 +140,8 @@ class Stock extends Database
         $Auth = new Auth();
         $Auth->isLoggedIn();
 
+        $code  = strtoupper($code); // auto capitalize user input
+
         $parsedCode = $this->parseCode($code);
 
         //check is code exists in database
@@ -216,6 +218,8 @@ class Stock extends Database
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
+
+        $code  = strtoupper($code); // auto capitalize user input
 
         $parsedCode = $this->parseCode($code);
 
