@@ -26,6 +26,7 @@ $orders = $FanaticOrders->getOrders();
         <h1>Fanatic orders</h1>
         <?php if (isset($_SESSION['userName'])) : ?>
             <button onclick="startCam();">scan order</button>
+            <button onclick="batchAddOrders();">batch add orders</button>
         <?php endif ?>
         <hr>
 
@@ -38,7 +39,6 @@ $orders = $FanaticOrders->getOrders();
                 <th>batch</th>
                 <th>code</th>
                 <th>status</th>
-
             </tr>
         </thead>
         <tbody id="searchResults">
@@ -56,8 +56,8 @@ $orders = $FanaticOrders->getOrders();
     </table>
 
     <dialog id="scannerModal" style="text-align: center;">
-        <div id="qr-reader" style="width: 200px"></div>
-        <div id="qr-reader-results"></div>
+        <div id="qr-reader" style="width: 200px;margin-inline: auto;"></div>
+        <div id="qr-reader-results" style="text-align: center;"></div>
         <button onclick="closeCamModal();" style="width: 80%;">cancel</button>
     </dialog>
 

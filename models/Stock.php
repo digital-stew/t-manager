@@ -109,12 +109,12 @@ class Stock extends Database
         if ($size !== 'all') array_push($where, "size = '$size'");
         if ($type !== 'all') array_push($where, "type = '$type'");
         if ($location !== 'all') array_push($where, "location = '$location'");
-
-
         if (sizeof($where) > 0) {
             $sql .= ' WHERE ';
             $sql .= implode(' AND ', $where);
         }
+
+        $sql .= " ORDER BY id DESC";
 
         $stm = $this->db->prepare($sql);
         $res = $stm->execute();
@@ -214,12 +214,15 @@ class Stock extends Database
         return false;
     }
 
-    function removeStock($code, $location, $amount): bool
+    function removeStock($code, $location, $amount, $reason): bool
     {
+        //TODO save reason
         $Auth = new Auth();
         $Auth->isLoggedIn();
 
         $code  = strtoupper($code); // auto capitalize user input
+
+        if ($reason == '') die('no reason');
 
         $parsedCode = $this->parseCode($code);
 
@@ -271,7 +274,7 @@ class Stock extends Database
             $stm->execute();
         }
         $Log = new Log();
-        $Log->add("REMOVE", "stock", null, "code: {$code} location: {$location} amount: {$amount}");
+        $Log->add("REMOVE", "stock", null, "code: {$code} location: {$location} amount: {$amount} reason: {$reason}");
         if ($res) return true;
         return false;
     }
@@ -371,5 +374,26 @@ class Stock extends Database
         }
 
         return $colors;
+    }
+
+    function getReasonsToRemoveStock(): array
+    {
+        $sql = <<<EOD
+            SELECT id, reason
+            FROM removeStockReasons
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $res = $stm->execute();
+
+        $reasons = [];
+        while ($row = $res->fetchArray()) {
+            $newReason = array(
+                'id' => $row['id'],
+                'reason' => $row['reason'],
+            );
+            array_push($reasons, $newReason);
+        }
+
+        return $reasons;
     }
 }

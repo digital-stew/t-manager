@@ -25,6 +25,12 @@
         <section class="border" style="padding: 2rem;">
             <h4>not operational ...yet</h4>
             <p>automatic user location</p>
+            <p>batch add orders</p>
+            <p>reason to remove stock dropdown</p>
+            <p>search fanatic orders</p>
+            <p>more relevant log entry's</p>
+            <p>editable stock remove reasons (scan oder + manual input)</p>
+            <p>open / close public assess</p>
         </section>
 
         <!-- <section class="border" style="padding: 2rem;">
@@ -33,11 +39,9 @@
 
         <section class="border" style="padding: 2rem;">
             <h4>last update</h4>
-            <p>BUX FIX: start images at first image every time a new sample is selected</p>
-            <p>BUX FIX: browser hang if no cam and trying to pick order</p>
-            <p>BUG FIX: when add/remove stock on pc pressing enter closes modal but doesn't save</p>
-            <p>auto capitalize stock input strings</p>
-            <p>better print samples</p>
+            <p>floating stock add/remove buttons</p>
+            <p>moved search stores menus to table head</p>
+            <p>stock list now in reverse order</p>
         </section>
     </div>
 </body>

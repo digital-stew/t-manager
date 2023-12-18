@@ -25,6 +25,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
             <hr>
         </div>
         <section style="display: flex; flex-wrap: wrap;gap: 2rem;justify-content: center;">
+            <p>add "open to public"</p>
             <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/users.php'; ?>
             <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_type.php'; ?>
             <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_color.php'; ?>

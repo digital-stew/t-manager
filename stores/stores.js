@@ -7,6 +7,7 @@ let addOrRemove = "";
 
 function addStockButton() {
   addOrRemove = "add";
+  // document.getElementById("reason-select").style.display = "none";
   try {
     html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
   } catch (error) {
@@ -17,6 +18,7 @@ function addStockButton() {
 
 function removeStockButton() {
   addOrRemove = "remove";
+  // document.getElementById("reason-select").style.display = "block";
   try {
     html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
   } catch (error) {
@@ -53,6 +55,13 @@ async function manualInput() {
   showModal(
     `/stores/${addOrRemove}.php?${addOrRemove}=true&code=${code}&location=${stockLocation}`
   );
+  if (addOrRemove == "remove") {
+    try {
+      html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+    } catch (error) {
+      console.log("no camera");
+    }
+  }
 }
 
 async function searchStock() {
