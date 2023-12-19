@@ -3,29 +3,98 @@ const config = { fps: 10, qrbox: { width: 130, height: 130 } };
 
 searchStock();
 
-let addOrRemove = "";
+/*********** add stock *********/
+const addQrReader = new Html5Qrcode("addStockModal-qrReader");
 
 function addStockButton() {
-  addOrRemove = "add";
-  // document.getElementById("reason-select").style.display = "none";
+  const userLocation = document.getElementById("currentLocationSelect").value;
+  document.getElementById("addStockModal-userLocation").innerText =
+    userLocation;
+  document.getElementById("addStockModal-hiddenLocationInput").value =
+    userLocation;
+  document.getElementById("addStockModal").showModal();
+
   try {
-    html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+    addQrReader.start(
+      { facingMode: "environment" },
+      config,
+      (decodedText, decodedResult) => {
+        addQrReader.pause();
+        document.getElementById("addStockModal-stockCode").value = decodedText;
+        setTimeout(() => {
+          addQrReader.resume();
+        }, 1000);
+      }
+    );
   } catch (error) {
     console.log("no camera");
   }
-  document.getElementById("scannerModal").showModal();
+}
+function closeAddStockModal() {
+  try {
+    addQrReader.stop();
+  } catch (error) {
+    console.log("cant stop none running camera ");
+  }
+  document.getElementById("addStockModal").close();
 }
 
+/*********** remove stock *********/
+const removeQrReader = new Html5Qrcode("removeStockModal-qrReader");
+
 function removeStockButton() {
-  addOrRemove = "remove";
-  // document.getElementById("reason-select").style.display = "block";
-  try {
-    html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
-  } catch (error) {
-    console.log("no camera");
-  }
-  document.getElementById("scannerModal").showModal();
+  const userLocation = document.getElementById("currentLocationSelect").value;
+  document.getElementById("removeStockModal-userLocation").innerText =
+    userLocation;
+  document.getElementById("removeStockModal-hiddenLocationInput").value =
+    userLocation;
+
+  let showUser = document.getElementById("removeStockModal-showUser");
+
+  document.getElementById("removeStockModal").showModal();
+
+  let prom = new Promise((resolve, reject) => {
+    showUser.innerText = "scan stock";
+    removeQrReader.start(
+      { facingMode: "environment" },
+      config,
+      (decodedText, decodedResult) => {
+        removeQrReader.stop();
+
+        document.getElementById("removeStockModal-stockCode").value =
+          decodedText;
+
+        setTimeout(() => {
+          resolve();
+        }, 1000);
+      }
+    );
+  }).then(() => {
+    showUser.innerText = "scan order";
+    removeQrReader.start(
+      { facingMode: "environment" },
+      config,
+      (decodedText, decodedResult) => {
+        removeQrReader.stop();
+
+        document.getElementById("removeStockModal-order").value = decodedText;
+
+        setTimeout(() => {
+          showUser.innerText = "";
+        }, 1000);
+      }
+    );
+  });
 }
+function closeRemoveStockModal() {
+  try {
+    removeQrReader.stop();
+  } catch (error) {
+    console.log("cant stop none running camera ");
+  }
+  document.getElementById("removeStockModal").close();
+}
+/*********** ******* *********/
 
 function closeCamModal() {
   try {

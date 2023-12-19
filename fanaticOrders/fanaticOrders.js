@@ -48,11 +48,12 @@ async function batchQrCodeSuccessCallback(decodedText, decodedResult) {
 
   const result = await addOrderToPick(decodedText);
   if (parseInt(result) > 0) batchShowUser(decodedText);
+  else batchShowUser("error");
 
   setTimeout(() => {
     html5QrCode.resume();
     console.log("resume");
-  }, 5000);
+  }, 3000);
 }
 
 function batchAddOrders() {
@@ -72,7 +73,7 @@ function batchShowUser(string) {
   document.getElementById("qr-reader-results").innerText = string;
   setTimeout(() => {
     document.getElementById("qr-reader-results").innerText = "";
-  }, 5000);
+  }, 3000);
 }
 
 //************replace rejects/short****** */

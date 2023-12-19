@@ -9,6 +9,10 @@ $types = $Stock->getTypes();
 $sizes = $Stock->getSizes();
 $colors = $Stock->getColors();
 $removeStockReasons = $Stock->getReasonsToRemoveStock();
+$options = "";
+foreach ($removeStockReasons as $reason) {
+    $options .= "<option value='{$reason['reason']}'>{$reason['reason']}</option>";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -94,6 +98,57 @@ $removeStockReasons = $Stock->getReasonsToRemoveStock();
             <br>
             <button type="button" onclick="manualInput();" style="width: 80%;">manual input</button><br>
             <button type="button" onclick="closeCamModal();" style="width: 80%;">cancel</button>
+        </form>
+    </dialog>
+
+    <dialog id="addStockModal">
+        <form action="/stores/add.php" method="post" autocomplete="off" style="display: flex;flex-direction: column;text-align: center;">
+            <h4>Add stock</h4>
+
+            <h5 id="addStockModal-userLocation"></h5>
+            <input type="hidden" name="location" id="addStockModal-hiddenLocationInput" required>
+
+            <div id="addStockModal-qrReader" style="width: 200px;margin-inline: auto;"></div>
+
+            <label for="addStockModal-stockCode">stock code</label>
+            <input id="addStockModal-stockCode" name="code" type="text" required>
+
+            <label for="addStockModal-amount" style="margin-top: 1rem;">amount</label>
+            <input id="addStockModal-amount" name="amount" type="number" style="text-align: center;" required>
+
+            <button type="submit" style="width: 80%;">Save</button><br>
+            <button type="button" onclick="closeAddStockModal();" style="width: 80%;">Cancel</button>
+        </form>
+    </dialog>
+
+    <dialog id="removeStockModal">
+        <form action="/stores/remove.php" method="post" autocomplete="off" style="display: flex;flex-direction: column;text-align: center;">
+            <h4>remove stock</h4>
+
+            <h5 id="removeStockModal-userLocation"></h5>
+            <input type="hidden" name="location" id="removeStockModal-hiddenLocationInput" required>
+
+            <h4 id="removeStockModal-showUser" style="color: red;"></h4>
+
+            <div id="removeStockModal-qrReader" style="width: 200px;margin-inline: auto;"></div>
+
+            <label for="removeStockModal-stockCode">stock code</label>
+            <input id="removeStockModal-stockCode" name="code" type="text" required>
+
+            <label for="removeStockModal-order">order</label>
+            <input type="text" name="order" id="removeStockModal-order">
+
+            <label for="removeStockModal-amount" style="margin-top: 1rem;">amount</label>
+            <input id="removeStockModal-amount" name="amount" type="number" style="text-align: center;" required>
+
+            <label for="reason-select" style="margin-top: 1rem;">reason</label>
+            <select id="reason-select" name="reason" required>
+                <option>--Please choose an option--</option>
+                <?= $options ?>
+            </select>
+
+            <button type="submit" style="width: 80%;">Save</button><br>
+            <button type="button" onclick="closeRemoveStockModal();" style="width: 80%;">Cancel</button>
         </form>
     </dialog>
 
