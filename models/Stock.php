@@ -183,7 +183,7 @@ class Stock extends Database
             $stm->bindValue(6, $location);
             $res = $stm->execute();
             $Log = new Log();
-            $Log->add("ADD", "stock", null, "code: {$code} location: {$location} amount: {$amount}");
+            $Log->add("ADD", "stock", null, null, "edit entry - code: {$code} location: {$location} amount: {$amount}");
             if ($res) return true;
         } else { // if code not exist in database
             $sql = <<<EOD
@@ -207,14 +207,14 @@ class Stock extends Database
             $stm->bindValue(6, $amount);
             $res = $stm->execute();
             $Log = new Log();
-            $Log->add("ADD", "stock", null, "code: {$code} location: {$location} amount: {$amount}");
+            $Log->add("ADD", "stock", null, null, "new entry - code: {$code} location: {$location} amount: {$amount}");
             if ($res) return true;
         }
 
         return false;
     }
 
-    function removeStock($code, $location, $amount, $reason): bool
+    function removeStock($code, $location, $amount, $reason, $orderNumber, $orderId): bool
     {
         //TODO save reason
         $Auth = new Auth();
@@ -273,8 +273,12 @@ class Stock extends Database
             $stm->bindValue(5, $location);
             $stm->execute();
         }
+
+        //get current order id
+
+
         $Log = new Log();
-        $Log->add("REMOVE", "stock", null, "code: {$code} location: {$location} amount: {$amount} reason: {$reason}");
+        $Log->add("REMOVE", "stock", $orderNumber, $orderId, "amount: {$amount} - reason: {$reason}");
         if ($res) return true;
         return false;
     }

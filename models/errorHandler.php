@@ -4,7 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 function customError($errno, $errstr, $file, $line)
 {
   $Log = new Log();
-  $Log->add("ERROR", '', null, "err number: {$errno}, {$errstr}, {$file}, line: {$line}");
+  $Log->add("ERROR", '', '', '', "err number: {$errno} - {$errstr} - {$file} - line: {$line}");
   //header('Location: /?flashUser=stock added');
   //print_r($_SERVER);
   echo "<div class='error'>

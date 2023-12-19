@@ -131,7 +131,7 @@ class sample extends Database
 
             if ($files['name'] == '') {
                 $Log = new Log();
-                $Log->add("EDIT", "sample", $id, $number);
+                $Log->add("EDIT", "sample", $name, $id, " order number: {$number}");
                 return true;
             }
 
@@ -168,7 +168,7 @@ class sample extends Database
             $res = $stm->execute();
 
             $Log = new Log();
-            $Log->add("EDIT", "sample", $id, $number);
+            $Log->add("EDIT", "sample", $name, $id, " order number: {$number}");
             return true;
         } catch (Exception $e) {
             return false;
@@ -249,7 +249,7 @@ class sample extends Database
             }
             header('Location: /samples?id=' . $lastID);
             $Log = new Log();
-            $Log->add("ADD", "sample", $lastID, $number);
+            $Log->add("NEW", "sample", $name, $lastID, "");
             return true;
         } catch (Exception $e) {
             return false;
@@ -269,9 +269,9 @@ class sample extends Database
             $stm = $this->db->prepare("DELETE FROM samples WHERE rowid = ?");
             $stm->bindValue(1, $id, SQLITE3_TEXT);
             $stm->execute();
-            //header('Location: /samples');
+
             $Log = new Log();
-            $Log->add("DELETE", "sample", $id);
+            $Log->add("DELETE", "sample", null, $id, null);
             return true;
         } catch (Exception $e) {
             return false;
@@ -287,7 +287,7 @@ class sample extends Database
             $stm->bindValue(1, $image, SQLITE3_TEXT);
             $stm->execute();
             $Log = new Log();
-            $Log->add("DELETE", "sample", null, 'image: ' . $image);
+            $Log->add("DELETE", "sample", null, $id, "delete image: {$image}");
             return true;
         } catch (Exception $e) {
             return false;

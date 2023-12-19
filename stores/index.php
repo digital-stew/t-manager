@@ -136,7 +136,7 @@ foreach ($removeStockReasons as $reason) {
             <input id="removeStockModal-stockCode" name="code" type="text" required>
 
             <label for="removeStockModal-order">order</label>
-            <input type="text" name="order" id="removeStockModal-order">
+            <input type="text" name="order" id="removeStockModal-order" required>
 
             <label for="removeStockModal-amount" style="margin-top: 1rem;">amount</label>
             <input id="removeStockModal-amount" name="amount" type="number" style="text-align: center;" required>

@@ -37,6 +37,7 @@ $Auth = new Auth();
                     <th>action</th>
                     <th>subject</th>
                     <th>id</th>
+                    <th>order</th>
                     <th>note</th>
                     <th>user</th>
                     <th>time</th>
@@ -49,6 +50,7 @@ $Auth = new Auth();
                         <td><?= $entry['action'] ?></td>
                         <td><?= $entry['subject'] ?></td>
                         <td><?= $entry['logID'] ?></td>
+                        <td><?= $entry['order'] ?></td>
                         <td><?= $entry['note'] ?></td>
                         <td><?= $entry['userName'] ?></td>
                         <td class='timestamp' data-datetime="true"><?= $entry['timestamp'] ?></td>

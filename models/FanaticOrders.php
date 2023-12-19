@@ -133,7 +133,8 @@ class FanaticOrders extends Database
         if ($parsedCode['3XL'] > 0) $this->addSize($lastID, '3XL', $parsedCode['3XL']);
 
         $Log = new Log();
-        $Log->add("ADD", "order", $lastID, $parsedCode['orderName']);
+        //   $Log->add("NEW", "order", (string)$parsedCode['orderName'], $lastID, $code);
+        $Log->add("NEW", "order", "order name", $lastID, "code");
 
         if ($parsedCode) return (string)$lastID;
         else return false;
@@ -153,6 +154,8 @@ class FanaticOrders extends Database
         $stm->bindValue(1, $id, SQLITE3_TEXT);
         $res = $stm->execute();
         $firstRes = $res->fetchArray();
+        //print_r($firstRes);
+        //die();
         $order['id'] = $firstRes['id'];
         $order['code'] = $firstRes['code'];
         $order['name'] = $firstRes['name'];
@@ -234,13 +237,22 @@ class FanaticOrders extends Database
         $stm->bindValue(3, $currentEntry['id'], SQLITE3_TEXT);
         $res = $stm->execute();
 
+        //get current order info
+
+        $sql = <<<EOD
+            SELECT id, code, name, garment, status
+            FROM forders
+            WHERE id = ?;
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $orderId, SQLITE3_TEXT);
+        $res = $stm->execute();
+        $currentOrder = $res->fetchArray();
+
         //remove the stock
 
         $Stock = new Stock();
-        $Stock->removeStock($stockCode, $userLocation, $amount);
-
-        $Log = new Log();
-        $Log->add("PICK", "order", $orderId, $size);
+        $Stock->removeStock($stockCode, $userLocation, $amount, 'pick', $currentOrder['name'], $currentOrder['id']);
 
         $this->updateOrderStatus($currentEntry['forder_id']);
 
@@ -282,19 +294,38 @@ class FanaticOrders extends Database
         $Auth = new Auth();
         $Auth->isLoggedIn();
 
+        //get order
+        $currentOrder = $this->getOrder($id);
+        //  print_r($currentOrder);
+
         //remove stock
         $stm = $this->db->prepare("DELETE FROM forders_sizes WHERE forder_id = ?");
         $stm->bindValue(1, $id, SQLITE3_TEXT);
         $stm->execute();
 
         //remove order
-        $stm = $this->db->prepare("DELETE FROM forders WHERE id = ?");
-        $stm->bindValue(1, $id, SQLITE3_TEXT);
-        $stm->execute();
+        $stm2 = $this->db->prepare("DELETE FROM forders WHERE id = ?");
+        $stm2->bindValue(1, $id, SQLITE3_TEXT);
+        $stm2->execute();
 
+        // die('delete order');
         $Log = new Log();
-        $Log->add("DELETE", "fanatic order", $id);
+        $Log->add("DELETE", "order", $currentOrder['name'], $id, "delete fanatic order");
 
         return true;
+    }
+
+    function getIdFromNumber(string $orderNumber)
+    {
+        $sql = <<<EOD
+            SELECT id
+            FROM forders
+            WHERE name = ?;
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $stm->bindValue(1, $orderNumber, SQLITE3_TEXT);
+        $res = $stm->execute();
+        $currentOrder = $res->fetchArray();
+        return (string)$currentOrder['id'];
     }
 }

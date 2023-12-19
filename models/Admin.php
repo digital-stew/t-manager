@@ -86,7 +86,7 @@ class Admin extends Database
         $stm->bindValue(5, password_hash($password, PASSWORD_BCRYPT), SQLITE3_TEXT);
         $res = $stm->execute();
         $Log = new Log();
-        $Log->add("ADD", "user", null, $userName);
+        $Log->add("NEW", "user", null, null, "new user: {$userName}");
         if ($res) return true;
         else return false;
     }
@@ -109,7 +109,7 @@ class Admin extends Database
         $stm->bindValue(4, $id, SQLITE3_TEXT);
         $res = $stm->execute();
         $Log = new Log();
-        $Log->add("EDIT", "user", $id);
+        $Log->add("EDIT", "user", null, $id, null);
         if ($res) return true;
         else return false;
     }
@@ -131,7 +131,7 @@ class Admin extends Database
         $stm->bindValue(2, $id, SQLITE3_TEXT);
         $res = $stm->execute();
         $Log = new Log();
-        $Log->add("EDIT", "user", $id, "change password");
+        $Log->add("EDIT", "user", null, $id, "admin change password");
         if ($res) return true;
         else return false;
     }
@@ -146,7 +146,7 @@ class Admin extends Database
         $stm->bindValue(1, $id, SQLITE3_TEXT);
         $stm->execute();
         $Log = new Log();
-        $Log->add("DELETE", "user", $id);
+        $Log->add("DELETE", "user", null, $id);
         if ($stm) return true;
         else return false;
     }
@@ -178,8 +178,11 @@ class Admin extends Database
         $stm->bindValue(2, $oldCode, SQLITE3_TEXT);
         $stm->bindValue(3, $color, SQLITE3_TEXT);
         $res = $stm->execute();
+
+        $lastID = $this->db->query("SELECT last_insert_rowid();")->fetchArray()['last_insert_rowid()'];
+
         $Log = new Log();
-        $Log->add("ADD", "stock", null, "color: " . $color);
+        $Log->add("NEW", "stock", null, $lastID, "new color: {$color}");
         if ($res) return true;
         else return false;
     }
@@ -194,7 +197,7 @@ class Admin extends Database
         $stm->bindValue(1, $id, SQLITE3_TEXT);
         $stm->execute();
         $Log = new Log();
-        $Log->add("DELETE", "stock", $id, "color");
+        $Log->add("DELETE", "stock", null, $id, "delete stock color");
         if ($stm) return true;
         else return false;
     }
@@ -226,8 +229,12 @@ class Admin extends Database
         $stm->bindValue(2, $oldCode, SQLITE3_TEXT);
         $stm->bindValue(3, $type, SQLITE3_TEXT);
         $res = $stm->execute();
+
+        $lastID = $this->db->query("SELECT last_insert_rowid();")->fetchArray()['last_insert_rowid()'];
+
         $Log = new Log();
-        $Log->add("ADD", "stock", null, "type: " . $type);
+        $Log->add("NEW", "stock", null, $lastID, "new code: {$newCode} - old code: {$oldCode} - type: {$type}");
+
         if ($res) return true;
         else return false;
     }
@@ -242,7 +249,8 @@ class Admin extends Database
         $stm->bindValue(1, $id, SQLITE3_TEXT);
         $stm->execute();
         $Log = new Log();
-        $Log->add("DELETE", "stock", $id, "type");
+        $Log->add("DELETE", "stock", null, $id, "delete stock type");
+
         if ($stm) return true;
         else return false;
     }
@@ -271,8 +279,12 @@ class Admin extends Database
         $stm->bindValue(1, $code, SQLITE3_TEXT);
         $stm->bindValue(2, $size, SQLITE3_TEXT);
         $res = $stm->execute();
+
+        $lastID = $this->db->query("SELECT last_insert_rowid();")->fetchArray()['last_insert_rowid()'];
+
         $Log = new Log();
-        $Log->add('ADD', 'stock', null, "size: " . $size);
+        $Log->add("NEW", "stock", null, $lastID, "new size: {$size} - code: {$code}");
+
         if ($res) return true;
         else return false;
     }
@@ -287,7 +299,7 @@ class Admin extends Database
         $stm->bindValue(1, $id, SQLITE3_TEXT);
         $stm->execute();
         $Log = new Log();
-        $Log->add("DELETE", "stock", $id, "size");
+        $Log->add("DELETE", "stock", null, $id, "delete stock size");
         if ($stm) return true;
         else return false;
     }
