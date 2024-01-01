@@ -30,6 +30,7 @@
             <p>search fanatic orders</p>
             <p>open / close public assess</p>
             <p>add/remove stock reasons in admin panel</p>
+            <p>error checking on stock removal</p>
         </section>
 
         <!-- <section class="border" style="padding: 2rem;">
@@ -48,6 +49,7 @@
             <p>BUG FIX: fanatic orders sizes now SX - 5XL</p>
             <p>reason to remove stock dropdown</p>
             <p>editable stock remove reasons (scan oder + manual input)</p>
+            <p>default user location changed to hawkins</p>
 
     </div>
 </body>

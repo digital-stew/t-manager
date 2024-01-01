@@ -41,7 +41,7 @@ class Auth extends Database
     }
     function getLocations(): array
     {
-        return ['t-print', 'hawkins', 'fleetwood', 'cornwall'];
+        return ['hawkins', 'fleetwood', 't-print', 'cornwall'];
     }
     function setLocation($newLocation)
     {
