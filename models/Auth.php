@@ -17,7 +17,7 @@ class Auth extends Database
             $_SESSION['userLevel'] = $user['userlevel'];
 
             //set location
-            $_SESSION['location'] = "t-print";
+            $_SESSION['location'] = "hawkins";
 
             return "login=ok";
         } else {
