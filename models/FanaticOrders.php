@@ -119,7 +119,7 @@ class FanaticOrders extends Database
         $stm->execute();
         $row = $stm->get_result()->fetch_assoc();
         $stm->close();
-        (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stock LIMIT 1;")->fetch_assoc();
+        (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stock LIMIT 1;")->fetch_column();
 
         if ($parsedCode['XS'] > 0) $this->addSize($lastID, 'XS', $parsedCode['XS']);
         if ($parsedCode['S'] > 0) $this->addSize($lastID, 'S', $parsedCode['S']);

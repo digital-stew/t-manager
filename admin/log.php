@@ -5,7 +5,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 
 $Log = new Log();
 $log = $Log->get();
-//$Auth = new Auth();
+$Auth = new Auth();
 
 ?>
 <!DOCTYPE html>

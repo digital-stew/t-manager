@@ -81,7 +81,7 @@ class sample extends Database
         try {
             $stm = $this->db->prepare($sql);
             $searchTerm = '%' . $search . '%';
-            $stm->bind_param("sssi", $searchTerm, $searchTerm, $searchTerm, $limit);
+            $stm->bind_param("sssi", $searchTerm, $searchTerm, $searchTerm, $limit); // code-spell-checker:disable-line
             $stm->execute();
             $response = $stm->get_result();
 
@@ -106,6 +106,7 @@ class sample extends Database
 
             return $searchResults;
         } catch (Exception $e) {
+            die($e);
             return $e;
         }
     }
@@ -122,7 +123,7 @@ class sample extends Database
 
         try {
             $stm = $this->db->prepare($sql);
-            $stm->bind_param("sssssssi", $frontData, $backData, $otherData, $notes, $name, $number, $otherRef, $id);
+            $stm->bind_param("sssssssi", $frontData, $backData, $otherData, $notes, $name, $number, $otherRef, $id); // code-spell-checker:disable-line
             $stm->execute();
 
             if ($files['name'] == '') {
@@ -158,7 +159,7 @@ class sample extends Database
             $stm = $this->db->prepare($sql);
             $uniqueFilename = $fileUUID . '.webp';
             $timeStamp = time();
-            $stm->bind_param("sissi", $uniqueFilename, $_GET['id'], $files['name'], $_SESSION['userName'], $timeStamp);
+            $stm->bind_param("sissi", $uniqueFilename, $_GET['id'], $files['name'], $_SESSION['userName'], $timeStamp); // code-spell-checker:disable-line
             $stm->execute();
 
             $Log = new Log();
@@ -193,10 +194,10 @@ class sample extends Database
         try {
             $stm = $this->db->prepare($sql);
             $timeStamp = time();
-            $stm->bind_param("sssisssss", $name, $number, $otherRef, $timeStamp, $frontData, $backData, $otherData, $notes, $userName);
+            $stm->bind_param("sssisssss", $name, $number, $otherRef, $timeStamp, $frontData, $backData, $otherData, $notes, $userName); // code-spell-checker:disable-line
             $res = $stm->execute();
 
-            (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.samples LIMIT 1;")->fetch_assoc();
+            (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.samples LIMIT 1;")->fetch_column();
 
             //handle the files
             $i = 0; //iterator
@@ -227,7 +228,7 @@ class sample extends Database
             EOD;
                 $stm = $this->db->prepare($sql);
                 $uniqueFilename = $fileUUID . '.webp';
-                $stm->bind_param("sissi", $uniqueFilename, $lastID, $originalFileName, $_SESSION['userName'], $timeStamp);
+                $stm->bind_param("sissi", $uniqueFilename, $lastID, $originalFileName, $_SESSION['userName'], $timeStamp); // code-spell-checker:disable-line
                 $res = $stm->execute();
                 $i++;
             }

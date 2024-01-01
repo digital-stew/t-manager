@@ -1,5 +1,7 @@
 <?php
-$phpLines = shell_exec("find . -type f -name '*.php' | xargs wc -l | awk '{ total += $1 } END { print total }'");
+//$phpLines = shell_exec("find . -type f -name '*.php' | xargs wc -l | awk '{ total += $1 } END { print total }'");
+//$jsLines = shell_exec("find . -type f -name '*.js' | xargs wc -l | awk '{ total += $1 } END { print total }'");
+//$allLines = shell_exec("find . -type f -name '*' | xargs wc -l | awk '{ total += $1 } END { print total }'");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,6 +29,7 @@ $phpLines = shell_exec("find . -type f -name '*.php' | xargs wc -l | awk '{ tota
             <p>automatic user location</p>
             <p>search fanatic orders</p>
             <p>open / close public assess</p>
+            <p>add/remove stock reasons in admin panel</p>
         </section>
 
         <!-- <section class="border" style="padding: 2rem;">
@@ -46,7 +49,10 @@ $phpLines = shell_exec("find . -type f -name '*.php' | xargs wc -l | awk '{ tota
             <p>reason to remove stock dropdown</p>
             <p>editable stock remove reasons (scan oder + manual input)</p>
         </section>
-        <?= $phpLines ?>
+        <!-- <section class="border" style="padding: 2rem;">
+            <p>php <?= $phpLines ?></p>
+            <p>js <?= $jsLines ?></p>
+        </section> -->
     </div>
 </body>
 

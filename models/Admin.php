@@ -108,7 +108,7 @@ class Admin extends Database
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bind_param("sssi", $email, $department, $userLevel, $id);
+        $stm->bind_param("sssi", $email, $department, $userLevel, $id); // code-spell-checker:disable-line
         $res = $stm->execute();
         $stm->close();
 
@@ -189,8 +189,7 @@ class Admin extends Database
         $res = $stm->execute();
         $stm->close();
 
-        (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stockCodes_color LIMIT 1;")->fetch_assoc();
-
+        (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stockCodes_color LIMIT 1;")->fetch_column();
         $Log = new Log();
         $Log->add("NEW", "stock color", null, $lastID, "new code: {$newCode} - old code: {$oldCode} - color: {$color}");
 
@@ -243,7 +242,7 @@ class Admin extends Database
         $res = $stm->execute();
         $stm->close();
 
-        (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stockCodes_type LIMIT 1;")->fetch_assoc();
+        (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stockCodes_type LIMIT 1;")->fetch_column();
 
         $Log = new Log();
         $Log->add("NEW", "stock type", null, $lastID, "new code: {$newCode} - old code: {$oldCode} - type: {$type}");
@@ -295,7 +294,7 @@ class Admin extends Database
         $res = $stm->execute();
         $stm->close();
 
-        (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stockCodes_size LIMIT 1;")->fetch_assoc();
+        (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stockCodes_size LIMIT 1;")->fetch_column();
 
         $Log = new Log();
         $Log->add("NEW", "stock size", null, $lastID, "new size: {$size} - code: {$code}");

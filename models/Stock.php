@@ -238,7 +238,7 @@ class Stock extends Database
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bind_param("iisssss", $amount, $amount, $code, $parsedCode['type'], $parsedCode['color'], $parsedCode['size'], $location);
+        $stm->bind_param("iisssss", $amount, $amount, $code, $parsedCode['type'], $parsedCode['color'], $parsedCode['size'], $location); // code-spell-checker:disable-line
         $stm->execute();
         $stm->close();
 

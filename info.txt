@@ -44,6 +44,15 @@ NHLGlobal-18 ¦ 1108W-GRY-NHL-MU2 ¦ Womens Tee Sports Grey ¦ 13 XS ¦ 20 S ¦ 
 
 1108W = 208W
 
-mysql
-apt install php-db
-apt-get install php-mysql
+mysql:
+    client:
+    apt install php-db
+    apt-get install php-mysql
+
+    server:
+    apt-get install my-sql-server
+
+    backup:
+    mysqldump -u debian-sys-maint -p t-manager > /root/dump.sql
+    restore:
+    mysql -u debian-sys-maint -p t-manager < /root/dump.sql

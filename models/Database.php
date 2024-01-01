@@ -5,9 +5,12 @@ class Database
     public $db;
     function __construct()
     {
-        $serverName = "localhost";
-        $username = "debian-sys-maint";
-        $password = "nVPtaxfLbST9Ytx3";
+        $serverName = "127.0.0.1";
+        $username = "debian-sys-maint"; // code-spell-checker:disable-line
+
+        //$password = "nVPtaxfLbST9Ytx3"; //desktop dev // code-spell-checker:disable-line
+        //$password = "nVPtaxfLbST9Ytx3"; //laptop dev// code-spell-checker:disable-line
+        $password = "I3WPz8F9tCEhArZw"; //production
 
         $this->db = new mysqli($serverName, $username, $password);
         if ($this->db->connect_error) {
