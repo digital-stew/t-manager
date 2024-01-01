@@ -28,7 +28,7 @@
             <h4>not operational ...yet</h4>
             <p>automatic user location</p>
             <p>search fanatic orders</p>
-            <p>open / close public assess</p>
+            <p>open / close public access</p>
             <p>add/remove stock reasons in admin panel</p>
             <p>error checking on stock removal</p>
         </section>
@@ -46,7 +46,7 @@
             <p>stock list now in reverse order</p>
             <p>batch add orders</p>
             <p>more relevant log entry's</p>
-            <p>BUG FIX: fanatic orders sizes now SX - 5XL</p>
+            <p>BUG FIX: fanatic orders sizes now XS - 5XL</p>
             <p>reason to remove stock dropdown</p>
             <p>editable stock remove reasons (scan oder + manual input)</p>
             <p>default user location changed to hawkins</p>
