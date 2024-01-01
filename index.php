@@ -48,11 +48,7 @@
             <p>BUG FIX: fanatic orders sizes now SX - 5XL</p>
             <p>reason to remove stock dropdown</p>
             <p>editable stock remove reasons (scan oder + manual input)</p>
-        </section>
-        <!-- <section class="border" style="padding: 2rem;">
-            <p>php <?= $phpLines ?></p>
-            <p>js <?= $jsLines ?></p>
-        </section> -->
+
     </div>
 </body>
 
