@@ -5,21 +5,22 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 
 class sample extends Database
 {
-    function get(string $id): array| bool
+    function get(int $id): array | false
     {
         $sql = <<<EOD
         SELECT samples.*, sample_images.webp_filename, sample_images.original_filename
-        FROM samples
-            LEFT JOIN sample_images
+        FROM `t-manager`.samples
+            LEFT JOIN `t-manager`.sample_images
             ON samples.rowid = sample_images.sample_id
             WHERE rowid = ?;
         EOD;
         try {
             $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, $id);
-            $res = $stm->execute();
+            $stm->bind_param("i", $id);
+            $stm->execute();
+            $result = $stm->get_result();
 
-            $sample = $res->fetchArray(SQLITE3_ASSOC); // get all sample details including first image
+            $sample = $result->fetch_assoc(); // get all sample details including first image
 
             $sample['images'] = []; // create array to hold image names
             $sample['originalNames'] = array(); // create array to hold image names
@@ -27,10 +28,12 @@ class sample extends Database
             array_push($sample['images'], $sample['webp_filename']); // push the first image
             array_push($sample['originalNames'], $sample['original_filename']); // push the first image
 
-            while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            while ($row = $result->fetch_assoc()) {
                 array_push($sample['images'], $row['webp_filename']); // push the rest
                 array_push($sample['originalNames'], $row['original_filename']); // push the rest
             }
+
+            $stm->close();
 
             return array(
                 'id' => $sample['rowid'],
@@ -62,11 +65,11 @@ class sample extends Database
                 samples.otherref,
                 (
                     SELECT sample_images.webp_filename
-                    FROM sample_images
+                    FROM `t-manager`.sample_images
                     WHERE sample_images.sample_id = samples.rowid
                     LIMIT 1
                 ) AS image
-            FROM samples
+            FROM `t-manager`.samples
             WHERE
                 samples.name LIKE ? OR
                 samples.otherref LIKE ? OR
@@ -77,14 +80,13 @@ class sample extends Database
 
         try {
             $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, '%' . $search . '%', SQLITE3_TEXT);
-            $stm->bindValue(2, '%' . $search . '%', SQLITE3_TEXT);
-            $stm->bindValue(3, '%' . $search . '%', SQLITE3_TEXT);
-            $stm->bindValue(4, $limit, SQLITE3_TEXT);
-            $res = $stm->execute();
+            $searchTerm = '%' . $search . '%';
+            $stm->bind_param("sssi", $searchTerm, $searchTerm, $searchTerm, $limit);
+            $stm->execute();
+            $response = $stm->get_result();
 
             $searchResults = [];
-            while ($sample = $res->fetchArray()) {
+            while ($sample = $response->fetch_assoc()) {
                 $sample = array(
                     'id' => $sample['rowid'],
                     'name' => $sample['name'] ?? '',
@@ -100,33 +102,27 @@ class sample extends Database
                 );
                 array_push($searchResults, $sample);
             }
+            $stm->close();
+
             return $searchResults;
         } catch (Exception $e) {
             return $e;
         }
     }
 
-    function update(string $id, string $frontData, string $backData, string $otherData, string $notes, string $name, string $number, string $otherRef, $files): bool
+    function update(int $id, string $frontData, string $backData, string $otherData, string $notes, string $name, string $number, string $otherRef, $files): bool
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
         $sql = <<<EOD
-            UPDATE samples
+            UPDATE `t-manager`.samples
             SET printdata = ?, printdataback = ?, printdataother = ?, notes = ?, name = ?, number = ?, otherref = ?
             WHERE rowid = ?
             EOD;
 
         try {
             $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, $frontData, SQLITE3_TEXT);
-            $stm->bindValue(2, $backData, SQLITE3_TEXT);
-            $stm->bindValue(3, $otherData, SQLITE3_TEXT);
-            $stm->bindValue(4, $notes, SQLITE3_TEXT);
-            $stm->bindValue(5, $name, SQLITE3_TEXT);
-            $stm->bindValue(6, $number, SQLITE3_TEXT);
-            $stm->bindValue(7, $otherRef, SQLITE3_TEXT);
-            $stm->bindValue(8, $id, SQLITE3_TEXT);
-
+            $stm->bind_param("sssssssi", $frontData, $backData, $otherData, $notes, $name, $number, $otherRef, $id);
             $stm->execute();
 
             if ($files['name'] == '') {
@@ -150,7 +146,7 @@ class sample extends Database
             move_uploaded_file($files['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/original/' . $files['name']);
 
             $sql = <<<EOD
-            INSERT INTO sample_images(
+            INSERT INTO `t-manager`.sample_images(
                 webp_filename,
                 sample_id,
                 original_filename,
@@ -160,15 +156,14 @@ class sample extends Database
                 VALUES (?,?,?,?,?)
             EOD;
             $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, $fileUUID . '.webp', SQLITE3_TEXT);
-            $stm->bindValue(2, $_GET['id'], SQLITE3_TEXT);
-            $stm->bindValue(3, $files['name'], SQLITE3_TEXT);
-            $stm->bindValue(4, $_SESSION['userName'], SQLITE3_TEXT);
-            $stm->bindValue(5, time(), SQLITE3_TEXT);
-            $res = $stm->execute();
+            $uniqueFilename = $fileUUID . '.webp';
+            $timeStamp = time();
+            $stm->bind_param("sissi", $uniqueFilename, $_GET['id'], $files['name'], $_SESSION['userName'], $timeStamp);
+            $stm->execute();
 
             $Log = new Log();
-            $Log->add("EDIT", "sample", $name, $id, " order number: {$number}");
+            $Log->add("EDIT", "sample", $name, $id, "order number: {$number}");
+
             return true;
         } catch (Exception $e) {
             return false;
@@ -182,7 +177,7 @@ class sample extends Database
         if ($name == '' or $number == '') die('no name or number');
         if ($files['tmp_name'][0] == '') die('no files');
         $sql = <<<EOD
-            INSERT INTO samples (
+            INSERT INTO `t-manager`.samples (
             name,
             number,
             otherref,
@@ -197,18 +192,11 @@ class sample extends Database
             EOD;
         try {
             $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, $name, SQLITE3_TEXT);
-            $stm->bindValue(2, $number, SQLITE3_TEXT);
-            $stm->bindValue(3, $otherRef, SQLITE3_TEXT);
-            $stm->bindValue(4, time(), SQLITE3_TEXT);
-            $stm->bindValue(5, $frontData, SQLITE3_TEXT);
-            $stm->bindValue(6, $backData, SQLITE3_TEXT);
-            $stm->bindValue(7, $otherData, SQLITE3_TEXT);
-            $stm->bindValue(8, $notes, SQLITE3_TEXT);
-            $stm->bindValue(9, $userName, SQLITE3_TEXT);
+            $timeStamp = time();
+            $stm->bind_param("sssisssss", $name, $number, $otherRef, $timeStamp, $frontData, $backData, $otherData, $notes, $userName);
             $res = $stm->execute();
 
-            $lastID = $this->db->query("SELECT last_insert_rowid();")->fetchArray()['last_insert_rowid()'];
+            (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.samples LIMIT 1;")->fetch_assoc();
 
             //handle the files
             $i = 0; //iterator
@@ -228,7 +216,7 @@ class sample extends Database
                 move_uploaded_file($files['tmp_name'][$i], $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/original/' . $originalFileName);
 
                 $sql = <<<EOD
-            INSERT INTO sample_images(
+            INSERT INTO `t-manager`.sample_images(
                 webp_filename,
                 sample_id,
                 original_filename,
@@ -238,18 +226,17 @@ class sample extends Database
                 VALUES (?,?,?,?,?)
             EOD;
                 $stm = $this->db->prepare($sql);
-                $stm->bindValue(1, $fileUUID . '.webp', SQLITE3_TEXT);
-                $stm->bindValue(2, $lastID, SQLITE3_TEXT);
-                $stm->bindValue(3, $originalFileName, SQLITE3_TEXT);
-                $stm->bindValue(4, $_SESSION['userName'], SQLITE3_TEXT);
-                $stm->bindValue(5, time(), SQLITE3_TEXT);
+                $uniqueFilename = $fileUUID . '.webp';
+                $stm->bind_param("sissi", $uniqueFilename, $lastID, $originalFileName, $_SESSION['userName'], $timeStamp);
                 $res = $stm->execute();
-
                 $i++;
             }
+
             header('Location: /samples?id=' . $lastID);
+
             $Log = new Log();
             $Log->add("NEW", "sample", $name, $lastID, "");
+
             return true;
         } catch (Exception $e) {
             return false;
@@ -262,12 +249,12 @@ class sample extends Database
         $Auth->isLoggedIn();
         try {
             //remove images
-            $stm = $this->db->prepare("DELETE FROM sample_images WHERE sample_id = ?");
-            $stm->bindValue(1, $id, SQLITE3_TEXT);
+            $stm = $this->db->prepare("DELETE FROM `t-manager`.sample_images WHERE sample_id = ?");
+            $stm->bind_param("i", $id);
             $stm->execute();
             //remove sample
-            $stm = $this->db->prepare("DELETE FROM samples WHERE rowid = ?");
-            $stm->bindValue(1, $id, SQLITE3_TEXT);
+            $stm = $this->db->prepare("DELETE FROM `t-manager`.samples WHERE rowid = ?");
+            $stm->bind_param("i", $id);
             $stm->execute();
 
             $Log = new Log();
@@ -283,11 +270,13 @@ class sample extends Database
         $Auth = new Auth();
         $Auth->isLoggedIn();
         try {
-            $stm = $this->db->prepare("DELETE FROM sample_images WHERE webp_filename = ?");
-            $stm->bindValue(1, $image, SQLITE3_TEXT);
+            $stm = $this->db->prepare("DELETE FROM `t-manager`.sample_images WHERE webp_filename = ?");
+            $stm->bind_param("s", $image);
             $stm->execute();
+
             $Log = new Log();
             $Log->add("DELETE", "sample", null, $id, "delete image: {$image}");
+
             return true;
         } catch (Exception $e) {
             return false;

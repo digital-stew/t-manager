@@ -43,3 +43,7 @@ NHLGlobal-21 ¦ 1108W-GRY-NHL-MU4 ¦ Womens Tee Sports Grey ¦ 13 XS ¦ 20 S ¦ 
 NHLGlobal-18 ¦ 1108W-GRY-NHL-MU2 ¦ Womens Tee Sports Grey ¦ 13 XS ¦ 20 S ¦ 22 M ¦ 23 L ¦ 12 XL ¦ 10 2XL ¦ 0 3XL
 
 1108W = 208W
+
+mysql
+apt install php-db
+apt-get install php-mysql

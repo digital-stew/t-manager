@@ -21,13 +21,15 @@ class FanaticOrders extends Database
             'XL' => (int)trim(explode(' ', trim($splitCode[7]))[0]),
             '2XL' => (int)trim(explode(' ', trim($splitCode[8]))[0]),
             '3XL' => (int)trim(explode(' ', trim($splitCode[9]))[0]),
+            '4XL' => (int)trim(explode(' ', trim($splitCode[10]))[0]),
+            '5XL' => (int)trim(explode(' ', trim($splitCode[11]))[0]),
         ];
     }
 
     function addSize($forderId, $size, $amount)
     {
         $sql = <<<EOD
-            INSERT INTO forders_sizes (
+            INSERT INTO `t-manager`.forders_sizes (
                 forder_id,
                 size,
                 amount
@@ -36,13 +38,12 @@ class FanaticOrders extends Database
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $forderId, SQLITE3_TEXT);
-        $stm->bindValue(2, $size, SQLITE3_TEXT);
-        $stm->bindValue(3, $amount, SQLITE3_TEXT);
+        $stm->bind_param("sss", $forderId, $size, $amount);
         $stm->execute();
+        $stm->close();
     }
 
-    function getStockCode(string $code)
+    function getStockCode(string $code): string
     {
         // returns 208W861G
         $splitCode = explode('-', $code);
@@ -52,27 +53,29 @@ class FanaticOrders extends Database
 
         //      get type
         $sql = <<<EOD
-            SELECT  newCode
-            FROM stockCodes_type
+            SELECT newCode
+            FROM `t-manager`.stockCodes_type
             WHERE oldCode = ?
         EOD;
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $splitCode[0]);
-        $res = $stm->execute();
-        $row = $res->fetchArray();
+        $stm->bind_param("s", $splitCode[0]);
+        $stm->execute();
+        $row = $stm->get_result()->fetch_assoc();
+        $stm->close();
 
         $type = $row['newCode'] ?? '';
 
         //      get color
         $sql = <<<EOD
-            SELECT  newCode
-            FROM stockCodes_color
+            SELECT newCode
+            FROM `t-manager`.stockCodes_color
             WHERE oldCode = ?
         EOD;
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $splitCode[1]);
-        $res = $stm->execute();
-        $row = $res->fetchArray();
+        $stm->bind_param("s", $splitCode[1]);
+        $stm->execute();
+        $row = $stm->get_result()->fetch_assoc();
+        $stm->close();
 
         $color = $row['newCode'] ?? '';
 
@@ -82,7 +85,7 @@ class FanaticOrders extends Database
         return $type . $color;
     }
 
-    function addOrder(string $code): string
+    function addOrder(string $code): int | false
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
@@ -91,23 +94,20 @@ class FanaticOrders extends Database
 
         $sql = <<<EOD
             SELECT *
-            FROM forders
+            FROM `t-manager`.forders
             WHERE code = ?;
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $parsedCode['orderCode'], SQLITE3_TEXT);
-        //$stm->bindValue(2, $parsedCode['orderName'], SQLITE3_TEXT);
-        $res = $stm->execute();
-        $row = $res->fetchArray();
+        $stm->bind_param("s", $parsedCode['orderCode']);
+        $stm->execute();
+        $row = $stm->get_result()->fetch_assoc();
+        $stm->close();
 
-
-        $tmp = 0;
-
-        if ($row) return (string)$row['id'];
+        if ($row) return $row['id'];
 
         $sql = <<<EOD
-            INSERT INTO forders (
+            INSERT INTO `t-manager`.forders (
                 code,
                 name,
                 garment
@@ -115,14 +115,11 @@ class FanaticOrders extends Database
             VALUES (?,?,?)
         EOD;
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $parsedCode['orderCode'], SQLITE3_TEXT);
-        $stm->bindValue(2, $parsedCode['orderName'], SQLITE3_TEXT);
-        $stm->bindValue(3, $parsedCode['garment'], SQLITE3_TEXT);
+        $stm->bind_param("sss", $parsedCode['orderCode'], $parsedCode['orderName'], $parsedCode['garment']);
         $stm->execute();
-
-        $lastID = $this->db->query("SELECT last_insert_rowid();")->fetchArray()['last_insert_rowid()'];
-
-        // die($lastID);
+        $row = $stm->get_result()->fetch_assoc();
+        $stm->close();
+        (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stock LIMIT 1;")->fetch_assoc();
 
         if ($parsedCode['XS'] > 0) $this->addSize($lastID, 'XS', $parsedCode['XS']);
         if ($parsedCode['S'] > 0) $this->addSize($lastID, 'S', $parsedCode['S']);
@@ -131,62 +128,64 @@ class FanaticOrders extends Database
         if ($parsedCode['XL'] > 0) $this->addSize($lastID, 'XL', $parsedCode['XL']);
         if ($parsedCode['2XL'] > 0) $this->addSize($lastID, '2XL', $parsedCode['2XL']);
         if ($parsedCode['3XL'] > 0) $this->addSize($lastID, '3XL', $parsedCode['3XL']);
+        if ($parsedCode['4XL'] > 0) $this->addSize($lastID, '4XL', $parsedCode['4XL']);
+        if ($parsedCode['5XL'] > 0) $this->addSize($lastID, '5XL', $parsedCode['5XL']);
 
         $Log = new Log();
-        //   $Log->add("NEW", "order", (string)$parsedCode['orderName'], $lastID, $code);
-        $Log->add("NEW", "order", "order name", $lastID, "code");
+        $Log->add("NEW", "order", $parsedCode['orderName'], $lastID, $code);
 
-        if ($parsedCode) return (string)$lastID;
+        if ($parsedCode) return $lastID;
         else return false;
     }
 
-    function getOrder(string $id)
+    function getOrder(int $id): array
     {
 
         $sql = <<<EOD
             SELECT forders.*, forders_sizes.amount, forders_sizes.size, forders_sizes.picked
-            FROM forders
-                LEFT JOIN forders_sizes
-                ON forders.id = forders_sizes.forder_id
-                WHERE forders.id = ?;
+            FROM `t-manager`.forders
+                LEFT JOIN `t-manager`.forders_sizes
+                ON `t-manager`.forders.id = `t-manager`.forders_sizes.forder_id
+                WHERE `t-manager`.forders.id =?;
         EOD;
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $id, SQLITE3_TEXT);
-        $res = $stm->execute();
-        $firstRes = $res->fetchArray();
-        //print_r($firstRes);
-        //die();
+        $stm->bind_param("i", $id);
+        $stm->execute();
+        $result = $stm->get_result();
+        $firstRes = $result->fetch_assoc();
+
+        $order = [];
         $order['id'] = $firstRes['id'];
         $order['code'] = $firstRes['code'];
         $order['name'] = $firstRes['name'];
         $order['garment'] = $firstRes['garment'];
         $order['status'] = $firstRes['status'];
-
         $order['sizes'] = [$firstRes['size'] => $firstRes['amount']];
         $order['picked'] = [$firstRes['size'] => $firstRes['picked']];
 
-        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+        while ($row = $result->fetch_assoc()) {
 
             $order['sizes'] += [$row['size'] => $row['amount']];
             $order['picked'] += [$row['size'] => $row['picked']];
         }
+        $stm->close();
+
         return $order;
     }
 
-    function getOrders($status = 'pending')
+    function getOrders($status = 'pending'): array
     {
         $sql = <<<EOD
             SELECT *
-            FROM forders
-            
+            FROM `t-manager`.forders
         EOD;
 
         $stm = $this->db->prepare($sql);
-        //$stm->bindValue(1, $status, SQLITE3_TEXT);
-        $res = $stm->execute();
+        $stm->execute();
+        $result = $stm->get_result();
 
         $searchResults = [];
-        while ($order = $res->fetchArray()) {
+        while ($order = $result->fetch_assoc()) {
             $order = [
                 'id' => $order['id'],
                 'code' => $order['code'],
@@ -196,10 +195,11 @@ class FanaticOrders extends Database
             ];
             array_push($searchResults, $order);
         }
+        $stm->close();
         return $searchResults;
     }
 
-    function pickSize($orderId, $size, $amount, $stockCode, $userLocation)
+    function pickSize(int $orderId, $size, $amount, $stockCode, $userLocation)
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
@@ -207,15 +207,15 @@ class FanaticOrders extends Database
         //get the entry about to be edited
         $sql = <<<EOD
             SELECT id, forder_id, size, amount, status, picked
-            FROM forders_sizes
+            FROM `t-manager`.forders_sizes
             WHERE forder_id = ? AND size = ?;
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $orderId, SQLITE3_TEXT);
-        $stm->bindValue(2, $size, SQLITE3_TEXT);
+        $stm->bind_param("is", $orderId, $size);
         $res = $stm->execute();
-        $currentEntry = $res->fetchArray();
+        $currentEntry = $stm->get_result()->fetch_assoc();
+        $stm->close();
 
         //check if can take that amount
         if ($currentEntry['amount'] - $amount < 0) return 'below zero';
@@ -227,39 +227,41 @@ class FanaticOrders extends Database
 
         //update the order
         $sql = <<<EOD
-            UPDATE forders_sizes
+            UPDATE `t-manager`.forders_sizes
             SET picked = ?, status = ?
             WHERE id = ?;
         EOD;
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $currentEntry['picked'] + $amount);
-        $stm->bindValue(2, $status);
-        $stm->bindValue(3, $currentEntry['id'], SQLITE3_TEXT);
+        $amountPicked = $currentEntry['picked'] + $amount;
+        $stm->bind_param("sss", $amountPicked, $status, $currentEntry['id']);
         $res = $stm->execute();
+        $stm->close();
 
         //get current order info
 
         $sql = <<<EOD
             SELECT id, code, name, garment, status
-            FROM forders
+            FROM `t-manager`.forders
             WHERE id = ?;
         EOD;
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $orderId, SQLITE3_TEXT);
+        $stm->bind_param("s", $orderId);
         $res = $stm->execute();
-        $currentOrder = $res->fetchArray();
+        $result = $stm->get_result();
+        $currentOrder = $result->fetch_assoc();
+        $stm->close();
 
         //remove the stock
 
         $Stock = new Stock();
-        $Stock->removeStock($stockCode, $userLocation, $amount, 'pick', $currentOrder['name'], $currentOrder['id']);
+        $Stock->removeStock($stockCode, $userLocation, (int)$amount, 'pick', $currentOrder['name'], $currentOrder['id']);
 
         $this->updateOrderStatus($currentEntry['forder_id']);
 
         if ($res) return 'ok';
     }
 
-    function updateOrderStatus($id)
+    function updateOrderStatus(int $id): void
     {
         $status = 'pending';
 
@@ -279,34 +281,34 @@ class FanaticOrders extends Database
         if ($allComplete) $status = 'complete';
 
         $sql = <<<EOD
-            UPDATE forders
+            UPDATE `t-manager`.forders
             SET status = ?
             WHERE id = ?;
         EOD;
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $status);
-        $stm->bindValue(2, $id, SQLITE3_TEXT);
-        $res = $stm->execute();
+        $stm->bind_param("si", $status, $id);
+        $stm->execute();
     }
 
-    function deleteOrder(string $id)
+    function deleteOrder(int $id): bool
     {
         $Auth = new Auth();
         $Auth->isLoggedIn();
 
         //get order
         $currentOrder = $this->getOrder($id);
-        //  print_r($currentOrder);
 
         //remove stock
         $stm = $this->db->prepare("DELETE FROM forders_sizes WHERE forder_id = ?");
-        $stm->bindValue(1, $id, SQLITE3_TEXT);
+        $stm->bind_param("i", $id);
         $stm->execute();
+        $stm->close();
 
         //remove order
         $stm2 = $this->db->prepare("DELETE FROM forders WHERE id = ?");
-        $stm2->bindValue(1, $id, SQLITE3_TEXT);
+        $stm2->bind_param("i", $id);
         $stm2->execute();
+        $stm->close();
 
         // die('delete order');
         $Log = new Log();
@@ -315,17 +317,18 @@ class FanaticOrders extends Database
         return true;
     }
 
-    function getIdFromNumber(string $orderNumber)
+    function getIdFromNumber(string $orderNumber): int
     {
         $sql = <<<EOD
             SELECT id
-            FROM forders
+            FROM `t-manager`.forders
             WHERE name = ?;
         EOD;
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $orderNumber, SQLITE3_TEXT);
-        $res = $stm->execute();
-        $currentOrder = $res->fetchArray();
-        return (string)$currentOrder['id'];
+        $stm->bind_param("s", $orderNumber);
+        $stm->execute();
+        $result = $stm->get_result();
+        $currentOrder = $result->fetch_assoc();
+        return (int)$currentOrder['id'];
     }
 }

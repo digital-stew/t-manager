@@ -6,20 +6,21 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 class Admin extends Database
 {
 
-    function getAllUsers()
+    function getAllUsers(): array
     {
         $Auth = new Auth();
         $Auth->isAdmin();
         $sql = <<<EOD
             SELECT *
-            FROM users
+            FROM `t-manager`.users
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $res = $stm->execute();
+        $stm->execute();
+        $res = $stm->get_result();
 
         $results = [];
-        while ($row = $res->fetchArray()) {
+        while ($row = $res->fetch_assoc()) {
             $user = array(
                 'id' => $row['id'],
                 'name' => $row['user'],
@@ -30,23 +31,26 @@ class Admin extends Database
             );
             array_push($results, $user);
         }
+        $stm->close();
+
         return $results;
     }
 
-    function getUser($id)
+    function getUser(int $id): array
     {
         $Auth = new Auth();
         $Auth->isAdmin();
         $sql = <<<EOD
             SELECT *
-            FROM users
+            FROM `t-manager`.users
             WHERE id = ?
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $id, SQLITE3_TEXT);
-        $res = $stm->execute();
-        $user = $res->fetchArray();
+        $stm->bind_param("i", $id);
+        $stm->execute();
+        $user = $stm->get_result()->fetch_assoc();
+        $stm->close();
 
         return array(
             'id' => $user['id'],
@@ -58,13 +62,13 @@ class Admin extends Database
         );
     }
 
-    function addUser($userName, $email, $password, $userLevel, $department): bool
+    function addUser(string $userName, string $email, string $password, string $userLevel, string $department): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
 
         $sql = <<<EOD
-            INSERT INTO users
+            INSERT INTO `t-manager`.users
             (
                 user,
                 email,
@@ -79,14 +83,15 @@ class Admin extends Database
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, strtolower($userName), SQLITE3_TEXT);
-        $stm->bindValue(2, $email, SQLITE3_TEXT);
-        $stm->bindValue(3, $department, SQLITE3_TEXT);
-        $stm->bindValue(4, $userLevel, SQLITE3_TEXT);
-        $stm->bindValue(5, password_hash($password, PASSWORD_BCRYPT), SQLITE3_TEXT);
+        $lowercaseUserName = strtolower($userName); //ensure user names are lowercase
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        $stm->bind_result("sssss", $lowercaseUserName, $email, $department, $userLevel, $hashedPassword);
         $res = $stm->execute();
+        $stm->close();
+
         $Log = new Log();
         $Log->add("NEW", "user", null, null, "new user: {$userName}");
+
         if ($res) return true;
         else return false;
     }
@@ -97,57 +102,63 @@ class Admin extends Database
         $Auth->isAdmin();
 
         $sql = <<<EOD
-        UPDATE users
+        UPDATE `t-manager`.users
         SET email =?, department = ?, userlevel = ?
         WHERE id = ?
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $email, SQLITE3_TEXT);
-        $stm->bindValue(2, $department, SQLITE3_TEXT);
-        $stm->bindValue(3, $userLevel, SQLITE3_TEXT);
-        $stm->bindValue(4, $id, SQLITE3_TEXT);
+        $stm->bind_param("sssi", $email, $department, $userLevel, $id);
         $res = $stm->execute();
+        $stm->close();
+
         $Log = new Log();
         $Log->add("EDIT", "user", null, $id, null);
+
         if ($res) return true;
         else return false;
     }
 
-    function adminChangeUserPassword($id, $password): bool
+    function adminChangeUserPassword(int $id, string $password): bool
     {
         //working?
         $Auth = new Auth();
         $Auth->isAdmin();
 
         $sql = <<<EOD
-            UPDATE users
+            UPDATE `t-manager`.users
             SET password = ?
             WHERE id = ?
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, password_hash($password, PASSWORD_BCRYPT), SQLITE3_TEXT);
-        $stm->bindValue(2, $id, SQLITE3_TEXT);
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        $stm->bind_param("si", $hashedPassword, $id);
         $res = $stm->execute();
+        $stm->close();
+
         $Log = new Log();
         $Log->add("EDIT", "user", null, $id, "admin change password");
+
         if ($res) return true;
         else return false;
     }
 
-    function deleteUser($id): bool
+    function deleteUser(int $id): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
 
-        $sql = "DELETE FROM users WHERE id = ?";
+        $sql = "DELETE FROM `t-manager`.users WHERE id = ?";
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $id, SQLITE3_TEXT);
-        $stm->execute();
+        $stm->bind_param("i", $id);
+        $res = $stm->execute();
+        $stm->close();
+
         $Log = new Log();
-        $Log->add("DELETE", "user", null, $id);
-        if ($stm) return true;
+        $Log->add("DELETE", "user", null, $id, "delete user");
+
+        if ($res) return true;
         else return false;
     }
 
@@ -161,7 +172,7 @@ class Admin extends Database
         if (!isset($color) || $color == '') return false;
 
         $sql = <<<EOD
-            INSERT INTO stockCodes_color
+            INSERT INTO `t-manager`.stockCodes_color
             (
                 newCode,
                 oldCode,
@@ -174,31 +185,34 @@ class Admin extends Database
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $newCode, SQLITE3_TEXT);
-        $stm->bindValue(2, $oldCode, SQLITE3_TEXT);
-        $stm->bindValue(3, $color, SQLITE3_TEXT);
+        $stm->bind_param("sss", $newCode, $oldCode, $color);
         $res = $stm->execute();
+        $stm->close();
 
-        $lastID = $this->db->query("SELECT last_insert_rowid();")->fetchArray()['last_insert_rowid()'];
+        (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stockCodes_color LIMIT 1;")->fetch_assoc();
 
         $Log = new Log();
-        $Log->add("NEW", "stock", null, $lastID, "new color: {$color}");
+        $Log->add("NEW", "stock color", null, $lastID, "new code: {$newCode} - old code: {$oldCode} - color: {$color}");
+
         if ($res) return true;
         else return false;
     }
 
-    function deleteStockColor(string $id): bool
+    function deleteStockColor(int $id): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
 
-        $sql = "DELETE FROM stockCodes_color WHERE id = ?";
+        $sql = "DELETE FROM `t-manager`.stockCodes_color WHERE id = ?";
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $id, SQLITE3_TEXT);
-        $stm->execute();
+        $stm->bind_param("i", $id);
+        $res = $stm->execute();
+        $stm->close();
+
         $Log = new Log();
-        $Log->add("DELETE", "stock", null, $id, "delete stock color");
-        if ($stm) return true;
+        $Log->add("DELETE", "stock color", null, $id, "delete stock color");
+
+        if ($res) return true;
         else return false;
     }
 
@@ -212,7 +226,7 @@ class Admin extends Database
         if (!isset($type) || $type == '') return false;
 
         $sql = <<<EOD
-            INSERT INTO stockCodes_type
+            INSERT INTO `t-manager`.stockCodes_type
             (
                 newCode,
                 oldCode,
@@ -225,33 +239,34 @@ class Admin extends Database
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $newCode, SQLITE3_TEXT);
-        $stm->bindValue(2, $oldCode, SQLITE3_TEXT);
-        $stm->bindValue(3, $type, SQLITE3_TEXT);
+        $stm->bind_param("sss", $newCode, $oldCode, $type);
         $res = $stm->execute();
+        $stm->close();
 
-        $lastID = $this->db->query("SELECT last_insert_rowid();")->fetchArray()['last_insert_rowid()'];
+        (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stockCodes_type LIMIT 1;")->fetch_assoc();
 
         $Log = new Log();
-        $Log->add("NEW", "stock", null, $lastID, "new code: {$newCode} - old code: {$oldCode} - type: {$type}");
+        $Log->add("NEW", "stock type", null, $lastID, "new code: {$newCode} - old code: {$oldCode} - type: {$type}");
 
         if ($res) return true;
         else return false;
     }
 
-    function deleteStockType(string $id): bool
+    function deleteStockType(int $id): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
 
-        $sql = "DELETE FROM stockCodes_type WHERE id = ?";
+        $sql = "DELETE FROM `t-manager`.stockCodes_type WHERE id = ?";
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $id, SQLITE3_TEXT);
-        $stm->execute();
-        $Log = new Log();
-        $Log->add("DELETE", "stock", null, $id, "delete stock type");
+        $stm->bind_param("i", $id);
+        $res = $stm->execute();
+        $stm->close();
 
-        if ($stm) return true;
+        $Log = new Log();
+        $Log->add("DELETE", "stock type", null, $id, "delete stock type");
+
+        if ($res) return true;
         else return false;
     }
 
@@ -264,7 +279,7 @@ class Admin extends Database
         if (!isset($size) || $size == '') return false;
 
         $sql = <<<EOD
-            INSERT INTO stockCodes_size
+            INSERT INTO `t-manager`.stockCodes_size
             (
                 code,
                 size
@@ -276,31 +291,34 @@ class Admin extends Database
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $code, SQLITE3_TEXT);
-        $stm->bindValue(2, $size, SQLITE3_TEXT);
+        $stm->bind_param("ss", $code, $size);
         $res = $stm->execute();
+        $stm->close();
 
-        $lastID = $this->db->query("SELECT last_insert_rowid();")->fetchArray()['last_insert_rowid()'];
+        (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stockCodes_size LIMIT 1;")->fetch_assoc();
 
         $Log = new Log();
-        $Log->add("NEW", "stock", null, $lastID, "new size: {$size} - code: {$code}");
+        $Log->add("NEW", "stock size", null, $lastID, "new size: {$size} - code: {$code}");
 
         if ($res) return true;
         else return false;
     }
 
-    function deleteStockSize(string $id): bool
+    function deleteStockSize(int $id): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
 
-        $sql = "DELETE FROM stockCodes_size WHERE id = ?";
+        $sql = "DELETE FROM `t-manager`.stockCodes_size WHERE id = ?";
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $id, SQLITE3_TEXT);
-        $stm->execute();
+        $stm->bind_param("i", $id);
+        $res = $stm->execute();
+        $stm->close();
+
         $Log = new Log();
-        $Log->add("DELETE", "stock", null, $id, "delete stock size");
-        if ($stm) return true;
+        $Log->add("DELETE", "stock size", null, $id, "delete stock size");
+
+        if ($res) return true;
         else return false;
     }
 }

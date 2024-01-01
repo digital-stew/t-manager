@@ -23,7 +23,7 @@ if (isset($_POST['newLocation'])) {
     <?php if (isset($_SESSION['userName'])) : ?>
         <div style="display: flex;flex-direction: column;width: 100%;text-align: center;">
             <a href="/user/index.php">
-                <h4>welcome <?= $_SESSION['userName'] ?></h4>
+                <h4 id="user-welcome">welcome <?= $_SESSION['userName'] ?></h4>
             </a>
             <button id="logoutButton" onclick="logout()">logout</button>
 
@@ -41,8 +41,8 @@ if (isset($_POST['newLocation'])) {
 
     <?php else : ?>
         <form id="loginForm" method="post" style="display: flex;flex-direction: column;">
-            <input type="text" name="username" id="" placeholder="Username" style="margin-block: 0.5rem;">
-            <input type="password" name="password" placeholder="Password">
+            <input type="text" name="username" id="login_input" placeholder="Username" style="margin-block: 0.5rem;">
+            <input type="password" name="password" id="password_input" placeholder="Password">
             <button id="loginButton" type="submit" name="login" value="login">Login</button>
         </form>
     <?php endif ?>

@@ -1,4 +1,4 @@
-const html5QrCode = new Html5Qrcode("qr-reader");
+//const html5QrCode = new Html5Qrcode("qr-reader");
 const config = { fps: 10, qrbox: { width: 130, height: 130 } };
 
 searchStock();
@@ -77,7 +77,8 @@ function removeStockButton() {
       (decodedText, decodedResult) => {
         removeQrReader.stop();
 
-        document.getElementById("removeStockModal-order").value = decodedText;
+        document.getElementById("removeStockModal-order").value =
+          decodedText.split("¦")[0];
 
         setTimeout(() => {
           showUser.innerText = "";

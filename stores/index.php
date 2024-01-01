@@ -89,18 +89,6 @@ foreach ($removeStockReasons as $reason) {
         </table>
     </section>
 
-    <dialog id="scannerModal" style="text-align: center;">
-        <div id="qr-reader" style="width: 200px;margin-inline: auto;"></div>
-        <div id="qr-reader-results"></div>
-        <form action="JavaScript:manualInput()">
-            <br>
-            <input type="text" name="manualInputCode" id="manualInputCode">
-            <br>
-            <button type="button" onclick="manualInput();" style="width: 80%;">manual input</button><br>
-            <button type="button" onclick="closeCamModal();" style="width: 80%;">cancel</button>
-        </form>
-    </dialog>
-
     <dialog id="addStockModal">
         <form action="/stores/add.php" method="post" autocomplete="off" style="display: flex;flex-direction: column;text-align: center;">
             <h4>Add stock</h4>

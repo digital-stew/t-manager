@@ -7,3 +7,7 @@ assets/images/sample-images/
 node_modules/
 vendor/
 
+cypress/
+cypress.config.js
+package-lock.json
+package.json

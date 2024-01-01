@@ -19,36 +19,42 @@ class Stock extends Database
         //      test type
         $sql = <<<EOD
             SELECT id, newCode, oldCode, type
-            FROM stockCodes_type
+            FROM `t-manager`.stockCodes_type
         EOD;
         $stm = $this->db->prepare($sql);
-        $res = $stm->execute();
-        while ($row = $res->fetchArray()) {
+        $stm->execute();
+        $result = $stm->get_result();
+
+        while ($row = $result->fetch_assoc()) {
             if ($splitCode[0] == $row['newCode']) $type = $row['type'];
         }
+        $stm->close();
 
         //      test color
         $sql = <<<EOD
             SELECT id, newCode, oldCode, color
-            FROM stockCodes_color
+            FROM `t-manager`.stockCodes_color
         EOD;
         $stm = $this->db->prepare($sql);
-        $res = $stm->execute();
-        while ($row = $res->fetchArray()) {
+        $stm->execute();
+        $result = $stm->get_result();
+        while ($row = $result->fetch_assoc()) {
             if ($splitCode[1] == $row['newCode']) $color = $row['color'];
         }
+        $stm->close();
 
         //      test size
         $sql = <<<EOD
             SELECT id, code, size
-            FROM stockCodes_size
+            FROM `t-manager`.stockCodes_size
         EOD;
         $stm = $this->db->prepare($sql);
-        $res = $stm->execute();
-        while ($row = $res->fetchArray()) {
+        $stm->execute();
+        $result = $stm->get_result();
+        while ($row = $result->fetch_assoc()) {
             if ($splitCode[2] == $row['code']) $size = $row['size'];
         }
-
+        $stm->close();
 
         if ($type == '') die('cant parse type');
         if ($color == '') die('cat parse color');
@@ -61,19 +67,21 @@ class Stock extends Database
         ];
     }
 
-    function searchCode($code)
+    function searchCode(string $code): array
     {
         $sql = <<<EOD
         SELECT *
-        FROM stock
+        FROM `t-manager`.stock
         WHERE code LIKE ?
         EOD;
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $code . '%');
-        $res = $stm->execute();
-        // $isInDatabase = $res->fetchArray();
+        $searchTerm = $code . '%';
+        $stm->bind_param("s", $searchTerm);
+        $stm->execute();
+        $results = $stm->get_result();
+
         $searchResults = [];
-        while ($result = $res->fetchArray()) {
+        while ($result = $results->fetch_assoc()) {
             $result = [
                 'id' => $result['id'],
                 'code' => $result['code'],
@@ -85,23 +93,16 @@ class Stock extends Database
             ];
             array_push($searchResults, $result);
         }
+        $stm->close();
         return $searchResults;
-        // return $isInDatabase;
     }
 
     function search($color = 'all', $size = 'all', $type = 'all', $location = 'all'): array
     {
 
-        // make user input safe
-        $color = SQLite3::escapeString($color);
-        $size = SQLite3::escapeString($size);
-        $type = SQLite3::escapeString($type);
-        $location = SQLite3::escapeString($location);
-
-        //start sql string builder
         $sql = <<< EOD
             SELECT *
-            FROM stock
+            FROM `t-manager`.stock
         EOD;
 
         $where = [];
@@ -117,10 +118,11 @@ class Stock extends Database
         $sql .= " ORDER BY id DESC";
 
         $stm = $this->db->prepare($sql);
-        $res = $stm->execute();
+        $stm->execute();
+        $res = $stm->get_result();
 
         $searchResults = [];
-        while ($result = $res->fetchArray()) {
+        while ($result = $res->fetch_assoc()) {
             $result = [
                 'id' => $result['id'],
                 'code' => $result['code'],
@@ -132,6 +134,7 @@ class Stock extends Database
             ];
             array_push($searchResults, $result);
         }
+        $stm->close();
         return $searchResults;
     }
 
@@ -147,7 +150,7 @@ class Stock extends Database
         //check is code exists in database
         $sql = <<<EOD
         SELECT *
-        FROM stock
+        FROM `t-manager`.stock
         WHERE code = ?
             AND type = ?
             AND color = ?
@@ -155,17 +158,14 @@ class Stock extends Database
             AND location = ?
         EOD;
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $code);
-        $stm->bindValue(2, $parsedCode['type']);
-        $stm->bindValue(3, $parsedCode['color']);
-        $stm->bindValue(4, $parsedCode['size']);
-        $stm->bindValue(5, $location);
-        $res = $stm->execute();
-        $isInDatabase = $res->fetchArray();
+        $stm->bind_param("sssss", $code, $parsedCode['type'], $parsedCode['color'], $parsedCode['size'], $location);
+        $stm->execute();
+        $isInDatabase = $stm->get_result()->fetch_assoc();
+        $stm->close();
 
         if ($isInDatabase) { // if code exists in database
             $sql = <<<EOD
-            UPDATE stock
+            UPDATE `t-manager`.stock
             SET amount = amount + ?
             WHERE code = ?
                 AND type = ?
@@ -175,19 +175,16 @@ class Stock extends Database
             EOD;
 
             $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, $amount);
-            $stm->bindValue(2, $code);
-            $stm->bindValue(3, $parsedCode['type']);
-            $stm->bindValue(4, $parsedCode['color']);
-            $stm->bindValue(5, $parsedCode['size']);
-            $stm->bindValue(6, $location);
+            $stm->bind_param("ssssss", $amount, $code, $parsedCode['type'], $parsedCode['color'], $parsedCode['size'], $location);
             $res = $stm->execute();
+            $stm->close();
+
             $Log = new Log();
             $Log->add("ADD", "stock", null, null, "edit entry - code: {$code} location: {$location} amount: {$amount}");
             if ($res) return true;
         } else { // if code not exist in database
             $sql = <<<EOD
-            INSERT INTO stock (
+            INSERT INTO `t-manager`.stock (
                 code,
                 type,
                 color,
@@ -199,13 +196,10 @@ class Stock extends Database
             EOD;
 
             $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, $code);
-            $stm->bindValue(2, $parsedCode['type']);
-            $stm->bindValue(3, $parsedCode['color']);
-            $stm->bindValue(4, $parsedCode['size']);
-            $stm->bindValue(5, $location);
-            $stm->bindValue(6, $amount);
+            $stm->bind_param("ssssss", $code, $parsedCode['type'], $parsedCode['color'], $parsedCode['size'], $location, $amount);
             $res = $stm->execute();
+            $stm->close();
+
             $Log = new Log();
             $Log->add("ADD", "stock", null, null, "new entry - code: {$code} location: {$location} amount: {$amount}");
             if ($res) return true;
@@ -214,9 +208,9 @@ class Stock extends Database
         return false;
     }
 
-    function removeStock($code, $location, $amount, $reason, $orderNumber, $orderId): bool
+    function removeStock(string $code, string $location, int $amount, string $reason, string $orderNumber, int $orderId): bool
     {
-        //TODO save reason
+        //TODO check stock code - check order number - just remove stock(admin only)
         $Auth = new Auth();
         $Auth->isLoggedIn();
 
@@ -231,7 +225,7 @@ class Stock extends Database
         if ($amount > $currentAmount) return false;
 
         $sql = <<<EOD
-            UPDATE stock
+            UPDATE `t-manager`.stock
             SET amount = CASE
                 WHEN amount >= ? THEN amount - ?
                 ELSE amount
@@ -244,20 +238,15 @@ class Stock extends Database
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $amount);
-        $stm->bindValue(2, $amount);
-        $stm->bindValue(3, $code);
-        $stm->bindValue(4, $parsedCode['type']);
-        $stm->bindValue(5, $parsedCode['color']);
-        $stm->bindValue(6, $parsedCode['size']);
-        $stm->bindValue(7, $location);
-        $res = $stm->execute();
+        $stm->bind_param("iisssss", $amount, $amount, $code, $parsedCode['type'], $parsedCode['color'], $parsedCode['size'], $location);
+        $stm->execute();
+        $stm->close();
 
         // if stock is zero remove from database
         $currentAmount = $this->getCurrentStockAmount($code, $parsedCode['type'], $parsedCode['color'], $parsedCode['size'], $location);
         if ($currentAmount === 0) {
             $sql = <<<EOD
-                DELETE FROM stock
+                DELETE FROM `t-manager`.stock
                 WHERE code = ?
                     AND type = ?
                     AND color = ?
@@ -266,28 +255,22 @@ class Stock extends Database
             EOD;
 
             $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, $code);
-            $stm->bindValue(2, $parsedCode['type']);
-            $stm->bindValue(3, $parsedCode['color']);
-            $stm->bindValue(4, $parsedCode['size']);
-            $stm->bindValue(5, $location);
+            $stm->bind_param("sssss", $code, $parsedCode['type'], $parsedCode['color'], $parsedCode['size'], $location);
             $stm->execute();
+            $stm->close();
         }
 
         //get current order id
-
-
         $Log = new Log();
-        $Log->add("REMOVE", "stock", $orderNumber, $orderId, "amount: {$amount} - reason: {$reason}");
-        if ($res) return true;
-        return false;
+        $Log->add("REMOVE", "stock", $orderNumber, $orderId, "size: {$parsedCode['size']} - amount: {$amount} - reason: {$reason}");
+        return true;
     }
 
-    function getCurrentStockAmount($code, $type, $color, $size, $location)
+    function getCurrentStockAmount(string $code, string $type, string $color, string $size, string $location): int | false
     {
         $sql = <<<EOD
             SELECT amount
-            FROM stock
+            FROM `t-manager`.stock
             WHERE code = ?
                 AND type = ?
                 AND color = ?
@@ -296,17 +279,14 @@ class Stock extends Database
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $stm->bindValue(1, $code);
-        $stm->bindValue(2, $type);
-        $stm->bindValue(3, $color);
-        $stm->bindValue(4, $size);
-        $stm->bindValue(5, $location);
-        $res =  $stm->execute();
+        $stm->bind_param("sssss", $code, $type, $color, $size, $location);
+        $stm->execute();
 
-        $row = $res->fetchArray();
+        $row = $stm->get_result()->fetch_assoc();
+        $stm->close();
 
         if ($row) {
-            return $row['amount'];
+            return (int)$row['amount'];
         } else {
             return false;
         }
@@ -316,13 +296,14 @@ class Stock extends Database
     {
         $sql = <<<EOD
             SELECT id, newCode, oldCode, type
-            FROM stockCodes_type
+            FROM `t-manager`.stockCodes_type
         EOD;
         $stm = $this->db->prepare($sql);
-        $res = $stm->execute();
+        $stm->execute();
+        $res = $stm->get_result();
 
         $types = [];
-        while ($row = $res->fetchArray()) {
+        while ($row = $res->fetch_assoc()) {
             $newType = array(
                 'id' => $row['id'],
                 'newCode' => $row['newCode'],
@@ -331,6 +312,7 @@ class Stock extends Database
             );
             array_push($types, $newType);
         }
+        $stm->close();
 
         return $types;
     }
@@ -339,13 +321,14 @@ class Stock extends Database
     {
         $sql = <<<EOD
             SELECT id, code, size
-            FROM stockCodes_size
+            FROM `t-manager`.stockCodes_size
         EOD;
         $stm = $this->db->prepare($sql);
-        $res = $stm->execute();
+        $stm->execute();
+        $res = $stm->get_result();
 
         $sizes = [];
-        while ($row = $res->fetchArray()) {
+        while ($row = $res->fetch_assoc()) {
             $newSize = array(
                 'id' => $row['id'],
                 'code' => $row['code'],
@@ -353,6 +336,7 @@ class Stock extends Database
             );
             array_push($sizes, $newSize);
         }
+        $stm->close();
 
         return $sizes;
     }
@@ -361,13 +345,14 @@ class Stock extends Database
     {
         $sql = <<<EOD
             SELECT id, newCode, oldCode, color
-            FROM stockCodes_color
+            FROM `t-manager`.stockCodes_color
         EOD;
         $stm = $this->db->prepare($sql);
-        $res = $stm->execute();
+        $stm->execute();
+        $res = $stm->get_result();
 
         $colors = [];
-        while ($row = $res->fetchArray()) {
+        while ($row = $res->fetch_assoc()) {
             $newColor = array(
                 'id' => $row['id'],
                 'newCode' => $row['newCode'],
@@ -376,6 +361,7 @@ class Stock extends Database
             );
             array_push($colors, $newColor);
         }
+        $stm->close();
 
         return $colors;
     }
@@ -384,19 +370,21 @@ class Stock extends Database
     {
         $sql = <<<EOD
             SELECT id, reason
-            FROM removeStockReasons
+            FROM `t-manager`.removeStockReasons
         EOD;
         $stm = $this->db->prepare($sql);
-        $res = $stm->execute();
+        $stm->execute();
+        $res = $stm->get_result();
 
         $reasons = [];
-        while ($row = $res->fetchArray()) {
+        while ($row = $res->fetch_assoc()) {
             $newReason = array(
                 'id' => $row['id'],
                 'reason' => $row['reason'],
             );
             array_push($reasons, $newReason);
         }
+        $stm->close();
 
         return $reasons;
     }

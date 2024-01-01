@@ -5,7 +5,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 
 $Log = new Log();
 $log = $Log->get();
-$Auth = new Auth();
+//$Auth = new Auth();
 
 ?>
 <!DOCTYPE html>
@@ -50,7 +50,7 @@ $Auth = new Auth();
                         <td><?= $entry['action'] ?></td>
                         <td><?= $entry['subject'] ?></td>
                         <td><?= $entry['logID'] ?></td>
-                        <td><?= $entry['order'] ?></td>
+                        <td><?= $entry['orderName'] ?></td>
                         <td><?= $entry['note'] ?></td>
                         <td><?= $entry['userName'] ?></td>
                         <td class='timestamp' data-datetime="true"><?= $entry['timestamp'] ?></td>

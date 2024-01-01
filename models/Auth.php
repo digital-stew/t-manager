@@ -6,10 +6,12 @@ class Auth extends Database
 {
     function login(string $userName, string $password)
     {
-        $stm = $this->db->prepare("SELECT * FROM users WHERE user = ?");
-        $stm->bindValue(1, $userName, SQLITE3_TEXT);
-        $res = $stm->execute();
-        $user = $res->fetchArray(SQLITE3_ASSOC);
+        $stm = $this->db->prepare("SELECT * FROM `t-manager`.users WHERE user = ?");
+        $stm->bind_param("s", $userName);
+        $stm->execute() or die('db error');
+        $user = $stm->get_result()->fetch_assoc();
+        $stm->close();
+
         if (password_verify($password, $user['password'])) {
             $_SESSION['userName'] = $user['user'];
             $_SESSION['userLevel'] = $user['userlevel'];
@@ -50,23 +52,27 @@ class Auth extends Database
     {
 
         //get user
-        $stm = $this->db->prepare("SELECT * FROM users WHERE user = ?");
-        $stm->bindValue(1, $userName, SQLITE3_TEXT);
-        $res = $stm->execute();
-        $user = $res->fetchArray(SQLITE3_ASSOC);
+        $stm = $this->db->prepare("SELECT * FROM `t-manager`.users WHERE user = ?");
+        $stm->bind_param("s", $userName);
+        $dbResponse = $stm->execute();
+        $result = $stm->get_result();
+        $user = $result->fetch_assoc();
+        $stm->close();
+
         if (password_verify($oldPassword, $user['password'])) {
 
             $sql = <<<EOD
-            UPDATE users
+            UPDATE `t-manager`.users
             SET password =?
             WHERE id = ?
             EOD;
             $stm = $this->db->prepare($sql);
-            $stm->bindValue(1, password_hash($newPassword, PASSWORD_BCRYPT), SQLITE3_TEXT);
-            $stm->bindValue(2, $user['id'], SQLITE3_TEXT);
-            $res = $stm->execute();
+            $newPasswordHash = password_hash($newPassword, PASSWORD_BCRYPT);
+            $stm->bind_param("si", $newPasswordHash, $user['id']);
+            $dbResponse = $stm->execute();
+            $stm->close();
 
-            if ($res) return true;
+            if ($dbResponse) return true;
         } else {
             return false;
         }

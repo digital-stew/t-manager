@@ -1,5 +1,5 @@
 <?php
-//$phpLines = shell_exec("find . -type f -name '*.php' | xargs wc -l | awk '{ total += $1 } END { print total }'");
+$phpLines = shell_exec("find . -type f -name '*.php' | xargs wc -l | awk '{ total += $1 } END { print total }'");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,11 +25,7 @@
         <section class="border" style="padding: 2rem;">
             <h4>not operational ...yet</h4>
             <p>automatic user location</p>
-            <p>batch add orders</p>
-            <p>reason to remove stock dropdown</p>
             <p>search fanatic orders</p>
-            <p>more relevant log entry's</p>
-            <p>editable stock remove reasons (scan oder + manual input)</p>
             <p>open / close public assess</p>
         </section>
 
@@ -39,10 +35,18 @@
 
         <section class="border" style="padding: 2rem;">
             <h4>last update</h4>
+            <p>move to mysql</p>
+            <p>BUG FIX: total stock count error</p>
             <p>floating stock add/remove buttons</p>
             <p>moved search stores menus to table head</p>
             <p>stock list now in reverse order</p>
+            <p>batch add orders</p>
+            <p>more relevant log entry's</p>
+            <p>BUG FIX: fanatic orders sizes now SX - 5XL</p>
+            <p>reason to remove stock dropdown</p>
+            <p>editable stock remove reasons (scan oder + manual input)</p>
         </section>
+        <?= $phpLines ?>
     </div>
 </body>
 
