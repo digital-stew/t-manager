@@ -10,7 +10,7 @@ class FanaticOrders extends Database
     function parseCode(string $code): array
     {
         $splitCode = explode('¦', $code);
-        return [
+        $returnArray = [
             'orderName' => trim($splitCode[0]),
             'orderCode' => trim($splitCode[1]),
             'garment' => trim($splitCode[2]),
@@ -21,9 +21,12 @@ class FanaticOrders extends Database
             'XL' => (int)trim(explode(' ', trim($splitCode[7]))[0]),
             '2XL' => (int)trim(explode(' ', trim($splitCode[8]))[0]),
             '3XL' => (int)trim(explode(' ', trim($splitCode[9]))[0]),
-            '4XL' => (int)trim(explode(' ', trim($splitCode[10]))[0]),
-            '5XL' => (int)trim(explode(' ', trim($splitCode[11]))[0]),
         ];
+
+        //  if (isset($splitCode[10])) $returnArray['4XL'] = (int)trim(explode(' ', trim($splitCode[10]))[0]);
+        // if (isset($splitCode[11])) $returnArray['5XL'] = (int)trim(explode(' ', trim($splitCode[11]))[0]);
+
+        return $returnArray;
     }
 
     function addSize($forderId, $size, $amount)
@@ -102,7 +105,9 @@ class FanaticOrders extends Database
         $stm->bind_param("s", $parsedCode['orderCode']);
         $stm->execute();
         $row = $stm->get_result()->fetch_assoc();
-        $stm->close();
+        //print_r($row);
+        //die();
+        // $stm->close();
 
         if ($row) return $row['id'];
 
@@ -110,17 +115,22 @@ class FanaticOrders extends Database
             INSERT INTO `t-manager`.forders (
                 code,
                 name,
-                garment
+                garment,
+                status
             )
-            VALUES (?,?,?)
+            VALUES (?,?,?,?)
         EOD;
         $stm = $this->db->prepare($sql);
-        $stm->bind_param("sss", $parsedCode['orderCode'], $parsedCode['orderName'], $parsedCode['garment']);
+        $status = 'pending';
+        $stm->bind_param("ssss", $parsedCode['orderCode'], $parsedCode['orderName'], $parsedCode['garment'], $status);
         $stm->execute();
-        $row = $stm->get_result()->fetch_assoc();
+        //$row = $stm->get_result()->fetch_assoc();
         $stm->close();
+
         (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stock LIMIT 1;")->fetch_column();
 
+        //print_r($lastID);
+        //die();
         if ($parsedCode['XS'] > 0) $this->addSize($lastID, 'XS', $parsedCode['XS']);
         if ($parsedCode['S'] > 0) $this->addSize($lastID, 'S', $parsedCode['S']);
         if ($parsedCode['M'] > 0) $this->addSize($lastID, 'M', $parsedCode['M']);
@@ -128,13 +138,14 @@ class FanaticOrders extends Database
         if ($parsedCode['XL'] > 0) $this->addSize($lastID, 'XL', $parsedCode['XL']);
         if ($parsedCode['2XL'] > 0) $this->addSize($lastID, '2XL', $parsedCode['2XL']);
         if ($parsedCode['3XL'] > 0) $this->addSize($lastID, '3XL', $parsedCode['3XL']);
-        if ($parsedCode['4XL'] > 0) $this->addSize($lastID, '4XL', $parsedCode['4XL']);
-        if ($parsedCode['5XL'] > 0) $this->addSize($lastID, '5XL', $parsedCode['5XL']);
+        //if ($parsedCode['4XL'] > 0) $this->addSize($lastID, '4XL', $parsedCode['4XL']);
+        //if ($parsedCode['5XL'] > 0) $this->addSize($lastID, '5XL', $parsedCode['5XL']);
 
         $Log = new Log();
         $Log->add("NEW", "order", $parsedCode['orderName'], $lastID, $code);
 
-        if ($parsedCode) return $lastID;
+        //if ($parsedCode) return $lastID;
+        if ($lastID > 0) return $lastID;
         else return false;
     }
 
@@ -299,16 +310,16 @@ class FanaticOrders extends Database
         $currentOrder = $this->getOrder($id);
 
         //remove stock
-        $stm = $this->db->prepare("DELETE FROM forders_sizes WHERE forder_id = ?");
+        $stm = $this->db->prepare("DELETE FROM `t-manager`.forders_sizes WHERE forder_id = ?");
         $stm->bind_param("i", $id);
         $stm->execute();
-        $stm->close();
+        //$stm->close();
 
         //remove order
-        $stm2 = $this->db->prepare("DELETE FROM forders WHERE id = ?");
+        $stm2 = $this->db->prepare("DELETE FROM `t-manager`.forders WHERE id = ?");
         $stm2->bind_param("i", $id);
         $stm2->execute();
-        $stm->close();
+        //$stm->close();
 
         // die('delete order');
         $Log = new Log();
@@ -329,6 +340,7 @@ class FanaticOrders extends Database
         $stm->execute();
         $result = $stm->get_result();
         $currentOrder = $result->fetch_assoc();
-        return (int)$currentOrder['id'];
+        if ($currentOrder) return (int)$currentOrder['id'];
+        else die($orderNumber . " not in database");
     }
 }

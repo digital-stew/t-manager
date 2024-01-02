@@ -8,9 +8,10 @@ async function qrCodeSuccessCallback(decodedText, decodedResult) {
   document.getElementById("scannerModal").close();
 
   const result = await addOrderToPick(decodedText);
-  if (parseInt(result) > 0)
+  if (parseInt(result) > 0) {
     //returns new order id
     window.location = "/fanaticOrders/pickOrder.php?id=" + result;
+  }
 }
 
 async function addOrderToPick(code) {
@@ -21,7 +22,7 @@ async function addOrderToPick(code) {
     body: formData,
   });
   const res = await req.text();
-  if (parseFloat(res) == res) {
+  if (parseInt(res) > 0) {
     return res; //new order id
     // window.location = "/fanaticOrders/pickOrder.php?id=" + res;
   } else return false;
