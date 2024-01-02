@@ -10,7 +10,7 @@ if (isset($_POST['code'])) {
     $newOrderID = $FanaticOrders->addOrder($_POST['code']);
     //if ($echoOrder) die('ok');
     //else die('error');
-    die($newOrderID);
+    die((string)$newOrderID);
 }
 
 if (isset($_POST['pick'])) {
