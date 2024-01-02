@@ -31,7 +31,6 @@
             <p>open / close public access</p>
             <p>add/remove stock reasons in admin panel</p>
             <p>error checking on stock removal</p>
-            <p>combine stock color/types for all the crazy/same codes </p>
         </section>
 
         <!-- <section class="border" style="padding: 2rem;">
@@ -53,7 +52,7 @@
             <p>default user location changed to hawkins</p>
             <p>reverse order for fanatic order list</p>
             <p>auto focus on remove stock</p>
-
+            <p>combine stock color/types for all the crazy/same codes</p>
     </div>
 </body>
 

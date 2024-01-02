@@ -23,8 +23,8 @@ class FanaticOrders extends Database
             '3XL' => (int)trim(explode(' ', trim($splitCode[9]))[0]),
         ];
 
-        //  if (isset($splitCode[10])) $returnArray['4XL'] = (int)trim(explode(' ', trim($splitCode[10]))[0]);
-        // if (isset($splitCode[11])) $returnArray['5XL'] = (int)trim(explode(' ', trim($splitCode[11]))[0]);
+        if (isset($splitCode[10])) $returnArray['4XL'] = (int)trim(explode(' ', trim($splitCode[10]))[0]);
+        if (isset($splitCode[11])) $returnArray['5XL'] = (int)trim(explode(' ', trim($splitCode[11]))[0]);
 
         return $returnArray;
     }
@@ -138,8 +138,8 @@ class FanaticOrders extends Database
         if ($parsedCode['XL'] > 0) $this->addSize($lastID, 'XL', $parsedCode['XL']);
         if ($parsedCode['2XL'] > 0) $this->addSize($lastID, '2XL', $parsedCode['2XL']);
         if ($parsedCode['3XL'] > 0) $this->addSize($lastID, '3XL', $parsedCode['3XL']);
-        //if ($parsedCode['4XL'] > 0) $this->addSize($lastID, '4XL', $parsedCode['4XL']);
-        //if ($parsedCode['5XL'] > 0) $this->addSize($lastID, '5XL', $parsedCode['5XL']);
+        if (isset($parsedCode['4XL']) && $parsedCode['4XL'] > 0) $this->addSize($lastID, '4XL', $parsedCode['4XL']);
+        if (isset($parsedCode['5XL']) && $parsedCode['5XL'] > 0) $this->addSize($lastID, '5XL', $parsedCode['5XL']);
 
         $Log = new Log();
         $Log->add("NEW", "order", $parsedCode['orderName'], $lastID, $code);

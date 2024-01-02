@@ -314,7 +314,7 @@ class Stock extends Database
         }
         $stm->close();
 
-        return $types;
+        return $this->unique_array($types, 'type');
     }
 
     function getSizes(): array
@@ -363,7 +363,7 @@ class Stock extends Database
         }
         $stm->close();
 
-        return $colors;
+        return $this->unique_array($colors, 'color');
     }
 
     function getReasonsToRemoveStock(): array
@@ -387,5 +387,19 @@ class Stock extends Database
         $stm->close();
 
         return $reasons;
+    }
+    private function unique_array($array, $key)
+    {
+        $temp_array = array();
+        $i = 0;
+        $key_array = array();
+        foreach ($array as $val) {
+            if (!in_array($val[$key], $key_array)) {
+                $key_array[$i] = $val[$key];
+                $temp_array[$i] = $val;
+            }
+            $i++;
+        }
+        return $temp_array;
     }
 }
