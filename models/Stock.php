@@ -216,7 +216,7 @@ class Stock extends Database
 
         $code  = strtoupper($code); // auto capitalize user input
 
-        if ($reason == '') die('no reason');
+        if ($reason == 'none') die('no reason');
 
         $parsedCode = $this->parseCode($code);
 

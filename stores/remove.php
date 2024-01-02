@@ -27,7 +27,7 @@ if (isset($_GET['remove']) && isset($_GET['code'])) {
             <label>
                 reason
                 <select id="reason-select" name="reason">
-                    <option value="">--Please choose an option--</option>
+                    <option value="none">--Please choose an option--</option>
                     $options
                 </select>
             </label>

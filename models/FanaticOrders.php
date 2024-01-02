@@ -189,6 +189,7 @@ class FanaticOrders extends Database
         $sql = <<<EOD
             SELECT *
             FROM `t-manager`.forders
+            ORDER BY id DESC
         EOD;
 
         $stm = $this->db->prepare($sql);
@@ -336,11 +337,15 @@ class FanaticOrders extends Database
             WHERE name = ?;
         EOD;
         $stm = $this->db->prepare($sql);
-        $stm->bind_param("s", $orderNumber);
+        $trimOrder = trim($orderNumber);
+        $stm->bind_param("s", $trimOrder);
         $stm->execute();
         $result = $stm->get_result();
         $currentOrder = $result->fetch_assoc();
-        if ($currentOrder) return (int)$currentOrder['id'];
-        else die($orderNumber . " not in database");
+        if ($currentOrder) {
+            return (int)$currentOrder['id'];
+        } else {
+            die($orderNumber . " not in database");
+        }
     }
 }

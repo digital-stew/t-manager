@@ -79,6 +79,7 @@ function removeStockButton() {
 
         document.getElementById("removeStockModal-order").value =
           decodedText.split("¦")[0];
+        document.getElementById("removeStockModal-amount").focus();
 
         setTimeout(() => {
           showUser.innerText = "";
