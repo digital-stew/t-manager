@@ -9,9 +9,9 @@ class Database
         $username = "debian-sys-maint"; // code-spell-checker:disable-line
 
         //$password = "nVPtaxfLbST9Ytx3"; //desktop dev // code-spell-checker:disable-line
-        $password = "nVPtaxfLbST9Ytx3"; //laptop dev// code-spell-checker:disable-line
+        //$password = "nVPtaxfLbST9Ytx3"; //laptop dev// code-spell-checker:disable-line
         //$password = "I3WPz8F9tCEhArZw"; //production
-        //$password = "iNLBTHQBlFSoLANn"; //tux-systems.co.uk // code-spell-checker:disable-line
+        $password = "iNLBTHQBlFSoLANn"; //tux-systems.co.uk // code-spell-checker:disable-line
 
         $this->db = new mysqli($serverName, $username, $password);
         if ($this->db->connect_error) {
