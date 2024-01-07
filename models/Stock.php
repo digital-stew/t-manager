@@ -402,4 +402,24 @@ class Stock extends Database
         }
         return $temp_array;
     }
+
+
+    function transferStock(string $stockCode, string $from, string $to, int $amount): bool
+    {
+        //check code is valid
+        $parsedCode = $this->parseCode($stockCode);
+
+        //check from and to are valid
+        $Auth = new Auth();
+        $locations = $Auth->getLocations();
+        if (!in_array($from, $locations)) die('invalid source');
+        if (!in_array($to, $locations)) die('invalid destination');
+
+        //remove stock
+        $this->removeStock($stockCode, $from, (int)$amount, 'transfer from', '', 0) or die('transfer stock remove error');
+        //add stock
+        $this->addStock($stockCode, $to, $amount) or die('transfer stock add error');
+
+        return true;
+    }
 }

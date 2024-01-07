@@ -21,3 +21,13 @@ function customError($errno, $errstr, $file, $line)
 //set error handler
 //trigger_error('error text', E_USER_ERROR);
 set_error_handler("customError", E_ALL);
+
+function our_global_exception_handler(Throwable $exception)
+{
+  //this code should log the exception to disk and an error tracking system
+  $Log = new Log();
+  $Log->add("ERROR", '', '', '', "$exception->getMessage()");
+  die($exception->getMessage());
+}
+
+//set_exception_handler('our_global_exception_handler');

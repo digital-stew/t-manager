@@ -98,6 +98,40 @@ function closeRemoveStockModal() {
 }
 /*********** ******* *********/
 
+/*********** transfer stock *********/
+const transferQrReader = new Html5Qrcode("transferStockModal-qrReader");
+function transferStockButton() {
+  document.getElementById("transferStockModal").showModal();
+  try {
+    transferQrReader.start(
+      { facingMode: "environment" },
+      config,
+      (decodedText, decodedResult) => {
+        transferQrReader.pause();
+        if (stockCodeIsValid(decodedText))
+          document.getElementById("stockCodeInput").value = decodedText;
+        setTimeout(() => {
+          transferQrReader.resume();
+        }, 1000);
+      }
+    );
+  } catch (error) {
+    console.log("no camera");
+  }
+}
+function stockCodeIsValid(inputCode) {
+  return typeof inputCode === "string" && inputString.length === 11;
+}
+function closeTransferStockModal() {
+  try {
+    transferQrReader.stop();
+  } catch (error) {
+    console.log("cant stop none running camera ");
+  }
+  document.getElementById("transferStockModal").close();
+}
+/*********** ******* *********/
+
 function closeCamModal() {
   try {
     html5QrCode.stop();

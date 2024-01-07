@@ -51,6 +51,7 @@ mysql:
 
     server:
     apt-get install my-sql-server
+    apt-get install php-gd
 
     backup:
     mysqldump -u debian-sys-maint -p t-manager > /root/dump.sql

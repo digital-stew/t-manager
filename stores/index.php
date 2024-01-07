@@ -37,6 +37,7 @@ foreach ($removeStockReasons as $reason) {
             <div>
                 <button onclick="addStockButton()">add</button>
                 <button onclick="removeStockButton()">remove</button>
+                <button onclick="transferStockButton()">transfer</button>
             </div>
         <?php endif ?>
     </div>
@@ -137,6 +138,37 @@ foreach ($removeStockReasons as $reason) {
 
             <button type="submit" style="width: 80%;">Save</button><br>
             <button type="button" onclick="closeRemoveStockModal();" style="width: 80%;">Cancel</button>
+        </form>
+    </dialog>
+
+    <dialog id="transferStockModal">
+        <form action="/stores/transfer.php" method="post" style="display: flex;flex-direction: column;text-align: center;">
+
+            <div id="transferStockModal-qrReader" style="width: 200px;margin-inline: auto;"></div>
+
+            <label for="stockCodeInput">code</label>
+            <input type="text" id="stockCodeInput" name="stockCodeInput" required>
+
+            <label for="amountInput">amount</label>
+            <input type="number" id="amountInput" name="amountInput" style="text-align: inherit;appearance: textfield;" required>
+
+            <label for="transferFromSelect">from</label>
+            <select name="transferFromSelect" id="transferFromSelect">
+                <option value="none">--- select option ---</option>
+                <?php foreach ($locations as $location) : ?>
+                    <option value="<?= $location ?>"><?= $location ?></option>
+                <?php endforeach ?>
+            </select>
+
+            <label for="transferToSelect">to</label>
+            <select name="transferToSelect" id="transferToSelect">
+                <option value="none">--- select option ---</option>
+                <?php foreach ($locations as $location) : ?>
+                    <option value="<?= $location ?>"><?= $location ?></option>
+                <?php endforeach ?>
+            </select>
+            <button type="submit" style="width: 80%;">Save</button><br>
+            <button type="button" onclick="closeTransferStockModal();" style="width: 80%;">Cancel</button>
         </form>
     </dialog>
 

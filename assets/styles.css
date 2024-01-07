@@ -262,7 +262,9 @@ tr:hover {
   margin: 1rem;
 }
 input[type="text"],
+select,
 input[type="password"],
+input[type="number"],
 input[type="search"] {
   text-align: center;
 }
