@@ -88,7 +88,7 @@ if (isset($_GET['colorId'])) {
 //=======================================
 
 $Auth->isAdmin();
-$stockColors = $Stock->getColors();
+$stockColors = $Stock->getColors(true);
 ?>
 <section id="adminView" style="width: fit-content;" class="newBox border">
     <h2>Stock colors</h2>

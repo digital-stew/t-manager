@@ -86,7 +86,7 @@ if (isset($_GET['typeId'])) {
 }
 //=======================================
 $Auth->isAdmin();
-$stockTypes = $Stock->getTypes();
+$stockTypes = $Stock->getTypes(true);
 ?>
 <section id="adminView" style="width: fit-content;" class="newBox border">
     <h2>Stock types</h2>

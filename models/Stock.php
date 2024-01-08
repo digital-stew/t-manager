@@ -292,7 +292,7 @@ class Stock extends Database
         }
     }
 
-    function getTypes(): array
+    function getTypes($all = false): array
     {
         $sql = <<<EOD
             SELECT id, newCode, oldCode, type
@@ -314,7 +314,8 @@ class Stock extends Database
         }
         $stm->close();
 
-        return $this->unique_array($types, 'type');
+        if($all) return $types;
+        else return $this->unique_array($types, 'type');
     }
 
     function getSizes(): array
@@ -341,7 +342,7 @@ class Stock extends Database
         return $sizes;
     }
 
-    function getColors(): array
+    function getColors($all = false): array
     {
         $sql = <<<EOD
             SELECT id, newCode, oldCode, color
@@ -362,8 +363,9 @@ class Stock extends Database
             array_push($colors, $newColor);
         }
         $stm->close();
-
-        return $this->unique_array($colors, 'color');
+        
+        if($all) return $colors;
+        else return $this->unique_array($colors, 'color');
     }
 
     function getReasonsToRemoveStock(): array
