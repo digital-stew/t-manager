@@ -32,14 +32,14 @@ foreach ($removeStockReasons as $reason) {
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php'; ?>
     <div style="<?= isset($_SESSION['userName']) ? 'background-image: inherit ;position: sticky;top:0px;' : '' ?>">
         <h1>Stores</h1>
-        <hr>
         <?php if (isset($_SESSION['userName'])) : ?>
             <div>
                 <button onclick="addStockButton()">add</button>
                 <button onclick="removeStockButton()">remove</button>
                 <button onclick="transferStockButton()">transfer</button>
             </div>
-        <?php endif ?>
+            <?php endif ?>
+            <hr>
     </div>
 
     <section>

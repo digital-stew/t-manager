@@ -83,9 +83,9 @@ class Admin extends Database
         EOD;
 
         $stm = $this->db->prepare($sql);
-        $lowercaseUserName = strtolower($userName); //ensure user names are lowercase
+        (string)$lowercaseUserName = strtolower($userName); //ensure user names are lowercase
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-        $stm->bind_result("sssss", $lowercaseUserName, $email, $department, $userLevel, $hashedPassword);
+        $stm->bind_param("sssss", $lowercaseUserName, $email, $department, $userLevel, $hashedPassword);
         $res = $stm->execute();
         $stm->close();
 

@@ -9,7 +9,7 @@ class Database
         //$serverName = "192.168.1.30";
         $username = "debian-sys-maint"; // code-spell-checker:disable-line
 
-        if ($_SERVER['SERVER_SOFTWARE'] == 'PHP 8.2.10-2ubuntu1 Development Server') $password = "YdmtWmrw6k9L5bCK"; // code-spell-checker:disable-line
+        if ($_SERVER['SERVER_SOFTWARE'] == 'PHP 8.2.10-2ubuntu1 Development Server') $password = "V7AB6DXaNISWLEjD"; // code-spell-checker:disable-line
         // if (DEBUG) $password = "YdmtWmrw6k9L5bCK"; // code-spell-checker:disable-line
         else $password = "IajLPMEwoRPKEuNM"; // code-spell-checker:disable-line
 
@@ -27,8 +27,9 @@ class Database
             //$this->db = new SQLite3($_SERVER['DOCUMENT_ROOT'] . '/db.sqlite');
             //$this->db->exec("PRAGMA busy_timeout=5000");
         } catch (Exception $e) {
+            print_r($e->getMessage());
             die('database error');
-        }
+       }
     }
     function __destruct()
     {
