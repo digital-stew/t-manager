@@ -314,7 +314,7 @@ class Stock extends Database
         }
         $stm->close();
 
-        if($all) return $types;
+        if ($all) return $types;
         else return $this->unique_array($types, 'type');
     }
 
@@ -363,8 +363,8 @@ class Stock extends Database
             array_push($colors, $newColor);
         }
         $stm->close();
-        
-        if($all) return $colors;
+
+        if ($all) return $colors;
         else return $this->unique_array($colors, 'color');
     }
 

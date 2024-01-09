@@ -50,7 +50,10 @@ class sample extends Database
                 'originalNames' => $sample['originalNames'],
             );
         } catch (Exception $e) {
-            return false;
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'get()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            die();
         }
     }
 
@@ -106,8 +109,10 @@ class sample extends Database
 
             return $searchResults;
         } catch (Exception $e) {
-            die($e);
-            return $e;
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'search()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            die();
         }
     }
 
@@ -126,6 +131,7 @@ class sample extends Database
             $stm->bind_param("sssssssi", $frontData, $backData, $otherData, $notes, $name, $number, $otherRef, $id); // code-spell-checker:disable-line
             $stm->execute();
 
+            //if no files add log and return
             if ($files['name'] == '') {
                 $Log = new Log();
                 $Log->add("EDIT", "sample", $name, $id, " order number: {$number}");
@@ -141,7 +147,7 @@ class sample extends Database
                     $webpData = imagewebp($image, $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/webp/' . $fileUUID . '.webp', 50);
                     break;
                 default:
-                    die('cant convert file ' . $files['name']);
+                    throw new Exception('cant convert file ' . $files['name']);
             }
 
             move_uploaded_file($files['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . '/assets/images/samples/original/' . $files['name']);
@@ -167,7 +173,10 @@ class sample extends Database
 
             return true;
         } catch (Exception $e) {
-            return false;
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'update()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            die();
         }
     }
 
@@ -240,7 +249,10 @@ class sample extends Database
 
             return true;
         } catch (Exception $e) {
-            return false;
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'add()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            die();
         }
     }
 
@@ -262,7 +274,10 @@ class sample extends Database
             $Log->add("DELETE", "sample", null, $id, null);
             return true;
         } catch (Exception $e) {
-            return false;
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'remove()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            die();
         }
     }
 
@@ -280,7 +295,10 @@ class sample extends Database
 
             return true;
         } catch (Exception $e) {
-            return false;
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'removeImage()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            die();
         }
     }
 }
