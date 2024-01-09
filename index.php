@@ -31,6 +31,7 @@
             <p>open / close public access</p>
             <p>add/remove stock reasons in admin panel</p>
             <p>error checking on stock removal</p>
+            <p>move completed fanatic orders to new page</p>
         </section>
 
         <!-- <section class="border" style="padding: 2rem;">
@@ -39,20 +40,7 @@
 
         <section class="border" style="padding: 2rem;">
             <h4>last update</h4>
-            <p>move to mysql</p>
-            <p>BUG FIX: total stock count error</p>
-            <p>floating stock add/remove buttons</p>
-            <p>moved search stores menus to table head</p>
-            <p>stock list now in reverse order</p>
-            <p>batch add orders</p>
-            <p>more relevant log entry's</p>
-            <p>BUG FIX: fanatic orders sizes now XS - 5XL</p>
-            <p>reason to remove stock dropdown</p>
-            <p>editable stock remove reasons (scan oder + manual input)</p>
-            <p>default user location changed to hawkins</p>
-            <p>reverse order for fanatic order list</p>
-            <p>auto focus on remove stock</p>
-            <p>combine stock color/types for all the crazy/same codes</p>
+            <p>new: batch add stock</p>
     </div>
 </body>
 

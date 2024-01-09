@@ -10,7 +10,7 @@ class Log extends Database
         SELECT *
         FROM `t-manager`.log
         ORDER BY id DESC
-        LIMIT 1000
+        LIMIT 500
         EOD;
         $stm = $this->db->prepare($sql);
         $res = $stm->execute();

@@ -7,6 +7,8 @@ $Auth = new Auth();
 $locations = $Auth->getLocations();
 $types = $Stock->getTypes();
 $sizes = $Stock->getSizes();
+//print_r($sizes);
+//exit;
 $colors = $Stock->getColors();
 $removeStockReasons = $Stock->getReasonsToRemoveStock();
 $options = "";
@@ -35,11 +37,12 @@ foreach ($removeStockReasons as $reason) {
         <?php if (isset($_SESSION['userName'])) : ?>
             <div>
                 <button onclick="addStockButton()">add</button>
+                <button onclick="batchAddStockButton()">batch add</button>
                 <button onclick="removeStockButton()">remove</button>
                 <button onclick="transferStockButton()">transfer</button>
             </div>
-            <?php endif ?>
-            <hr>
+        <?php endif ?>
+        <hr>
     </div>
 
     <section>
@@ -150,7 +153,7 @@ foreach ($removeStockReasons as $reason) {
             <input type="text" id="stockCodeInput" name="stockCodeInput" required>
 
             <label for="amountInput">amount</label>
-            <input type="number" id="amountInput" name="amountInput" style="text-align: inherit;appearance: textfield;" required>
+            <input type="number" id="amountInput" name="amountInput" style="text-align: inherit;" required>
 
             <label for="transferFromSelect">from</label>
             <select name="transferFromSelect" id="transferFromSelect">
@@ -169,6 +172,23 @@ foreach ($removeStockReasons as $reason) {
             </select>
             <button type="submit" style="width: 80%;">Save</button><br>
             <button type="button" onclick="closeTransferStockModal();" style="width: 80%;">Cancel</button>
+        </form>
+    </dialog>
+
+    <dialog id="batchAddStockModal">
+        <h4>batch add stock</h4>
+        <form action="/stores/add.php" method="post" style="text-align: center;">
+            <input type="text" id="batchAddStyle" name="batchAddStyle" placeholder="style" style="margin-bottom: 1rem;" required>
+            <input type="text" id="batchAddColor" name="batchAddColor" placeholder="color" style=" margin-bottom: 1rem;" required>
+            <br>
+            <?php foreach ($sizes as $size) : ?>
+                <input type="number" name="<?= $size['size'] ?>" id="" placeholder="<?= $size['size'] ?>" style="width: 5ch;">
+            <?php endforeach ?>
+
+            <input type="hidden" name="location" value="<?= $_SESSION['location'] ?? 'none' ?>" id="">
+
+            <button type="submit" style="width: 80%;">Save</button><br>
+            <button type="button" onclick="closeBatchAddStockModal();" style="width: 80%;">Cancel</button>
         </form>
     </dialog>
 

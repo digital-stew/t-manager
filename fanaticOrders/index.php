@@ -2,10 +2,8 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/FanaticOrders.php';
 
 $FanaticOrders = new FanaticOrders();
-//$colors = $Stock->getColors();
 $orders = $FanaticOrders->getOrders();
-//print_r($orders);
-//die();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,6 +25,7 @@ $orders = $FanaticOrders->getOrders();
         <?php if (isset($_SESSION['userName'])) : ?>
             <button onclick="startCam();">scan order</button>
             <button onclick="batchAddOrders();">batch add orders</button>
+            <!-- <button onclick="showCompleteOrders();">show complete</button> -->
         <?php endif ?>
         <hr>
 

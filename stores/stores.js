@@ -132,6 +132,16 @@ function closeTransferStockModal() {
 }
 /*********** ******* *********/
 
+/*********** batch add stock *********/
+function batchAddStockButton() {
+  document.getElementById("batchAddStockModal").showModal();
+}
+
+function closeBatchAddStockModal() {
+  document.getElementById("batchAddStockModal").close();
+}
+/*********** ******* *********/
+
 function closeCamModal() {
   try {
     html5QrCode.stop();
