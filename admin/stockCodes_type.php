@@ -57,7 +57,7 @@ if (isset($_GET['addType'])) {
 if (isset($_GET['typeId'])) {
     session_start();
     $Auth->isAdmin();
-    $stockTypes = $Stock->getTypes();
+    $stockTypes = $Stock->getTypes(true);
 
     foreach ($stockTypes as $stockType) {
         if ($stockType['id'] == $_GET['typeId']) {
@@ -73,7 +73,7 @@ if (isset($_GET['typeId'])) {
     $html = <<<EOD
     <form method="post" action="/admin/stockCodes_type.php?typeId={$selectedStock['id']}"  class='newBox' autocomplete="off">
         <h4>stock type</h4>
-        <p>Id: {$selectedStock['id']}</p>
+         <p>Id: {$selectedStock['id']}</p>
         <p>new code: {$selectedStock['newCode']}</p>
         <p>old code: {$selectedStock['oldCode']}</p>
         <p>type: {$selectedStock['type']}</p>
