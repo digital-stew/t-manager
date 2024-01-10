@@ -182,7 +182,7 @@ foreach ($removeStockReasons as $reason) {
             <input type="text" id="batchAddColor" name="batchAddColor" placeholder="color" style=" margin-bottom: 1rem;" required>
             <br>
             <?php foreach ($sizes as $size) : ?>
-                <input type="number" name="<?= $size['size'] ?>" id="" placeholder="<?= $size['size'] ?>" style="width: 5ch;">
+                <input type="number" name="<?= $size['size'] ?>" id="" placeholder="<?= $size['size'] ?>" style="width: 7ch;">
             <?php endforeach ?>
 
             <input type="hidden" name="location" value="<?= $_SESSION['location'] ?? 'none' ?>" id="">
