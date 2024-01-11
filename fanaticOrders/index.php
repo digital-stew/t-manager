@@ -2,7 +2,11 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/FanaticOrders.php';
 
 $FanaticOrders = new FanaticOrders();
-$orders = $FanaticOrders->getOrders();
+if (isset($_GET['complete'])) {
+    $orders = $FanaticOrders->getOrders('complete');
+} else {
+    $orders = $FanaticOrders->getOrders('pending/short');
+}
 
 ?>
 <!DOCTYPE html>
@@ -25,8 +29,8 @@ $orders = $FanaticOrders->getOrders();
         <?php if (isset($_SESSION['userName'])) : ?>
             <button onclick="startCam();">scan order</button>
             <button onclick="batchAddOrders();">batch add orders</button>
-            <!-- <button onclick="showCompleteOrders();">show complete</button> -->
         <?php endif ?>
+        <button onclick="javascript:window.location.href = '/fanaticOrders/index.php?complete=true';">show complete</button>
         <hr>
 
     </div>

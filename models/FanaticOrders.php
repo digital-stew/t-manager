@@ -208,19 +208,27 @@ class FanaticOrders extends Database
         }
     }
 
-    function getOrders($status = 'complete'): array
+    function getOrders($status = 'pending/short'): array
     {
         try {
-            $sql = <<<EOD
-            SELECT *
-            FROM `t-manager`.forders
-            
-            ORDER BY id DESC
-            EOD;
+            if ($status == 'complete') {
+                $sql = <<<EOD
+                    SELECT *
+                    FROM `t-manager`.forders
+                    WHERE status = 'complete'
+                    ORDER BY id DESC
+                EOD;
+            }
+            if ($status == 'pending/short') {
+                $sql = <<<EOD
+                    SELECT *
+                    FROM `t-manager`.forders
+                    WHERE status = 'short' OR status = 'pending'
+                    ORDER BY id DESC
+                EOD;
+            }
 
             $stm = $this->db->prepare($sql);
-            //WHERE NOT status = ?
-            // $stm->bind_param("s", $status);
             $stm->execute();
             $result = $stm->get_result();
 
