@@ -33,7 +33,6 @@
             <p>error checking on stock removal</p>
             <p>add maintenance log</p>
             <p>add daily supervisor check list</p>
-            <p>move database user/pass to a safe file</p>
         </section>
 
         <!-- <section class="border" style="padding: 2rem;">
@@ -42,6 +41,7 @@
 
         <section class="border" style="padding: 2rem;">
             <h4>last update</h4>
+            <p>move database user/pass to a safe file</p>
             <p>move completed fanatic orders to new page</p>
             <p>new: batch add stock</p>
     </div>
