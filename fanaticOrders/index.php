@@ -30,7 +30,11 @@ if (isset($_GET['complete'])) {
             <button onclick="startCam();">scan order</button>
             <button onclick="batchAddOrders();">batch add orders</button>
         <?php endif ?>
-        <button onclick="javascript:window.location.href = '/fanaticOrders/index.php?complete=true';">show complete</button>
+        <?php if (isset($_GET['complete'])) : ?>
+            <button onclick="javascript:window.location.href = '/fanaticOrders/index.php';">show pending/short</button>
+        <?php else : ?>
+            <button onclick="javascript:window.location.href = '/fanaticOrders/index.php?complete=true';">show complete</button>
+        <?php endif ?>
         <hr>
 
     </div>
