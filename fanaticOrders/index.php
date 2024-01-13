@@ -31,9 +31,9 @@ if (isset($_GET['complete'])) {
             <button onclick="batchAddOrders();">batch add orders</button>
         <?php endif ?>
         <?php if (isset($_GET['complete'])) : ?>
-            <button onclick="javascript:window.location.href = '/fanaticOrders/index.php';">show pending/short</button>
+            <button onclick="javascript:window.location.href = '/fanaticOrders/';">show pending/short</button>
         <?php else : ?>
-            <button onclick="javascript:window.location.href = '/fanaticOrders/index.php?complete=true';">show complete</button>
+            <button onclick="javascript:window.location.href = '/fanaticOrders/?complete=true';">show complete</button>
         <?php endif ?>
         <hr>
 

@@ -1,6 +1,7 @@
 <?php
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 
 class Auth extends Database
 {

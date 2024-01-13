@@ -52,6 +52,7 @@ if (isset($_POST['newLocation'])) {
         <li><a href="/samples">Samples</a></li>
         <li><a href="/stores">Stores</a></li>
         <li><a href="/fanaticOrders">Fanatic orders</a></li>
+        <li><a href="/maintenance">Maintenance</a></li>
         <?php if (isset($_SESSION['userName']) && $_SESSION['userLevel'] == 'admin') : ?>
             <li><a href="/admin">admin</a></li>
             <li><a href="/admin/log.php">log</a></li>
