@@ -65,15 +65,19 @@ class Maintenance extends Database
             $status = 'pending';
             $stm->bind_param("sssis", $problem, $machine, $reportedBy, $timestamp, $status); // code-spell-checker:disable-line
             $res = $stm->execute();
+            (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.maintenance LIMIT 1;")->fetch_column();
+            $Log = new Log();
+            $Log->add('ADD', 'maintenance', $machine, $lastID, $problem);
             if ($res) return true;
         } catch (Exception $e) {
             print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'add()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
             die();
         }
     }
-    function get(int $id)
+    function get(int $id): array
     {
         $sql =  <<<EOD
             SELECT id, problem, machine, reportedBy, timestamp, status
@@ -85,5 +89,48 @@ class Maintenance extends Database
         $stm->bind_param("i", $id);
         $stm->execute();
         return $stm->get_result()->fetch_assoc();
+    }
+
+    function remove(int $id): bool
+    {
+        try {
+            $stm = $this->db->prepare("DELETE FROM `t-manager`.maintenance WHERE id = ?");
+            $stm->bind_param("i", $id);
+            $stm->execute();
+            $stm->close();
+            $Log = new Log();
+            $Log->add('REMOVE', 'maintenance', '', $id, '');
+            return true;
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'remove()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
+            die();
+        }
+    }
+
+    function complete(int $id)
+    {
+        try {
+            $sql = <<<EOD
+                UPDATE `t-manager`.maintenance
+                SET status = 'complete'
+                WHERE id = ?
+            EOD;
+            $stm = $this->db->prepare($sql);
+            $stm->bind_param("i", $id);
+            $stm->execute();
+            $stm->close();
+            $Log = new Log();
+            $Log->add('COMPLETE', 'maintenance', '', $id, '');
+            return true;
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'complete()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
+            die();
+        }
     }
 }

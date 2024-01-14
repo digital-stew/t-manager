@@ -1,17 +1,11 @@
 <?php
-
 require $_SERVER['DOCUMENT_ROOT'] . '/models/Maintenance.php';
-
 $Maintenance = new Maintenance();
 if (isset($_GET['complete'])) {
     $results = $Maintenance->getAll('complete');
 } else {
     $results = $Maintenance->getAll('pending');
 }
-
-//print_r($results);
-//die();
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,12 +23,17 @@ if (isset($_GET['complete'])) {
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php'; ?>
     <div>
         <h1>maintenance log </h1>
-        <button onclick="javascript: document.getElementById('maintenanceModal').showModal()">report problem</button>
+
+        <?php if (isset($_SESSION['userName'])) : ?>
+            <button onclick="document.getElementById('maintenanceModal').showModal()">report problem</button>
+        <?php endif ?>
+
         <?php if (isset($_GET['complete'])) : ?>
             <button onclick="javascript: window.location.href = '/maintenance'">show pending</button>
         <?php else : ?>
             <button onclick="javascript: window.location.href = '/maintenance?complete=true'">show complete</button>
         <?php endif  ?>
+
         <hr>
     </div>
     <table class="border">
@@ -63,11 +62,11 @@ if (isset($_GET['complete'])) {
     </table>
     <dialog id="maintenanceModal" style="text-align: center;">
         <h2>report problem</h2>
-        <form action="/maintenance/add.php" method="post">
+        <form action="/maintenance/control.php" method="post">
             <input type="text" name="problem" id="problem" placeholder="problem">
             <input type="text" name="machine" id="machine" placeholder="machine">
-            <button type="submit" style="width: 80%;margin-top: 2rem;" onclick="javascript: document.getElementById('maintenanceModal').showModal()">Save</button><br>
-            <button type="button" style="width: 80%;" onclick="javascript: document.getElementById('maintenanceModal').close()">Cancel</button>
+            <button type="submit" style="width: 80%;margin-top: 2rem;">Save</button><br>
+            <button type="button" style="width: 80%;" onclick="document.getElementById('maintenanceModal').close()">Cancel</button>
         </form>
     </dialog>
 

@@ -164,8 +164,6 @@ if (isset($_POST['skipPick'])) {
     </dialog>
     <script>
         const json = '<?php echo json_encode($order) ?>';
-
-
         const stockCode = "<?= $stockCodeP1 ?>";
     </script>
 </body>

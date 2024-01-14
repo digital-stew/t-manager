@@ -13,9 +13,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
 </head>
 
 <body>
-
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php';
-
     $Auth = new Auth();
     $Auth->isAdmin();
     ?>

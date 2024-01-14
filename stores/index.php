@@ -135,7 +135,7 @@ foreach ($removeStockReasons as $reason) {
 
             <label for="reason-select" style="margin-top: 1rem;">reason</label>
             <select id="reason-select" name="reason" required>
-                <option>--Please choose an option--</option>
+                <!-- <option>--Please choose an option--</option> -->
                 <?= $options ?>
             </select>
 

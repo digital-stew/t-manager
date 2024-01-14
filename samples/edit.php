@@ -35,8 +35,6 @@ if (isset($_POST['delete']) && isset($_GET["id"])) {
     <form enctype="multipart/form-data" action="/samples/edit.php?id=<?= $sample['id'] ?>" method="POST" id="sampleUpdateForm">
         <section id="sampleData" class="show_sample_section">
 
-
-
             <div class="newBox">
                 <input type="hidden" id="id" value="<?= $sample['id'] ?>">
                 <h4>Info</h4>
@@ -48,6 +46,7 @@ if (isset($_POST['delete']) && isset($_GET["id"])) {
                 <p><input type="text" name="otherref" placeholder="Empty" value="<?= $sample['otherRef'] ?>"></p>
                 <p class="timestamp"><?= $sample['date'] ?></p>
             </div>
+
             <div class="newBox" style="width: 500px;">
                 <h4>Print Data</h4>
                 <h3>front</h3>
@@ -74,14 +73,13 @@ if (isset($_POST['delete']) && isset($_GET["id"])) {
                 <h4></h4>
                 <button type="submit" onclick="return confirm('This will permanently delete this sample')" name="delete">Delete</button>
             </div>
+
             <?php foreach ($sample['images'] as $image) : ?>
                 <div class="newBox sample_show_imageWrapper" style="display: grid;">
-
                     <img class="sampleEditImage" src="/assets/images/samples/webp/<?= $image ?>" alt="sample" style="border-radius: 10px;width: 80%;margin: auto;display: block;">
                     <button type="button" onclick="return confirm('This will permanently delete this image') && deleteImage('<?= $sample['id'] ?>','<?= $image ?>')">remove image</button>
                 </div>
             <?php endforeach ?>
-
 
         </section>
     </form>

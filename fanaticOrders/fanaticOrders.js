@@ -101,5 +101,3 @@ function closeCamModal() {
   html5QrCode.stop();
   document.getElementById("scannerModal").close();
 }
-
-function showCompleteOrders() {}
