@@ -43,13 +43,15 @@ class FanaticOrders extends Database
             INSERT INTO `t-manager`.forders_sizes (
                 forder_id,
                 size,
-                amount
+                amount,
+                status
             )
-            VALUES (?,?,?)
+            VALUES (?,?,?,?)
             EOD;
 
+            $status = 'pending';
             $stm = $this->db->prepare($sql);
-            $stm->bind_param("sss", $forderId, $size, $amount);
+            $stm->bind_param("isis", $forderId, $size, $amount, $status);
             $stm->execute();
             $stm->close();
         } catch (Exception $e) {

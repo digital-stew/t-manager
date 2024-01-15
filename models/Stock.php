@@ -483,6 +483,7 @@ class Stock extends Database
     {
         try {
             //check code is valid
+            $stockCode = trim($stockCode);
             $parsedCode = $this->parseCode($stockCode);
 
             //check from and to are valid
@@ -492,7 +493,7 @@ class Stock extends Database
             if (!in_array($to, $locations)) throw new Exception('invalid destination');
 
             //remove stock
-            $this->removeStock($stockCode, $from, (int)$amount, 'transfer from', '', 0) or throw new Exception('transfer stock remove error');
+            $this->removeStock($stockCode, $from, (int)$amount, "transfer from: {$from}", '', 0) or throw new Exception('transfer stock remove error');
             //add stock
             $this->addStock($stockCode, $to, $amount) or throw new Exception('transfer stock add error');
 
