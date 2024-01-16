@@ -75,7 +75,7 @@ if (isset($_GET['complete'])) {
     <dialog id="manualAddJobModal">
         <form action="/fanaticOrders/pickOrder.php" method="post" style="text-align: center;">
             <h4>manual add job</h4>
-            <input type="text" name="orderName" id="" placeholder="order name / batch"> <br>
+            <input type="text" name="orderName" id="" placeholder="order name / batch" required> <br>
             <select name="type" id="">
                 <?php foreach ($Stock->getTypes() as $type) : ?>
                     <option value="<?= $type['oldCode'] ?>"><?= $type['type'] ?></option>

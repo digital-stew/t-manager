@@ -3,7 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/FanaticOrders.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
 
-if (isset($_POST['manualAddOrder'])) {
+if (isset($_POST['manualAddOrder']) && isset($_POST['orderName'])) {
     session_start();
     // code example 4336-2 ¦ 211M-00U2-ERS-ERS ¦ Hood Sports Grey ¦ 6 XS ¦ 6 S ¦ 8 M ¦ 8 L ¦ 8 XL ¦ 8 2XL ¦ 6 3XL ¦ 0 4XL ¦ 0 5XL
     $colorCode = trim(explode(':', $_POST['color'])[0]);
