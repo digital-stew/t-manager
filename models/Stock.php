@@ -493,7 +493,7 @@ class Stock extends Database
             if (!in_array($to, $locations)) throw new Exception('invalid destination');
 
             //remove stock
-            $this->removeStock($stockCode, $from, (int)$amount, "transfer from: {$from}", '', 0) or throw new Exception('transfer stock remove error ' . "from: {$from} - code: {$stockCode}");
+            $this->removeStock($stockCode, $from, (int)$amount, "transfer from: {$from}", '', 0) or throw new Exception('transfer stock remove error ' . "from: {$from} - code: {$stockCode} - amount: {$amount}");
             //add stock
             $this->addStock($stockCode, $to, $amount) or throw new Exception('transfer stock add error');
 
