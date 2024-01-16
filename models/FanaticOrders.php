@@ -118,13 +118,13 @@ class FanaticOrders extends Database
             $parsedCode = $this->parseCode($code);
 
             $sql = <<<EOD
-            SELECT *
+            SELECT id, code, name, garment, status
             FROM `t-manager`.forders
-            WHERE code = ?;
+            WHERE code = ? AND name = ?;
             EOD;
 
             $stm = $this->db->prepare($sql);
-            $stm->bind_param("s", $parsedCode['orderCode']);
+            $stm->bind_param("ss", $parsedCode['orderCode'], $parsedCode['orderName']);
             $stm->execute();
             $row = $stm->get_result()->fetch_assoc();
 

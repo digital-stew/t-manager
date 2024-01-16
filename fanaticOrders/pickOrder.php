@@ -1,15 +1,46 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/FanaticOrders.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
 
-//$colors = $Stock->getColors();
+if (isset($_POST['manualAddOrder'])) {
+    session_start();
+    // code example 4336-2 ¦ 211M-00U2-ERS-ERS ¦ Hood Sports Grey ¦ 6 XS ¦ 6 S ¦ 8 M ¦ 8 L ¦ 8 XL ¦ 8 2XL ¦ 6 3XL ¦ 0 4XL ¦ 0 5XL
+    $colorCode = trim(explode(':', $_POST['color'])[0]);
+    $colorText = trim(explode(':', $_POST['color'])[1]);
+    $manualCode = '';
+
+    //add order name eg 4336-2
+    $manualCode .= $_POST['orderName'] . ' ¦ ';
+
+    //add order code eg 211M-00U2-ERS-ERS
+    $rand1 = rand3();
+    $rand2 = rand3();
+    $manualCode .= "{$_POST['type']}-{$colorCode}-{$rand1}-{$rand2} ¦ ";
+
+    //add garment name eg Hood Sports Grey
+    $manualCode .= "{$colorText} ¦ ";
+
+    //add sizes
+    $Stock = new Stock();
+    foreach ($Stock->getSizes() as $size) {
+        if (isset($_POST[$size['size']]) && $_POST[$size['size']] > 0) {
+            $manualCode .= $_POST[$size['size']] . ' ' . $size['size'] . ' ¦ ';
+        } else {
+            $manualCode .= '0 ' . $size['size'] . ' ¦ ';
+        }
+    }
+
+    $FanaticOrders = new FanaticOrders();
+    $newOrderID = $FanaticOrders->addOrder($manualCode);
+    if ($newOrderID) header('location: /fanaticOrders');
+    die();
+}
 
 if (isset($_POST['code'])) {
     session_start();
     $FanaticOrders = new FanaticOrders();
     $newOrderID = $FanaticOrders->addOrder($_POST['code']);
-    //if ($echoOrder) die('ok');
-    //else die('error');
     die((string)$newOrderID);
 }
 
@@ -29,6 +60,17 @@ if (isset($_POST['skipPick'])) {
     die('ok');
 }
 
+function rand3($length = 3)
+{
+    $random_string = "";
+    while (strlen($random_string) < $length && $length > 0) {
+        $randNum = mt_rand(0, 61);
+        $random_string .= ($randNum < 10) ?
+            chr($randNum + 48) : ($randNum < 36 ?
+                chr($randNum + 55) : $randNum + 61);
+    }
+    return $random_string;
+}
 
 ?>
 <!DOCTYPE html>
