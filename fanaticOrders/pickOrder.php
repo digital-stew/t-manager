@@ -33,7 +33,11 @@ if (isset($_POST['manualAddOrder']) && isset($_POST['orderName'])) {
 
     $FanaticOrders = new FanaticOrders();
     $newOrderID = $FanaticOrders->addOrder($manualCode);
-    if ($newOrderID) header('location: /fanaticOrders');
+    if ($newOrderID) {
+        header('location: /fanaticOrders');
+    } else {
+        header('Location: /fanaticOrders?flashUser=ERROR!! Contact admin if problem persists');
+    }
     die();
 }
 
@@ -41,15 +45,26 @@ if (isset($_POST['code'])) {
     session_start();
     $FanaticOrders = new FanaticOrders();
     $newOrderID = $FanaticOrders->addOrder($_POST['code']);
-    die((string)$newOrderID);
+    if ($newOrderID) {
+        die((string)$newOrderID); //reply to js function
+    } else {
+        header('Location: /fanaticOrders?flashUser=ERROR!! Contact admin if problem persists');
+    }
 }
 
-if (isset($_POST['pick'])) {
+if (isset($_POST['pick']) && isset($_POST['orderId'])) {
     session_start();
     $FanaticOrders = new FanaticOrders();
     $res = $FanaticOrders->pickSize($_POST['orderId'], $_POST['size'], $_POST['pickedAmount'], $_POST['stockCode'], $_SESSION['location']);
     $_SESSION['pickPlace']++;
-    die('ok');
+    if ($res) {
+        $id = $_POST['orderId'];
+        header("Location: /fanaticOrders/pickOrder.php?id={$id}&continue=true");
+        die();
+    } else {
+        header('Location: /admin?flashUser=ERROR!! Contact admin if problem persists');
+        die();
+    }
 };
 
 if (!isset($_GET['id'])) die('no id code');
@@ -57,7 +72,9 @@ if (!isset($_GET['id'])) die('no id code');
 if (isset($_POST['skipPick'])) {
     session_start();
     $_SESSION['pickPlace']++;
-    die('ok');
+    $id = $_GET['id'];
+    header("Location: /fanaticOrders/pickOrder.php?id={$id}&continue=true");
+    return true;
 }
 
 function rand3($length = 3)
@@ -128,16 +145,12 @@ function rand3($length = 3)
         header("Refresh:0; url=/fanaticOrders/pickOrder.php?id=" . $_GET['id'] . "&continue=true");
         die();
     }
-
     ?>
 
     <div style="height: min-content;">
-
         <h1>pick order</h1>
         <hr>
-
         <section>
-
             <div style="display: flex;justify-content:center;gap: 1rem;">
                 <h4><?= $order['name'] ?></h4>
                 <h4><?= $order['code'] ?></h4>
@@ -146,21 +159,16 @@ function rand3($length = 3)
             <div id="qr-reader" style="width: 200px;margin-inline: auto;margin-top: 2rem;"></div>
 
             <div id="scanTarget" style="display: flex;justify-content:center;gap: 1rem;">
-
                 <p> <?= $fullCode ?> </p>
                 <p><?= $order['garment'] ?></p>
                 <p><?= $currentSize ?></p>
             </div>
             <div style="margin-inline: auto;text-align: center;">
-                <button onclick="skipPick();" style="width: 150px;">skip</button> <br>
-                <button onclick="document.getElementById('confirm').showModal();">test</button>
+                <form action="/fanaticOrders/pickOrder.php?id=<?= $_GET['id'] ?>&continue=true" method="post">
+                    <button type="submit" name="skipPick" style="width: 150px;">skip</button> <br>
+                </form>
+                <button onclick="document.getElementById('confirm').showModal();">manual</button>
             </div>
-
-            <!--  debug info
-            <?= $order['sizes'][$currentSize] ?>
-            <?= $currentSize ?>
-            <?= $_SESSION['pickPlace'] ?>
-        -->
 
             <table class="border" style="text-align: center;margin-inline: auto;">
                 <thead>
@@ -174,11 +182,13 @@ function rand3($length = 3)
                 <tbody>
                     <tr>
                         <td>to pick</td>
-                        <?php foreach (array_keys($order['sizes']) as $size)
-                            // <!-- print amount left to pick -->
-
-                            echo "<td>" . $order["sizes"][$size] - $order["picked"][$size] . "</td>";
-                        ?>
+                        <?php foreach (array_keys($order['sizes']) as $size) : ?>
+                            <!-- print amount left to pick -->
+                            <?php $style = '';
+                            if ($currentSize === $size) $style = "color: red;";
+                            ?>
+                            <td style="<?= $style ?>"><?= $order["sizes"][$size] - $order["picked"][$size] ?></td>
+                        <?php endforeach ?>
                     </tr>
                     <tr>
                         <td><?= $_SESSION['location'] ?></td>
@@ -186,28 +196,25 @@ function rand3($length = 3)
                         foreach (array_keys($order['sizes']) as $sizeValue) {
                             echo "<td>" . $availableStock[$sizeValue] . '</td>';
                         };
-
                         ?>
-
                     </tr>
                 </tbody>
             </table>
         </section>
     </div>
     <dialog id="confirm" style="text-align: center;">
-        <p style="display: none;">order id: <span id="orderId"><?= $_GET['id'] ?></span></p>
-        <p>code: <span id="targetCode"><?= $fullCode ?></span></p>
-        <p>size: <span id="targetSize"><?= $currentSize ?></span></p>
-        <!-- if available is less than required only show available stock -->
-        <p>pick: <span id="pickAmount"><?= $availableStock[$currentSize] < $order['sizes'][$currentSize] - $order["picked"][$currentSize] ? $availableStock[$currentSize] : $order['sizes'][$currentSize] - $order["picked"][$currentSize] ?></span></p>
-        <button onclick="uploadPick();" style="width: 90%;">done</button>
-        <button onclick="skipPick();">skip</button>
-        <button onclick="document.getElementById('confirm').close();">cancel</button>
+        <form action="/fanaticOrders/pickOrder.php?id=<?= $_GET['id'] ?>&continue=true" method="post" style="text-align: center;">
+            <input type="hidden" name="orderId" value="<?= $_GET['id'] ?>">
+            <div>code:<input type="text" name="stockCode" style="all:unset;width: 14ch;" class="hiddenBox" id="targetCode" value="<?= $fullCode ?>" readonly></div>
+            <div>size:<input type="text" name="size" style="all:unset;width: 5ch;margin-block: 1rem;" value="<?= $currentSize ?>" readonly></div>
+            <!-- if available is less than required only show available stock -->
+            <div>pick: <input type="tel" name="pickedAmount" style="all:unset;width: 5ch;" value="<?= $availableStock[$currentSize] < $order['sizes'][$currentSize] - $order["picked"][$currentSize] ? $availableStock[$currentSize] : $order['sizes'][$currentSize] - $order["picked"][$currentSize] ?>" readonly></div>
+            <button type="submit" name="pick" style="width: 90%;">done</button>
+            <button type="submit" name="skipPick">skip</button>
+            <button type="button" onclick="document.getElementById('confirm').close();">cancel</button>
+        </form>
     </dialog>
-    <script>
-        const json = '<?php echo json_encode($order) ?>';
-        const stockCode = "<?= $stockCodeP1 ?>";
-    </script>
+
 </body>
 
 </html>

@@ -42,7 +42,6 @@ if (isset($_GET['complete'])) {
                 <th>id</th>
                 <th>problem</th>
                 <th>machine</th>
-                <th>reported by</th>
                 <th>date</th>
                 <th>status</th>
             </tr>
@@ -53,7 +52,6 @@ if (isset($_GET['complete'])) {
                     <td><?= $result['id'] ?></td>
                     <td><?= $result['problem'] ?></td>
                     <td><?= $result['machine'] ?></td>
-                    <td><?= $result['reportedBy'] ?></td>
                     <td class='timestamp'><?= $result['timestamp'] ?></td>
                     <td><?= $result['status'] ?></td>
                 </tr>

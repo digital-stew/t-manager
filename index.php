@@ -12,6 +12,7 @@
     <title>Home</title>
     <link rel="stylesheet" href="/assets/styles.css">
     <script src="/assets/globalFunctions.js" defer></script>
+    <meta http-equiv="refresh" content="0; URL=/stores/" />
 </head>
 
 <body>

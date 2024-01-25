@@ -50,9 +50,10 @@ class sample extends Database
                 'originalNames' => $sample['originalNames'],
             );
         } catch (Exception $e) {
-            print_r($e->getMessage());
+            //print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'get()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
             die();
         }
     }
@@ -274,9 +275,9 @@ class sample extends Database
             $Log->add("DELETE", "sample", null, $id, null);
             return true;
         } catch (Exception $e) {
-            print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'remove()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
             die();
         }
     }
@@ -295,9 +296,10 @@ class sample extends Database
 
             return true;
         } catch (Exception $e) {
-            print_r($e->getMessage());
+            //print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'removeImage()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
             die();
         }
     }

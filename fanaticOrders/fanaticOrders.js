@@ -24,7 +24,6 @@ async function addOrderToPick(code) {
   const res = await req.text();
   if (parseInt(res) > 0) {
     return res; //new order id
-    // window.location = "/fanaticOrders/pickOrder.php?id=" + res;
   } else return false;
 }
 

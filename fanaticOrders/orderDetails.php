@@ -2,11 +2,17 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/FanaticOrders.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/sample.php';
 session_start();
 $Auth = new Auth();
 
 $FanaticOrders = new FanaticOrders();
 $order = $FanaticOrders->getOrder($_GET['id']);
+
+$Sample = new sample();
+$sample = $Sample->search($order['name'], 1);
+//print_r($sample);
+// exit;
 
 $Stock = new Stock();
 $returnArray = [];
@@ -14,7 +20,11 @@ $stockCode = $FanaticOrders->getStockCode($order['code']);
 
 if (isset($_POST['deleteFanaticOrder'])) {
     $res = $FanaticOrders->deleteOrder($_GET['id']);
-    if ($res) header('Location: /fanaticOrders?flashUser=order deleted');
+    if ($res) {
+        header('Location: /fanaticOrders?flashUser=order deleted');
+    } else {
+        header('Location: /admin?flashUser=ERROR!! Contact admin if problem persists');
+    }
     die();
 }
 
@@ -70,8 +80,14 @@ if (isset($_POST['deleteFanaticOrder'])) {
         </tbody>
     </table>
     <?php if (isset($_SESSION['userName'])) : ?>
-        <button type="button" onclick="window.location = '/fanaticOrders/pickOrder.php?id=<?= $order['id'] ?>';">pick order</button> <br>
+        <button type="button" onclick="window.location = '/fanaticOrders/pickOrder.php?id=<?= $order['id'] ?>';">pick order</button>
     <?php endif ?>
+
+    <?php if (isset($sample[0]['id'])) : ?>
+        <button onclick="window.location ='/samples?id=<?= $sample[0]['id'] ?>'">sample available</button>
+    <?php endif ?>
+
+    <br>
     <button type="button" onclick="closeModal();">cancel</button>
     <?php if (isset($_SESSION['userName']) && $_SESSION['userLevel'] == 'admin') : ?>
         <hr>

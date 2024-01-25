@@ -35,11 +35,11 @@ if (isset($_GET['addColor'])) {
         <h4>Add stock color</h4>
         <label>
             new code
-            <input type="text" name="newCode"  required>
+            <input type="text" name="newCode" minlength="3" required>
         </label>
         <label>
             old code
-            <input type="text" name="oldCode" required>
+            <input type="text" name="oldCode" minlength="3"  required>
         </label>
         <label>
             color

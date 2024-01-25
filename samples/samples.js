@@ -31,6 +31,7 @@ function updateSamplesList() {
 
 //click on a sample
 async function selectSample(rowID) {
+  // window.history.pushState({ search: rowID }, "", "?");
   displayImageNumber = 0; // select sample bug fix
   await showModal("/samples/show.php?id=" + rowID);
   images = document.querySelectorAll(".sampleImage"); //get all sample images as html elements

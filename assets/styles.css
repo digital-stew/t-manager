@@ -1,19 +1,61 @@
 :root {
-  --body-text-color: grey;
-  --body-background-image: linear-gradient(to right, #111, #111);
+  /*
+  --body-text-color: #333;
+  --heading-color: #333;
+  --body-background-image: linear-gradient(to right, #e6e6e6, #e6e6e6);
+
+  --navbar-background-image: #f4f4f4;
+  --navbar-a-color: #333;
+  --navbar-hover: rgba(255, 255, 255, 0.4);
+  --navbar-width: 200px;
+
+  --box-background: #f4f4f4;
+  --box-background-color: #fff;
+  --border-color: #ddd;
+
+  --th-color: #333;
+  --nth-child-1: #f4f4f4;
+  --nth-child-2: #fff;
+  --table-head-background: #e6e6e6;
+  --tr-hover-color: #333;
+  --tr-hover-background: #f0f0f0;
+
+  --textarea-background-color: #fff;
+  --textarea-color: #333;
+
+  --button-background-color: #4a32d1;
+  --button-text-color: #fff;
+
+  --modal-backdrop-color: rgba(255, 255, 255, 0.6);
+  */
+  --body-text-color: lightgrey;
+  --heading-color: #e6e6e6;
+  --body-background-image: linear-gradient(to right, #222, #100);
+
   --navbar-background-image: #222;
   --navbar-a-color: #34495e;
   --navbar-hover: rgba(0, 0, 0, 0.4);
   --navbar-width: 200px;
+
   --box-background: #e6e6e6;
+  --box-background-color: #333;
+  /* --box-background-color: linear-gradient(to right, #111, #333); */
+  --border-color: #333;
 
   --th-color: white;
   --nth-child-1: #222;
   --nth-child-2: #333;
+  --table-head-background: #111;
   --tr-hover-color: white;
   --tr-hover-background: lightgrey;
+
   --textarea-background-color: none;
   --textarea-color: none;
+
+  --button-background-color: #4a32d1;
+  --button-text-color: #e6e6e6;
+
+  --modal-backdrop-color: rgba(0, 0, 0, 0.6);
 }
 
 * {
@@ -42,7 +84,7 @@ a {
   background-color: #000;
 }
 .newBox {
-  background-color: #333;
+  background-color: var(--box-background-color);
   width: auto;
   height: fit-content;
   padding: 0.5rem;
@@ -81,7 +123,7 @@ h4,
 h5,
 h6 {
   text-align: center;
-  color: #e6e6e6;
+  color: var(--heading-color);
 }
 
 /* -------------------NAVBAR------------------------------*/
@@ -117,6 +159,7 @@ h6 {
   grid-column: 1 /2;
   padding-top: 3rem;
   background: var(--body-background-image);
+  background: var(--navbar-background-image);
   z-index: 100;
 }
 .linkList::before {
@@ -138,7 +181,6 @@ h6 {
   all: unset;
   text-decoration: none;
   text-align: center;
-  /* color: var(--navbar-a-color); */
   padding-block: 1rem;
   display: block;
   transition: all 500ms;
@@ -155,12 +197,18 @@ h6 {
 /* ==========table========================= */
 table {
   border-collapse: collapse;
-  margin-inline: 2px;
+  /* margin-inline: 2px; */
   height: fit-content;
+}
+th:first-child {
+  border-top-left-radius: 30px;
+}
+th:last-child {
+  border-top-right-radius: 30px;
 }
 th {
   color: var(--th-color);
-  background-color: #111;
+  background-color: var(--table-head-background);
   position: sticky;
   top: 0;
   padding-inline: 1rem;
@@ -261,19 +309,35 @@ tr:hover {
 .linkList > li {
   margin: 1rem;
 }
-input[type="text"],
 select,
+input[type="text"],
 input[type="password"],
+input[type="tel"],
 input[type="number"],
 input[type="search"] {
   text-align: center;
+  border-radius: 10px;
+  border: none;
 }
 input[type="search"] {
+  border: none;
   width: 80%;
   margin-inline: auto;
 }
 input[type="number"] {
   appearance: textfield;
+}
+select {
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+  padding-inline: 12px;
+  border: none;
+  padding-block: 3px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.8);
+  -webkit-appearance: button;
+  appearance: button;
+  outline: none;
+  margin-bottom: 1rem;
 }
 .tableSection {
   display: flex;
@@ -286,8 +350,8 @@ button,
   font-family: inherit;
   padding-inline: 1rem;
   padding-block: 0.5rem;
-  background-color: #4a32d1;
-  color: #e6e6e6;
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
   border: unset;
   transition: all 500ms;
   /* margin: 1rem; */
@@ -298,8 +362,8 @@ button:hover {
 }
 /* ===================helpers================= */
 .border {
-  border: 20px solid #333;
-  border-radius: 10px;
+  border: 20px solid var(--border-color);
+  border-radius: 1 0px;
 }
 
 label {
@@ -312,9 +376,10 @@ label {
 dialog {
   background-image: var(--body-background-image);
   color: var(--body-text-color);
+  border-radius: 20px;
 }
 dialog::backdrop {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: var(--modal-backdrop-color);
 }
 /* =============================================== */
 
@@ -339,4 +404,12 @@ dialog::backdrop {
   .burgerMenu {
     display: none;
   }
+}
+
+hr {
+  height: 30px;
+  border-style: solid;
+  border-color: black;
+  border-width: 2px 0 0 0;
+  /* border-radius: 20px;   */
 }

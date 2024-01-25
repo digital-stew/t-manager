@@ -1,13 +1,14 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Admin.php';
 
 session_start();
-$Auth = new Auth();
-$locations = $Auth->getLocations();
-
+$Admin = new Admin();
+$locations = $Admin->getLocations();
+// print_r($_SERVER);
+// die();
 //set user location
 if (isset($_POST['newLocation'])) {
-    $Auth->setLocation($_POST['newLocation']);
+    $Admin->setLocation($_POST['newLocation']);
     header("Refresh:0; url=" . $_SERVER['HTTP_REFERER']);
     die();
 }
@@ -48,7 +49,7 @@ if (isset($_POST['newLocation'])) {
     <?php endif ?>
 
     <ul class="linkList">
-        <li><a href="/">Home</a></li>
+        <!-- <li><a href="/">Home</a></li> -->
         <li><a href="/samples">Samples</a></li>
         <li><a href="/stores">Stores</a></li>
         <li><a href="/fanaticOrders">Fanatic orders</a></li>
@@ -57,10 +58,13 @@ if (isset($_POST['newLocation'])) {
             <li><a href="/admin">admin</a></li>
             <li><a href="/admin/log.php">log</a></li>
         <?php endif ?>
+        <?php if (isset($_SESSION['userName'])) : ?>
+            <li><a href="/user">options</a></li>
+        <?php endif ?>
     </ul>
 
     <div style="margin-top: auto;">
-        t-manager V0.9.6
+        t-manager V1.0 rc1
     </div>
 </nav>
 

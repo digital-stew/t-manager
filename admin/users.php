@@ -31,7 +31,7 @@ if (isset($_POST['addUser'])) {
     session_start();
     $Auth->isAdmin();
     if (strlen($_POST['userName']) < 4) {
-        header('Location: /admin?flashUser=Username too short. > 4');
+        header('Location: /admin?flashUser=Username too short. > 3');
         die();
     }
     if (strlen($_POST['userName']) > 10) {
@@ -103,11 +103,11 @@ if (isset($_GET['addUser'])) {
     $html = <<<EOD
     <form action="/admin/users.php" method="post" class="newBox border" autocomplete="off">
         <h3>add new user</h3>
-        <input type="text" name="userName" placeholder="Name"> <br style="margin-bottom: 1rem;">
+        <input type="text" name="userName" placeholder="Name" minlength="3" maxlength="10" required> <br style="margin-bottom: 1rem;">
         <input type="text" name="email" placeholder="Email"> <br style="margin-bottom: 1rem;">
         <h3>Password</h3>
-        <input autoComplete="new-password"  type="password" name="password1" placeholder="Password"> <br>
-        <input autoComplete="new-password" type="password" name="password2" placeholder="again"> <br>
+        <input autoComplete="new-password"  type="password" name="password1" placeholder="Password" required> <br>
+        <input autoComplete="new-password" type="password" name="password2" placeholder="again" required> <br>
         <h3>User Level</h3>
         <select name="userLevel">
             <option value="user">User</option>

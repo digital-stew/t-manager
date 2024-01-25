@@ -18,9 +18,6 @@ class Auth extends Database
                 $_SESSION['userName'] = $user['user'];
                 $_SESSION['userLevel'] = $user['userlevel'];
 
-                //set location
-                $_SESSION['location'] = "hawkins";
-
                 return "login=ok";
             } else {
                 return "login=false";
@@ -47,15 +44,7 @@ class Auth extends Database
         die('not admin');
         return false;
     }
-    function getLocations(): array
-    {
-        return ['hawkins', 'fleetwood', 't-print', 'cornwall'];
-    }
-    function setLocation($newLocation)
-    {
-        $this->isLoggedIn();
-        $_SESSION['location'] = $newLocation;
-    }
+
     function changePassword($oldPassword, $newPassword, $userName)
     {
         try {

@@ -16,7 +16,10 @@ if ($_SESSION['userName'] == $sample['printer']) {
 
 if (isset($_POST["update"]) && isset($_GET["id"])) {
     $res = $Sample->update($_GET['id'], $_POST['front'], $_POST['back'], $_POST['other'], $_POST['notes'], $_POST['name'], $_POST['number'], $_POST['otherref'], $_FILES['files']);
+    //$search = '';
+    // if (isset($_GET['search'])) $search = '&show=' . $_GET['search'];
     if ($res) header('Location: /samples?flashUser=sample updated');
+    else header('Location: /samples?flashUser=ERROR updating sample');
     die();
 }
 if (isset($_POST['removeImage']) && isset($_GET['id'])) {
@@ -27,6 +30,7 @@ if (isset($_POST['removeImage']) && isset($_GET['id'])) {
 if (isset($_POST['delete']) && isset($_GET["id"])) {
     $res = $Sample->remove($_GET['id']);
     if ($res) header('location: /samples?flashUser=Sample Deleted');
+    else header('Location: /samples?flashUser=ERROR deleting sample');
     die();
 }
 

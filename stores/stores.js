@@ -7,11 +7,11 @@ searchStock();
 const addQrReader = new Html5Qrcode("addStockModal-qrReader");
 
 function addStockButton() {
-  const userLocation = document.getElementById("currentLocationSelect").value;
-  document.getElementById("addStockModal-userLocation").innerText =
-    userLocation;
-  document.getElementById("addStockModal-hiddenLocationInput").value =
-    userLocation;
+  // const userLocation = document.getElementById("currentLocationSelect").value;
+  // document.getElementById("addStockModal-userLocation").innerText =
+  // userLocation;
+  // document.getElementById("addStockModal-hiddenLocationInput").value =
+  // userLocation;
   document.getElementById("addStockModal").showModal();
 
   try {
@@ -43,11 +43,11 @@ function closeAddStockModal() {
 const removeQrReader = new Html5Qrcode("removeStockModal-qrReader");
 
 function removeStockButton() {
-  const userLocation = document.getElementById("currentLocationSelect").value;
-  document.getElementById("removeStockModal-userLocation").innerText =
-    userLocation;
-  document.getElementById("removeStockModal-hiddenLocationInput").value =
-    userLocation;
+  // const userLocation = document.getElementById("currentLocationSelect").value;
+  // document.getElementById("removeStockModal-userLocation").innerText =
+  // userLocation;
+  // document.getElementById("removeStockModal-hiddenLocationInput").value =
+  // userLocation;
 
   let showUser = document.getElementById("removeStockModal-showUser");
 
@@ -88,6 +88,32 @@ function removeStockButton() {
     );
   });
 }
+
+function removeStockManualInput() {
+  closeRemoveStockModal();
+  document.getElementById("removeStockModal-manual").showModal();
+  return;
+}
+
+function addStockManualInput() {
+  closeAddStockModal();
+  document.getElementById("addStockModal-manual").showModal();
+  return;
+}
+
+function updateStockCode_type() {
+  let select = document.getElementById("removeStockSelectType");
+  let stockCode = document.getElementById("removeStockModal-stockCode");
+  codeArray = [...stockCode.value.padEnd(11, "0")];
+  console.log(codeArray);
+}
+function updateStockCode_color() {
+  let select = document.getElementById("removeStockSelectColor");
+  let stockCode = document.getElementById("removeStockModal-stockCode");
+  stockCode.value = select.value + stockCode.value.substring(4, -1);
+}
+function updateStockCode_size() {}
+
 function closeRemoveStockModal() {
   try {
     removeQrReader.stop();

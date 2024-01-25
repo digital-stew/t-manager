@@ -22,12 +22,23 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
             <h1>Admin</h1>
             <hr>
         </div>
-        <section style="display: flex; flex-wrap: wrap;gap: 2rem;justify-content: center;">
-            <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/users.php'; ?>
-            <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_type.php'; ?>
-            <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_color.php'; ?>
-            <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_size.php'; ?>
-            <!-- <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/removeStockReasons.php'; ?> -->
+        <!-- <section style="display: flex; flex-wrap: wrap;gap: 2rem;justify-content: center;"> -->
+        <section>
+            <div style="display: flex; flex-wrap: wrap;gap: 2rem;justify-content: center">
+                <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/users.php'; ?>
+            </div>
+            <hr>
+            <div style="display: flex; flex-wrap: wrap;gap: 2rem;justify-content: center;margin-block: 2rem;">
+                <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_type.php'; ?>
+                <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_size.php'; ?>
+                <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/stockCodes_color.php'; ?>
+            </div>
+            <hr>
+            <div style="display: flex; flex-wrap: wrap;gap: 2rem;justify-content: center">
+                <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/removeStockReasons.php'; ?>
+                <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/autoLocation.php'; ?>
+
+            </div>
         </section>
     </div>
 

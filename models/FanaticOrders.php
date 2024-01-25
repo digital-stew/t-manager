@@ -139,6 +139,8 @@ class FanaticOrders extends Database
             )
             VALUES (?,?,?,?)
             EOD;
+
+            $this->db->query("START TRANSACTION");
             $stm = $this->db->prepare($sql);
             $status = 'pending';
             $stm->bind_param("ssss", $parsedCode['orderCode'], $parsedCode['orderName'], $parsedCode['garment'], $status);
@@ -157,12 +159,14 @@ class FanaticOrders extends Database
             if (isset($parsedCode['4XL']) && $parsedCode['4XL'] > 0) $this->addSize($lastID, '4XL', $parsedCode['4XL']);
             if (isset($parsedCode['5XL']) && $parsedCode['5XL'] > 0) $this->addSize($lastID, '5XL', $parsedCode['5XL']);
 
+            $this->db->query("COMMIT");
             $Log = new Log();
             $Log->add("NEW", "order", $parsedCode['orderName'], $lastID, $code);
 
             if ($lastID > 0) return $lastID;
             else return false;
         } catch (Exception $e) {
+            $this->db->query("ROLLBACK");
             print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'addOrder()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
@@ -255,7 +259,7 @@ class FanaticOrders extends Database
         }
     }
 
-    function pickSize(int $orderId, $size, $amount, $stockCode, $userLocation)
+    function pickSize(int $orderId, $size, $amount, $stockCode, $userLocation): bool
     {
         try {
             $Auth = new Auth();
@@ -315,11 +319,12 @@ class FanaticOrders extends Database
 
             $this->updateOrderStatus($currentEntry['forder_id']);
 
-            if ($res) return 'ok';
+            if ($res) return true;
         } catch (Exception $e) {
-            print_r($e->getMessage());
+            // print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'pickSize()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
             die();
         }
     }
@@ -393,7 +398,7 @@ class FanaticOrders extends Database
         }
     }
 
-    function getIdFromNumber(string $orderNumber): int
+    function getIdFromNumber(string $orderNumber): int|false
     {
         try {
             $sql = <<<EOD
@@ -406,16 +411,14 @@ class FanaticOrders extends Database
             $stm->bind_param("s", $trimOrder);
             $stm->execute();
             $result = $stm->get_result();
-            $currentOrder = $result->fetch_assoc();
-            if ($currentOrder) {
-                return (int)$currentOrder['id'];
-            } else {
-                die($orderNumber . " not in database");
-            }
+            $currentOrder = $result->fetch_assoc() or throw new Exception($orderNumber . " not in database");
+
+            return (int)$currentOrder['id'];
         } catch (Exception $e) {
             print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'getIdFromNumber()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
             die();
         }
     }

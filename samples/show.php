@@ -5,7 +5,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/models/errorHandler.php';
 session_start();
 $Sample = new sample();
 $sample = $Sample->get($_GET['id']);
-$FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='width:50px;height:50px;vertical-align:middle;' >";
+$FLASH_IMAGE_LINK = "<img src='/assets/images/flash.svg' alt='flash' style='width:30px;height:30px;vertical-align:middle;' >";
 $imageNumber = 0;
 ?>
 

@@ -232,6 +232,7 @@ class Stock extends Database
             print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'addStock()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
             die();
         }
     }
@@ -245,13 +246,13 @@ class Stock extends Database
 
             $code  = strtoupper($code); // auto capitalize user input
 
-            if ($reason == 'none') die('no reason');
+            if ($reason == 'none') new Exception('no remove stock reason');
 
             $parsedCode = $this->parseCode($code);
 
             // check there is enough stock to remove $amount
-            $currentAmount = $this->getCurrentStockAmount($code, $parsedCode['type'], $parsedCode['color'], $parsedCode['size'], $location);
-            if ($amount > $currentAmount) return false;
+            (int)$currentAmount = $this->getCurrentStockAmount($code, $parsedCode['type'], $parsedCode['color'], $parsedCode['size'], $location);
+            if ((int)$amount > $currentAmount) new Exception("not enough {$code} at {$location} to remove {$amount}");
 
             $sql = <<<EOD
                 UPDATE `t-manager`.stock
@@ -294,9 +295,10 @@ class Stock extends Database
             $Log->add("REMOVE", "stock", $orderNumber, $orderId, "size: {$parsedCode['size']} - amount: {$amount} - reason: {$reason}");
             return true;
         } catch (Exception $e) {
-            print_r($e->getMessage());
+            //print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'removeStock()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
             die();
         }
     }
@@ -426,43 +428,14 @@ class Stock extends Database
             if ($all) return $colors;
             else return $this->unique_array($colors, 'color');
         } catch (Exception $e) {
-            print_r($e->getMessage());
+            //print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'getColors()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
             die();
         }
     }
 
-    function getReasonsToRemoveStock(): array
-    {
-        $sql = <<<EOD
-            SELECT id, reason
-            FROM `t-manager`.removeStockReasons
-        EOD;
-
-        try {
-            $stm = $this->db->prepare($sql);
-            $stm->execute();
-            $res = $stm->get_result();
-
-            $reasons = [];
-            while ($row = $res->fetch_assoc()) {
-                $newReason = array(
-                    'id' => $row['id'],
-                    'reason' => $row['reason'],
-                );
-                array_push($reasons, $newReason);
-            }
-            $stm->close();
-
-            return $reasons;
-        } catch (Exception $e) {
-            print_r($e->getMessage());
-            $Log = new Log();
-            $Log->add('ERROR', 'getReasonsToRemoveStock()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
-            die();
-        }
-    }
     private function unique_array($array, $key)
     {
         $temp_array = array();
@@ -478,7 +451,6 @@ class Stock extends Database
         return $temp_array;
     }
 
-
     function transferStock(string $stockCode, string $from, string $to, int $amount): bool
     {
         try {
@@ -487,21 +459,25 @@ class Stock extends Database
             $parsedCode = $this->parseCode($stockCode);
 
             //check from and to are valid
-            $Auth = new Auth();
-            $locations = $Auth->getLocations();
+            $Admin = new Admin();
+            $locations = $Admin->getLocations();
             if (!in_array($from, $locations)) throw new Exception('invalid source');
             if (!in_array($to, $locations)) throw new Exception('invalid destination');
 
+            $this->db->query("START TRANSACTION");
             //remove stock
             $this->removeStock($stockCode, $from, (int)$amount, "transfer from: {$from}", '', 0) or throw new Exception('transfer stock remove error ' . "from: {$from} - code: {$stockCode} - amount: {$amount}");
             //add stock
             $this->addStock($stockCode, $to, $amount) or throw new Exception('transfer stock add error');
+            $this->db->query("COMMIT");
 
             return true;
         } catch (Exception $e) {
-            print_r($e->getMessage());
+            $this->db->query("ROLLBACK");
+            //print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'transferStock()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
             die();
         }
     }

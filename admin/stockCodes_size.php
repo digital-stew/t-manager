@@ -35,11 +35,11 @@ if (isset($_GET['addSize'])) {
         <h4>Add stock size</h4>
         <label>
             code
-            <input type="text" name="code" required>
+            <input type="text" name="code" minlength="1" required>
         </label>
         <label>
             size
-            <input type="text" name="size" required>
+            <input type="text" name="size" minlength="1" required>
         </label>
         <button type='submit' name='addSize'>Save</button>
         <button type='button' onclick="closeModal();">Back</button>

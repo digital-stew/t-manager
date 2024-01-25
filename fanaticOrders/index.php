@@ -48,6 +48,7 @@ if (isset($_GET['complete'])) {
             <tr>
                 <th>id</th>
                 <th>batch</th>
+                <th>garment</th>
                 <th>code</th>
                 <th>status</th>
             </tr>
@@ -58,6 +59,7 @@ if (isset($_GET['complete'])) {
                 <tr onclick="showModal('/fanaticOrders/orderDetails.php?id=<?= $order['id'] ?>');">
                     <td><?= $order['id'] ?></td>
                     <td><?= $order['name'] ?></td>
+                    <td><?= $order['garment'] ?></td>
                     <td><?= $order['code'] ?></td>
                     <td><?= $order['status'] ?></td>
 
@@ -87,7 +89,7 @@ if (isset($_GET['complete'])) {
                 <?php endforeach ?>
             </select> <br>
             <?php foreach ($Stock->getSizes() as $size) : ?>
-                <input type="number" name="<?= $size['size'] ?>" id="" placeholder="<?= $size['size'] ?>" style="width: 7ch;">
+                <input type="number" name="<?= $size['size'] ?>" min="0" placeholder="<?= $size['size'] ?>" style="width: 7ch;">
             <?php endforeach ?>
             <button type="submit" name="manualAddOrder" style="width: 80%;">add order</button>
             <button type="button" style="width: 80%;" onclick="document.getElementById('manualAddJobModal').close();">cancel</button>

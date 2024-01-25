@@ -36,11 +36,11 @@ if (isset($_GET['addType'])) {
         <h4>add stock type</h4>
         <label>
             new code
-            <input type="text" name="newCode" required>
+            <input type="text" name="newCode" minlength="3" required>
         </label>
         <label>
             old code
-            <input type="text" name="oldCode" required>
+            <input type="text" name="oldCode" minlength="3" required>
         </label>
         <label>
             type
