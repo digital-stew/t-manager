@@ -109,7 +109,7 @@ class FanaticOrders extends Database
         }
     }
 
-    function addOrder(string $code): int | false
+    function addOrder(string $code): int
     {
         try {
             $Auth = new Auth();
@@ -398,7 +398,7 @@ class FanaticOrders extends Database
         }
     }
 
-    function getIdFromNumber(string $orderNumber): int|false
+    function getIdFromNumber(string $orderNumber): int
     {
         try {
             $sql = <<<EOD

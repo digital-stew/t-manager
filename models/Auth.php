@@ -29,7 +29,7 @@ class Auth extends Database
             die();
         }
     }
-    function isLoggedIn(): true
+    function isLoggedIn()
     {
         if (!isset($_SESSION['userName'])) {
             // print_r($_SERVER);

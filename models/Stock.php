@@ -303,7 +303,7 @@ class Stock extends Database
         }
     }
 
-    function getCurrentStockAmount(string $code, string $type, string $color, string $size, string $location): int | false
+    function getCurrentStockAmount(string $code, string $type, string $color, string $size, string $location): int
     {
         $sql = <<<EOD
             SELECT amount

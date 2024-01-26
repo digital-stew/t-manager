@@ -6,7 +6,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 class Admin extends Database
 {
 
-    function getAllUsers(): array | false
+    function getAllUsers(): array
     {
         $Auth = new Auth();
         $Auth->isAdmin();
@@ -45,7 +45,7 @@ class Admin extends Database
         }
     }
 
-    function getUser(int $id): array | false
+    function getUser(int $id): array
     {
         $Auth = new Auth();
         $Auth->isAdmin();

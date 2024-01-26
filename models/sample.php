@@ -5,7 +5,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 
 class sample extends Database
 {
-    function get(int $id): array | false
+    function get(int $id): array
     {
         $sql = <<<EOD
         SELECT samples.*, sample_images.webp_filename, sample_images.original_filename
