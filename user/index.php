@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
-
+$Auth = new Auth();
+$Auth->isLoggedIn();
 ?>
 <!DOCTYPE html>
 <html lang="en">

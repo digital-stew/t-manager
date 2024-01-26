@@ -29,11 +29,19 @@ class Auth extends Database
             die();
         }
     }
-    function isLoggedIn(): bool
+    function isLoggedIn(): true
     {
         if (!isset($_SESSION['userName'])) {
-            die('not logged in');
-            return false;
+            // print_r($_SERVER);
+            // exit;
+            /*
+            if (isset($_SERVER['HTTP_REFERER'])) {
+                header("Refresh:0; url=" . $_SERVER['HTTP_REFERER'] . "?flashUser=not logged in");
+            } else {
+                echo "<script>alert('not logged in'); </script>";
+            }
+            */
+            die("<script>alert('not logged in'); </script>");
         };
         return true;
     }
@@ -41,7 +49,7 @@ class Auth extends Database
     {
         $this->isLoggedIn();
         if ($_SESSION['userLevel'] == 'admin') return true;
-        die('not admin');
+        die("<script>alert('not admin'); </script>");
         return false;
     }
 

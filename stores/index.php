@@ -199,7 +199,7 @@ foreach ($removeStockReasons as $reason) {
                 <?php endforeach ?>
             </select>
 
-            <select name="removeStockSelectColor" style="margin-block: 1rem;" required>
+            <select name="removeStockSelectColor" required>
                 <option value="">--- color ---</option>
                 <?php foreach ($colors as $color) : ?>
                     <option value="<?= $color['newCode'] ?>"><?= $color['color'] ?></option>

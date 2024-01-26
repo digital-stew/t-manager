@@ -50,9 +50,10 @@ if (isset($_POST['newLocation'])) {
 
     <ul class="linkList">
         <!-- <li><a href="/">Home</a></li> -->
+        <!-- <li><a href="/orders">Orders</a></li> -->
+        <li><a href="/fanaticOrders">Fanatic orders</a></li>
         <li><a href="/samples">Samples</a></li>
         <li><a href="/stores">Stores</a></li>
-        <li><a href="/fanaticOrders">Fanatic orders</a></li>
         <li><a href="/maintenance">Maintenance</a></li>
         <?php if (isset($_SESSION['userName']) && $_SESSION['userLevel'] == 'admin') : ?>
             <li><a href="/admin">admin</a></li>
