@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Admin.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Database.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 
@@ -292,7 +293,7 @@ class Stock extends Database
 
             //get current order id
             $Log = new Log();
-            $Log->add("REMOVE", "stock", $orderNumber, $orderId, "size: {$parsedCode['size']} - amount: {$amount} - reason: {$reason}");
+            $Log->add("REMOVE", "stock", $orderNumber, $orderId, "code: {$code} - size: {$parsedCode['size']} - amount: {$amount} - reason: {$reason}");
             return true;
         } catch (Exception $e) {
             //print_r($e->getMessage());
@@ -457,7 +458,6 @@ class Stock extends Database
             //check code is valid
             $stockCode = trim($stockCode);
             $parsedCode = $this->parseCode($stockCode);
-
             //check from and to are valid
             $Admin = new Admin();
             $locations = $Admin->getLocations();
