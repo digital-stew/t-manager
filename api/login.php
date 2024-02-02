@@ -9,9 +9,8 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 
     //set location
     $Admin = new Admin();
-    $autoLocations = $Admin->getAutoLocations();
     $autoLocationSet = false;
-    foreach ($autoLocations as $auto) {
+    foreach ($Admin->getAutoLocations() as $auto) {
         if ($_SERVER['REMOTE_ADDR'] == $auto['ip']) {
             $Admin->setLocation($auto['location']);
             $autoLocationSet = true;

@@ -159,7 +159,7 @@ function rand3($length = 3)
             <div id="qr-reader" style="width: 200px;margin-inline: auto;margin-top: 2rem;"></div>
 
             <div id="scanTarget" style="display: flex;justify-content:center;gap: 1rem;">
-                <p> <?= $fullCode ?> </p>
+                <p id="targetCode"> <?= $fullCode ?> </p>
                 <p><?= $order['garment'] ?></p>
                 <p><?= $currentSize ?></p>
             </div>
@@ -205,7 +205,7 @@ function rand3($length = 3)
     <dialog id="confirm" style="text-align: center;">
         <form action="/fanaticOrders/pickOrder.php?id=<?= $_GET['id'] ?>&continue=true" method="post" style="text-align: center;">
             <input type="hidden" name="orderId" value="<?= $_GET['id'] ?>">
-            <div>code:<input type="text" name="stockCode" style="all:unset;width: 14ch;" class="hiddenBox" id="targetCode" value="<?= $fullCode ?>" readonly></div>
+            <div>code:<input type="text" name="stockCode" style="all:unset;width: 14ch;" class="hiddenBox" value="<?= $fullCode ?>" readonly></div>
             <div>size:<input type="text" name="size" style="all:unset;width: 5ch;margin-block: 1rem;" value="<?= $currentSize ?>" readonly></div>
             <!-- if available is less than required only show available stock -->
             <div>pick: <input type="tel" name="pickedAmount" style="all:unset;width: 5ch;" value="<?= $availableStock[$currentSize] < $order['sizes'][$currentSize] - $order["picked"][$currentSize] ? $availableStock[$currentSize] : $order['sizes'][$currentSize] - $order["picked"][$currentSize] ?>" readonly></div>

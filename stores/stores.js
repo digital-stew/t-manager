@@ -2,11 +2,11 @@
 const config = { fps: 10, qrbox: { width: 130, height: 130 } };
 
 searchStock();
-
 /*********** add stock *********/
-const addQrReader = new Html5Qrcode("addStockModal-qrReader");
+let addQrReader = null;
 
 function addStockButton() {
+  addQrReader = new Html5Qrcode("addStockModal-qrReader");
   // const userLocation = document.getElementById("currentLocationSelect").value;
   // document.getElementById("addStockModal-userLocation").innerText =
   // userLocation;
@@ -40,9 +40,9 @@ function closeAddStockModal() {
 }
 
 /*********** remove stock *********/
-const removeQrReader = new Html5Qrcode("removeStockModal-qrReader");
-
+let removeQrReader = null;
 function removeStockButton() {
+  removeQrReader = new Html5Qrcode("removeStockModal-qrReader");
   // const userLocation = document.getElementById("currentLocationSelect").value;
   // document.getElementById("removeStockModal-userLocation").innerText =
   // userLocation;
@@ -125,8 +125,9 @@ function closeRemoveStockModal() {
 /*********** ******* *********/
 
 /*********** transfer stock *********/
-const transferQrReader = new Html5Qrcode("transferStockModal-qrReader");
+let transferQrReader = null;
 function transferStockButton() {
+  transferQrReader = new Html5Qrcode("transferStockModal-qrReader");
   document.getElementById("transferStockModal").showModal();
   try {
     transferQrReader.start(
@@ -134,8 +135,10 @@ function transferStockButton() {
       config,
       (decodedText, decodedResult) => {
         transferQrReader.pause();
-        if (stockCodeIsValid(decodedText))
+        if (stockCodeIsValid(decodedText)) {
           document.getElementById("stockCodeInput").value = decodedText;
+          document.getElementById("amountInput").focus();
+        }
         setTimeout(() => {
           transferQrReader.resume();
         }, 1000);
@@ -146,7 +149,8 @@ function transferStockButton() {
   }
 }
 function stockCodeIsValid(inputCode) {
-  return typeof inputCode === "string" && inputString.length === 11;
+  if (inputCode.length === 11) return true;
+  return false;
 }
 function closeTransferStockModal() {
   try {

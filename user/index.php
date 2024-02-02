@@ -1,7 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
-$Auth = new Auth();
-$Auth->isLoggedIn();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,7 +14,10 @@ $Auth->isLoggedIn();
 </head>
 
 <body>
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php'; ?>
+    <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php';
+    $Auth = new Auth();
+    $Auth->isLoggedIn();
+    ?>
     <div>
         <h1>user settings for <?= $_SESSION['userName'] ?></h1>
         <hr>

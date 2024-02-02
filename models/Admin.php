@@ -14,6 +14,7 @@ class Admin extends Database
         $sql = <<<EOD
             SELECT *
             FROM `t-manager`.users
+            ORDER BY id DESC
         EOD;
 
         try {
@@ -423,6 +424,7 @@ class Admin extends Database
         $sql = <<<EOD
             SELECT *
             FROM `t-manager`.autoLocations
+            ORDER BY id DESC
         EOD;
 
         try {
@@ -474,7 +476,7 @@ class Admin extends Database
             (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.autoLocations LIMIT 1;")->fetch_column();
 
             $Log = new Log();
-            $Log->add("NEW", "auto location", null, $lastID, "ip: {$ipAddress} - location: ($location}");
+            $Log->add("NEW", "auto location", null, $lastID, "ip: {$ipAddress} - location: {$location}");
 
             if ($res) return true;
             else return false;
@@ -517,6 +519,7 @@ class Admin extends Database
         $sql = <<<EOD
             SELECT id, reason
             FROM `t-manager`.removeStockReasons
+            ORDER BY id DESC
         EOD;
 
         try {

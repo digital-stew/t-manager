@@ -247,13 +247,13 @@ class Stock extends Database
 
             $code  = strtoupper($code); // auto capitalize user input
 
-            if ($reason == 'none') new Exception('no remove stock reason');
+            if ($reason == 'none') throw new Exception('no remove stock reason');
 
             $parsedCode = $this->parseCode($code);
 
             // check there is enough stock to remove $amount
             (int)$currentAmount = $this->getCurrentStockAmount($code, $parsedCode['type'], $parsedCode['color'], $parsedCode['size'], $location);
-            if ((int)$amount > $currentAmount) new Exception("not enough {$code} at {$location} to remove {$amount}");
+            if ((int)$amount > $currentAmount) throw new Exception("not enough {$code} at {$location} to remove {$amount}");
 
             $sql = <<<EOD
                 UPDATE `t-manager`.stock
@@ -342,6 +342,7 @@ class Stock extends Database
         $sql = <<<EOD
             SELECT id, newCode, oldCode, type
             FROM `t-manager`.stockCodes_type
+            ORDER BY id DESC
         EOD;
 
         try {
@@ -376,6 +377,7 @@ class Stock extends Database
         $sql = <<<EOD
             SELECT id, code, size
             FROM `t-manager`.stockCodes_size
+            ORDER BY id DESC
         EOD;
         try {
             $stm = $this->db->prepare($sql);
@@ -407,6 +409,7 @@ class Stock extends Database
         $sql = <<<EOD
             SELECT id, newCode, oldCode, color
             FROM `t-manager`.stockCodes_color
+            ORDER BY id DESC
         EOD;
 
         try {

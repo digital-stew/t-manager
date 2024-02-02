@@ -31,15 +31,17 @@ foreach ($removeStockReasons as $reason) {
 
 <body>
 
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php'; ?>
+    <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php';
+    $sLocation = $_SESSION['location'] ?? 'location error';
+    ?>
     <div style="<?= isset($_SESSION['userName']) ? 'background-image: inherit ;position: sticky;top:0px;' : '' ?>">
         <h1>Stores</h1>
         <?php if (isset($_SESSION['userName'])) : ?>
             <div>
-                <button onclick="addStockButton()">add</button>
-                <button onclick="batchAddStockButton()">batch add</button>
-                <button onclick="removeStockButton()">remove</button>
-                <button onclick="transferStockButton()">transfer</button>
+                <button id="addStockButton" onclick="addStockButton()">add</button>
+                <button id="batchAddStockButton" onclick="batchAddStockButton()">batch add</button>
+                <button id="removeStockButton" onclick="removeStockButton()">remove</button>
+                <button id="transferStockButton" onclick="transferStockButton()">transfer</button>
             </div>
         <?php endif ?>
         <hr>
@@ -97,12 +99,12 @@ foreach ($removeStockReasons as $reason) {
         <form action="/stores/add.php" method="post" autocomplete="off" style="display: flex;flex-direction: column;text-align: center;">
             <h4>Add stock</h4>
 
-            <h4 id="addStockModal-userLocation"><?= $_SESSION['location'] ?></h4>
-            <input type="hidden" name="location" id="addStockModal-hiddenLocationInput" value="<?= $_SESSION['location'] ?>" required>
+            <h4 id="addStockModal-userLocation"><?= $sLocation ?></h4>
+            <input type="hidden" name="location" id="addStockModal-hiddenLocationInput" value="<?= $sLocation ?>" required>
 
             <div id="addStockModal-qrReader" style="width: 200px;margin-inline: auto;"></div>
 
-            <button type="button" id="removeStockModal-manualButton" onclick="addStockManualInput()">manual input</button>
+            <button type="button" id="addStockModal-manualButton" onclick="addStockManualInput()">manual input</button>
 
             <label for="addStockModal-stockCode">stock code</label>
             <input id="addStockModal-stockCode" name="code" type="text" minlength="11" maxlength="11" required>
@@ -110,7 +112,7 @@ foreach ($removeStockReasons as $reason) {
             <label for="addStockModal-amount" style="margin-top: 1rem;">amount</label>
             <input id="addStockModal-amount" name="amount" type="number" min="0" style="text-align: center;" required>
 
-            <button type="submit" style="width: 80%;">Save</button><br>
+            <button id="addStockSubmitButton" type="submit" style="width: 80%;">Save</button><br>
             <button type="button" onclick="closeAddStockModal();" style="width: 80%;">Cancel</button>
         </form>
     </dialog>
@@ -119,24 +121,24 @@ foreach ($removeStockReasons as $reason) {
         <form action="/stores/add.php" method="post" autocomplete="off" style="display: flex;flex-direction: column;text-align: center;">
             <h4>Add stock</h4>
 
-            <h4 id="addStockModal-manual-userLocation"><?= $_SESSION['location'] ?></h4>
-            <input type="hidden" name="location" id="addStockModal-manual-hiddenLocationInput" value="<?= $_SESSION['location'] ?>" required>
+            <h4 id="addStockModal-manual-userLocation"><?= $sLocation ?></h4>
+            <input type="hidden" name="location" id="addStockModal-manual-hiddenLocationInput" value="<?= $sLocation ?>" required>
 
-            <select name="addStockSelectType" required>
+            <select id="addStockSelectType" name="addStockSelectType" required>
                 <option value="">--- type ---</option>
                 <?php foreach ($types as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['type'] ?></option>
                 <?php endforeach ?>
             </select>
 
-            <select name="addStockSelectColor" required>
+            <select id="addStockSelectColor" name="addStockSelectColor" required>
                 <option value="">--- color ---</option>
                 <?php foreach ($colors as $color) : ?>
                     <option value="<?= $color['newCode'] ?>"><?= $color['color'] ?></option>
                 <?php endforeach ?>
             </select>
 
-            <select name="addStockSelectSize" required>
+            <select id="addStockSelectSize" name="addStockSelectSize" required>
                 <option value="">--- size ---</option>
                 <?php foreach ($sizes as $size) : ?>
                     <option value="<?= $size['code'] ?>"><?= $size['size'] ?></option>
@@ -146,7 +148,7 @@ foreach ($removeStockReasons as $reason) {
             <label for="addStockModal-manual-amount" style="margin-top: 1rem;">amount</label>
             <input id="addStockModal-manual-amount" name="amount" type="number" min="1" style="text-align: center;" required>
 
-            <button type="submit" name="manualAddStock" style="width: 80%;margin-inline: auto;">Save</button><br>
+            <button id="addStockModal-manual-submit" type="submit" name="manualAddStock" style="width: 80%;margin-inline: auto;">Save</button><br>
             <button type="button" onclick="document.getElementById('addStockModal-manual').close();" style="width: 80%;margin-inline: auto;">Cancel</button>
         </form>
     </dialog>
@@ -156,8 +158,8 @@ foreach ($removeStockReasons as $reason) {
         <form action="/stores/remove.php" method="post" autocomplete="off" style="display: flex;flex-direction: column;text-align: center;">
             <h4>remove stock</h4>
 
-            <h4 id="removeStockModal-userLocation"><?= $_SESSION['location'] ?></h4>
-            <input type="hidden" name="location" id="removeStockModal-hiddenLocationInput" value="<?= $_SESSION['location'] ?>" required>
+            <h4 id="removeStockModal-userLocation"><?= $sLocation ?></h4>
+            <input type="hidden" name="location" id="removeStockModal-hiddenLocationInput" value="<?= $sLocation ?>" required>
 
             <h4 id="removeStockModal-showUser" style="color: red;"></h4>
 
@@ -180,7 +182,7 @@ foreach ($removeStockReasons as $reason) {
                 <?= $options ?>
             </select>
 
-            <button type="submit" style="width: 80%;margin-inline: auto;">Save</button><br>
+            <button id="removeStock-submit" type="submit" style="width: 80%;margin-inline: auto;">Save</button><br>
             <button type="button" onclick="closeRemoveStockModal();" style="width: 80%;margin-inline: auto;">Cancel</button>
         </form>
     </dialog>
@@ -189,8 +191,8 @@ foreach ($removeStockReasons as $reason) {
         <form action="/stores/remove.php" method="post" autocomplete="off" style="display: flex;flex-direction: column;text-align: center;">
             <h4>remove stock</h4>
 
-            <h4 id="removeStockModal-manual-userLocation"><?= $_SESSION['location'] ?></h4>
-            <input type="hidden" name="location" id="removeStockModal-manual-hiddenLocationInput" value="<?= $_SESSION['location'] ?>" required>
+            <h4 id="removeStockModal-manual-userLocation"><?= $sLocation ?></h4>
+            <input type="hidden" name="location" id="removeStockModal-manual-hiddenLocationInput" value="<?= $sLocation ?>" required>
 
             <select name="removeStockSelectType" required>
                 <option value="">--- type ---</option>
@@ -256,21 +258,21 @@ foreach ($removeStockReasons as $reason) {
                     <option value="<?= $location ?>"><?= $location ?></option>
                 <?php endforeach ?>
             </select>
-            <button type="submit" style="width: 80%;">Save</button><br>
+            <button id="transfer-submit" type="submit" style="width: 80%;">Save</button><br>
             <button type="button" onclick="closeTransferStockModal();" style="width: 80%;">Cancel</button>
         </form>
     </dialog>
 
     <dialog id="batchAddStockModal">
         <h4>batch add stock</h4>
-        <h4><?= $_SESSION['location'] ?></h4>
+        <h4><?= $sLocation ?></h4>
         <form action="/stores/add.php" method="post" style="text-align: center;">
-            <select name="batchAddStyle" style="margin-bottom: 1rem;">
+            <select id="batchAddStyle" name="batchAddStyle" style="margin-bottom: 1rem;">
                 <?php foreach ($types as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['type'] ?></option>
                 <?php endforeach ?>
             </select>
-            <select name="batchAddColor" style="margin-bottom: 1rem;">
+            <select id="batchAddColor" name="batchAddColor" style="margin-bottom: 1rem;">
                 <?php foreach ($colors as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['color'] ?></option>
                 <?php endforeach ?>
@@ -280,9 +282,9 @@ foreach ($removeStockReasons as $reason) {
                 <input type="number" name="<?= $size['size'] ?>" id="" placeholder="<?= $size['size'] ?>" min="0" style="width: 7ch;">
             <?php endforeach ?>
 
-            <input type="hidden" name="location" value="<?= $_SESSION['location'] ?? 'none' ?>" id="">
+            <input id="hiddenLocationInput" type="hidden" name="location" value="<?= $sLocation ?? 'none' ?>" id="">
 
-            <button type="submit" style="width: 80%;">Save</button><br>
+            <button id="batchAddStock-submit" type="submit" style="width: 80%;">Save</button><br>
             <button type="button" onclick="closeBatchAddStockModal();" style="width: 80%;">Cancel</button>
         </form>
     </dialog>
