@@ -74,6 +74,7 @@ describe("stores", () => {
     cy.get("#removeStockModal-amount").type("1");
     cy.get("#reason-select").select("reject");
     cy.get("#removeStock-submit").click();
+    cy.wait(100);
     cy.get("#modal").should("contain.text", "stock removed");
     cy.visit("/admin/log.php");
     cy.get("table")
@@ -94,6 +95,7 @@ describe("stores", () => {
     cy.get("#transferFromSelect").select("hawkins");
     cy.get("#transferToSelect").select("cornwall");
     cy.get("#transfer-submit").click();
+    cy.wait(100);
     cy.get("#modal").should("contain.text", "stock transferred");
     cy.visit("/admin/log.php");
 

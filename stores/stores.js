@@ -135,8 +135,10 @@ function transferStockButton() {
       config,
       (decodedText, decodedResult) => {
         transferQrReader.pause();
-        if (stockCodeIsValid(decodedText))
+        if (stockCodeIsValid(decodedText)) {
           document.getElementById("stockCodeInput").value = decodedText;
+          document.getElementById("amountInput").focus();
+        }
         setTimeout(() => {
           transferQrReader.resume();
         }, 1000);
@@ -147,7 +149,8 @@ function transferStockButton() {
   }
 }
 function stockCodeIsValid(inputCode) {
-  return typeof inputCode === "string" && inputString.length === 11;
+  if (inputCode.length === 11) return true;
+  return false;
 }
 function closeTransferStockModal() {
   try {
