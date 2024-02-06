@@ -31,6 +31,7 @@ function HRtimestamp(full = false) {
 }
 
 async function showModal(link) {
+  closeModal();
   const element = document.getElementById("modal");
   const res = await fetch(link);
   const reply = await res.text();

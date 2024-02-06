@@ -54,7 +54,7 @@ $Auth->isAdmin();
 ?>
 <section id="adminView" style="width: fit-content;" class="newBox border">
     <h2>Auto locations</h2>
-    <table>
+    <table id="autoLocation-table">
         <thead>
             <tr>
                 <th>ip</th>
@@ -70,7 +70,7 @@ $Auth->isAdmin();
             <?php endforeach; ?>
         </tbody>
     </table>
-    <button onclick="document.getElementById('addNewAutoLocation-modal').showModal()">new auto location</button>
+    <button id="addNewAutoLocation-button" onclick="document.getElementById('addNewAutoLocation-modal').showModal()">new auto location</button>
 </section>
 
 <dialog id="addNewAutoLocation-modal">

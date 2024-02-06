@@ -18,8 +18,8 @@ if (isset($_GET['getUser']) && isset($_GET['id'])) {
         <p>Department: {$user['department']}</p>
         <p>User Level: {$user['userLevel']}</p>
         <!-- <button type="button" onClick="showModal('/admin/users.php?adminChangeUserPassword=true&id={$user['id']}')">Change password</button> -->
-        <button type="button" onclick="showModal('/admin/users.php?editUser=true&id={$user['id']}')" >Edit</button>
-        <button type='submit' name="deleteUser">Delete</button>
+        <button id="editUser-button" type="button" onclick="showModal('/admin/users.php?editUser=true&id={$user['id']}')" >Edit</button>
+        <button id="deleteUser-button" type='submit' name="deleteUser">Delete</button>
         <button type='button' onclick="closeModal();">Back</button>
     </form>
     EOD;
@@ -61,7 +61,7 @@ if (isset($_POST['editUser']) && isset($_POST['email']) && isset($_POST['departm
     session_start();
     $Auth->isAdmin();
     $res = $Admin->editUser($_POST['editUser'], $_POST['email'], $_POST['department'], $_POST['userLevel']);
-    if ($res) header('Location: /admin?flashUser=User saved');
+    if ($res) header('Location: /admin?flashUser=user saved');
     else header('Location: /admin?flashUser=ERROR!! contact admin if problem persists');
     die();
 }
@@ -119,7 +119,7 @@ if (isset($_GET['addUser'])) {
             <option value="stores">Stores</option>
             <option value="office">Office</option>
         </select>
-        <button type="submit" name="addUser">add new user</button>
+        <button id="addNewUser-submit" type="submit" name="addUser">add new user</button>
         <button type="button" onclick="closeModal();">cancel</button>
     </form>
     EOD;
@@ -154,22 +154,18 @@ if (isset($_GET['editUser']) && isset($_GET['id'])) {
             <option value="admin">Admin</option>
         </select>
         <input type="hidden" name="editUser" value="{$user['id']}">
-        <button type='submit'>Save</button>
+        <button id="editUser-submit" type='submit'>Save</button>
         <button type='button' onclick="closeModal();">Cancel</button>
         </form>
     EOD;
     echo $html;
     die();
 }
-
-
-$Auth->isAdmin();
-$allUsers = $Admin->getAllUsers();
 ?>
 
-<section id="adminView" style="width: fit-content;" class="newBox border">
+<section style="width: fit-content;" class="newBox border">
     <h2>Users</h2>
-    <table>
+    <table id="usersTable">
         <thead>
             <tr>
                 <th>Name</th>
@@ -178,8 +174,8 @@ $allUsers = $Admin->getAllUsers();
                 <th>User Level</th>
             </tr>
         </thead>
-        <tbody id="searchResults">
-            <?php foreach ($allUsers as $user) : ?>
+        <tbody>
+            <?php foreach ($Admin->getAllUsers() as $user) : ?>
                 <tr onclick="showModal('/admin/users.php?getUser=true&id=<?= $user['id'] ?>')">
                     <td><?= $user['name'] ?></td>
                     <td><?= $user['email'] ?></td>
@@ -189,5 +185,5 @@ $allUsers = $Admin->getAllUsers();
             <?php endforeach; ?>
         </tbody>
     </table>
-    <button onclick="showModal('/admin/users.php?addUser=true')">Add new user</button>
+    <button id="addNewUser-button" onclick="showModal('/admin/users.php?addUser=true')">Add new user</button>
 </section>

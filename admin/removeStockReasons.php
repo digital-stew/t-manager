@@ -56,7 +56,7 @@ $Auth->isAdmin();
 ?>
 <section id="adminView" style="width: fit-content;" class="newBox border">
     <h2>Reasons to remove stock</h2>
-    <table>
+    <table id="reason-table">
         <thead>
             <tr>
                 <th>reasons</th>
@@ -70,7 +70,7 @@ $Auth->isAdmin();
             <?php endforeach; ?>
         </tbody>
     </table>
-    <button onclick="document.getElementById('addNewReason-modal').showModal();">Add new</button>
+    <button id="addNewReason-button" onclick="document.getElementById('addNewReason-modal').showModal();">Add new</button>
 </section>
 
 <dialog id="addNewReason-modal">

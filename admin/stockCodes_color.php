@@ -92,7 +92,7 @@ $stockColors = $Stock->getColors(true);
 ?>
 <section id="adminView" style="width: fit-content;" class="newBox border">
     <h2>Stock colors</h2>
-    <table>
+    <table id="stockColor-table">
         <thead>
             <tr>
                 <th>new code<br>(on boxes)</th>
@@ -110,5 +110,5 @@ $stockColors = $Stock->getColors(true);
             <?php endforeach; ?>
         </tbody>
     </table>
-    <button onclick="showModal('/admin/stockCodes_color.php?addColor=true')">Add new color</button>
+    <button id="stockColorAdd-button" onclick="showModal('/admin/stockCodes_color.php?addColor=true')">Add new color</button>
 </section>

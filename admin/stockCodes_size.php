@@ -82,11 +82,10 @@ if (isset($_GET['sizeId'])) {
 //=======================================
 
 $Auth->isAdmin();
-$stockSizes = $Stock->getSizes();
 ?>
 <section id="adminView" style="width: fit-content;" class="newBox border">
     <h2>Stock sizes</h2>
-    <table>
+    <table id="stockSizes-table">
         <thead>
             <tr>
                 <th>code</th>
@@ -94,7 +93,7 @@ $stockSizes = $Stock->getSizes();
             </tr>
         </thead>
         <tbody id="searchResults">
-            <?php foreach ($stockSizes as $stock) : ?>
+            <?php foreach ($Stock->getSizes() as $stock) : ?>
                 <tr onclick="showModal('/admin/stockCodes_size.php?sizeId=<?= $stock['id'] ?>')">
                     <td><?= $stock['code'] ?></td>
                     <td><?= $stock['size'] ?></td>
@@ -102,5 +101,5 @@ $stockSizes = $Stock->getSizes();
             <?php endforeach; ?>
         </tbody>
     </table>
-    <button onclick="showModal('/admin/stockCodes_size.php?addSize=true')">Add new size</button>
+    <button id="stockSizeAdd-button" onclick="showModal('/admin/stockCodes_size.php?addSize=true')">Add new size</button>
 </section>

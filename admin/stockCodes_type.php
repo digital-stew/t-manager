@@ -88,9 +88,9 @@ if (isset($_GET['typeId'])) {
 $Auth->isAdmin();
 $stockTypes = $Stock->getTypes(true);
 ?>
-<section id="adminView" style="width: fit-content;" class="newBox border">
+<section style="width: fit-content;" class="newBox border">
     <h2>Stock types</h2>
-    <table>
+    <table id="stockTypes-table">
         <thead>
             <tr>
                 <th>new code<br>(on boxes)</th>
@@ -98,7 +98,7 @@ $stockTypes = $Stock->getTypes(true);
                 <th>type</th>
             </tr>
         </thead>
-        <tbody id="searchResults">
+        <tbody>
             <?php foreach ($stockTypes as $stock) : ?>
                 <tr onclick="showModal('/admin/stockCodes_type.php?typeId=<?= $stock['id'] ?>')">
                     <td><?= $stock['newCode'] ?></td>
@@ -108,5 +108,5 @@ $stockTypes = $Stock->getTypes(true);
             <?php endforeach; ?>
         </tbody>
     </table>
-    <button onclick="showModal('/admin/stockCodes_type.php?addType=true')">Add new type</button>
+    <button id="stockTypesAdd-button" onclick="showModal('/admin/stockCodes_type.php?addType=true')">Add new type</button>
 </section>
