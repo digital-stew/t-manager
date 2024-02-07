@@ -58,7 +58,7 @@ if (isset($_GET['addColor'])) {
 if (isset($_GET['colorId'])) {
     session_start();
     $Auth->isAdmin();
-    $colorTypes = $Stock->getColors();
+    $colorTypes = $Stock->getColors(true);
 
     foreach ($colorTypes as $colorType) {
         if ($colorType['id'] == $_GET['colorId']) {
