@@ -30,7 +30,6 @@ foreach ($removeStockReasons as $reason) {
 </head>
 
 <body>
-
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/header.php';
     $sLocation = $_SESSION['location'] ?? 'location error';
     ?>
@@ -102,7 +101,7 @@ foreach ($removeStockReasons as $reason) {
             <h4 id="addStockModal-userLocation"><?= $sLocation ?></h4>
             <input type="hidden" name="location" id="addStockModal-hiddenLocationInput" value="<?= $sLocation ?>" required>
 
-            <div id="addStockModal-qrReader" style="width: 200px;margin-inline: auto;"></div>
+            <div id="addStockModal-qrReader" class="qr-reader"></div>
 
             <button type="button" id="addStockModal-manualButton" onclick="addStockManualInput()">manual input</button>
 
@@ -163,7 +162,7 @@ foreach ($removeStockReasons as $reason) {
 
             <h4 id="removeStockModal-showUser" style="color: red;"></h4>
 
-            <div id="removeStockModal-qrReader" style="width: 200px;margin-inline: auto;"></div>
+            <div id="removeStockModal-qrReader" class="qr-reader"></div>
 
             <button type="button" id="removeStockModal-manualButton" onclick="removeStockManualInput()">manual input</button>
 
@@ -235,7 +234,7 @@ foreach ($removeStockReasons as $reason) {
     <dialog id="transferStockModal">
         <form action="/stores/transfer.php" method="post" style="display: flex;flex-direction: column;text-align: center;">
 
-            <div id="transferStockModal-qrReader" style="width: 200px;margin-inline: auto;"></div>
+            <div id="transferStockModal-qrReader" class="qr-reader"></div>
 
             <label for="stockCodeInput">code</label>
             <input type="text" id="stockCodeInput" name="stockCodeInput" minlength="11" maxlength="11" required>

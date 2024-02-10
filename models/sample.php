@@ -77,7 +77,7 @@ class sample extends Database
             WHERE
                 samples.name LIKE ? OR
                 samples.otherref LIKE ? OR
-                samples.number LIKE ?
+                samples.number = ?
             ORDER BY samples.rowid DESC
             LIMIT ?;
         EOD;

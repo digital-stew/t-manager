@@ -205,7 +205,7 @@ class Admin extends Database
         }
     }
 
-    function addStockColor(string $newCode, string $oldCode, string $color): bool
+    function addStockColor(string $newCode, string $oldCode, string $color, bool $trueCode): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
@@ -220,23 +220,24 @@ class Admin extends Database
                 (
                     newCode,
                     oldCode,
-                    color
+                    color,
+                    trueCode
                 )
                 VALUES
                 (
-                    ?,?,?
+                    ?,?,?,?
                 )
             EOD;
 
             $stm = $this->db->prepare($sql);
-            $stm->bind_param("sss", $newCode, $oldCode, $color);
+            $stm->bind_param("sssi", $newCode, $oldCode, $color, $trueCode);
             $res = $stm->execute();
             $stm->close();
 
             (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stockCodes_color LIMIT 1;")->fetch_column();
 
             $Log = new Log();
-            $Log->add("NEW", "stock color", null, $lastID, "new code: {$newCode} - old code: {$oldCode} - color: {$color}");
+            $Log->add("NEW", "stock color", null, $lastID, "new code: {$newCode} - old code: {$oldCode} - color: {$color} - true code: {$trueCode}");
 
             if ($res) return true;
             else return false;
@@ -273,7 +274,7 @@ class Admin extends Database
         }
     }
 
-    function addStockType(string $newCode, string $oldCode, string $type): bool
+    function addStockType(string $newCode, string $oldCode, string $type, bool $trueCode): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
@@ -288,23 +289,24 @@ class Admin extends Database
             (
                 newCode,
                 oldCode,
-                type
+                type,
+                trueCode
             )
             VALUES
             (
-                ?,?,?
+                ?,?,?,?
             )
             EOD;
 
             $stm = $this->db->prepare($sql);
-            $stm->bind_param("sss", $newCode, $oldCode, $type);
+            $stm->bind_param("sssi", $newCode, $oldCode, $type, $trueCode);
             $res = $stm->execute();
             $stm->close();
 
             (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.stockCodes_type LIMIT 1;")->fetch_column();
 
             $Log = new Log();
-            $Log->add("NEW", "stock type", null, $lastID, "new code: {$newCode} - old code: {$oldCode} - type: {$type}");
+            $Log->add("NEW", "stock type", null, $lastID, "new code: {$newCode} - old code: {$oldCode} - type: {$type} - true code: {$trueCode}");
 
             if ($res) return true;
             else return false;

@@ -10,6 +10,7 @@ if ((isset($_POST['code']) || isset($_POST['manualAddStock'])) && isset($_POST['
     } else {
         $stockCode = $_POST['code'];
     }
+
     $Stock = new Stock();
     $res =  $Stock->addStock($stockCode, $_POST['location'], $_POST['amount']);
     if ($res) header('Location: /stores?flashUser=stock added');

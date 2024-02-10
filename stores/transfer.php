@@ -50,7 +50,8 @@ if (isset($_POST['stockCodeInput']) && isset($_POST['transferFromSelect']) && is
         }
         if (!$validAmount) throw new Exception("not enough {$_POST['stockCodeInput']} at {$_POST['transferFromSelect']} to transfer {$_POST['amountInput']}");
     } catch (Exception $e) {
-        die("<script> alert('{$e->getMessage()}') </script>");
+        header("Location: {$_SERVER['HTTP_REFERER']}?showUser={$e->getMessage()}");
+        die();
     }
     //checks complete 
 

@@ -1,102 +1,71 @@
-const html5QrCode = new Html5Qrcode("qr-reader");
 const config = { fps: 10, qrbox: { width: 130, height: 130 } };
 
 //*************scan and pick fanatic order */
-
-async function qrCodeSuccessCallback(decodedText, decodedResult) {
-  html5QrCode.stop();
-  document.getElementById("scannerModal").close();
-
-  const result = await addOrderToPick(decodedText);
-  if (parseInt(result) > 0) {
-    //returns new order id
-    window.location = "/fanaticOrders/pickOrder.php?id=" + result;
-  }
+let html5QrCodeAdd;
+try {
+  html5QrCodeAdd = new Html5Qrcode("qr-reader-add");
+} catch (error) {
+  console.log("no camera");
 }
 
-async function addOrderToPick(code) {
-  let formData = new FormData();
-  formData.append("code", code);
-  const req = await fetch("/fanaticOrders/pickOrder.php", {
-    method: "POST",
-    body: formData,
-  });
-  const res = await req.text();
-  if (parseInt(res) > 0) {
-    return res; //new order id
-  } else return false;
-}
-
-function startCam() {
+function startCamAdd() {
   try {
-    html5QrCode.start(
+    html5QrCodeAdd.start(
       { facingMode: "environment" },
       config,
-      qrCodeSuccessCallback
+      (decodedText, decodedResult) => {
+        html5QrCodeAdd.stop();
+        document.getElementById("orderInputStringAdd").value = decodedText;
+        document.getElementById("addOrderSubmitButton").click();
+      }
     );
   } catch (error) {
     console.log("no camera");
   }
-
-  document.getElementById("scannerModal").showModal();
 }
 
-//*************batch add fanatic orders */
-async function batchQrCodeSuccessCallback(decodedText, decodedResult) {
-  html5QrCode.pause();
-  console.log("pause");
-
-  const result = await addOrderToPick(decodedText);
-  if (parseInt(result) > 0) batchShowUser(decodedText);
-  else batchShowUser("error");
-
-  setTimeout(() => {
-    html5QrCode.resume();
-    console.log("resume");
-  }, 3000);
-}
-
-function batchAddOrders() {
-  try {
-    html5QrCode.start(
-      { facingMode: "environment" },
-      config,
-      batchQrCodeSuccessCallback
-    );
-  } catch (error) {
-    console.log("no camera");
-  }
-  document.getElementById("scannerModal").showModal();
-}
-
-function batchShowUser(string) {
-  document.getElementById("qr-reader-results").innerText = string;
-  setTimeout(() => {
-    document.getElementById("qr-reader-results").innerText = "";
-  }, 3000);
-}
-
-//************replace rejects/short****** */
-function replaceRejectsShorts() {
-  try {
-    html5QrCode.start(
-      { facingMode: "environment" },
-      config,
-      replaceRejectsShortsCallback
-    );
-  } catch (error) {
-    console.log("no camera");
-  }
-  document.getElementById("scannerModal").showModal();
-}
-
-async function replaceRejectsShortsCallback() {
-  html5QrCode.stop();
-  document.getElementById("scannerModal").close();
+function closeAddModal() {
+  html5QrCodeAdd.stop();
+  document.getElementById("addAndPickOrder-modal").close();
 }
 //*************************************** */
 
-function closeCamModal() {
-  html5QrCode.stop();
-  document.getElementById("scannerModal").close();
+//*************batch add fanatic orders */
+let html5QrCodeBatchAdd;
+try {
+  html5QrCodeBatchAdd = new Html5Qrcode("qr-reader-batchAdd");
+} catch (error) {
+  console.log("no camera");
 }
+
+function startCamBatchAdd() {
+  try {
+    html5QrCodeBatchAdd.start(
+      { facingMode: "environment" },
+      config,
+      (decodedText, decodedResult) => {
+        html5QrCodeBatchAdd.stop();
+        document.getElementById("orderInputStringBatchAdd").value = decodedText;
+        document.getElementById("batchAddSubmitButton").click();
+      }
+    );
+  } catch (error) {
+    console.log("no camera");
+  }
+}
+
+function closeBatchAddModal() {
+  html5QrCodeBatchAdd.stop();
+  document.getElementById("batchAddOrders-modal").close();
+}
+const queryParamsFanaticOrders = new URLSearchParams(window.location.search);
+const batchAddOrder = queryParamsFanaticOrders.get("batchAddOrder");
+if (batchAddOrder) {
+  document.getElementById("batchAddOrders-modal").showModal();
+  startCamBatchAdd();
+}
+//remove all get params
+queryParamsFanaticOrders.delete("batchAddOrder");
+const newUrl = `${window.location.pathname}`;
+window.history.pushState({}, "", newUrl);
+//*************************************** */

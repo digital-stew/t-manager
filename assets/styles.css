@@ -380,6 +380,7 @@ label {
 
 /* ===================modal================= */
 dialog {
+  text-align: center;
   background-image: var(--body-background-image);
   color: var(--body-text-color);
   border-radius: 20px;
@@ -418,4 +419,9 @@ hr {
   border-color: black;
   border-width: 2px 0 0 0;
   /* border-radius: 20px;   */
+}
+
+.qr-reader {
+  width: 200px;
+  margin-inline: auto;
 }

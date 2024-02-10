@@ -7,10 +7,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 class FanaticOrders extends Database
 {
 
-    function parseCode(string $code): array
+    function parseCode(string $code): array | bool
     {
         try {
-            $splitCode = explode('¦', $code);
+            $splitCode = explode('¦', $code) or throw new Exception('cant split code');
+            if (sizeof($splitCode) < 9) throw new Exception('invalid order string');
             $returnArray = [
                 'orderName' => trim($splitCode[0]),
                 'orderCode' => trim($splitCode[1]),
@@ -22,17 +23,18 @@ class FanaticOrders extends Database
                 'XL' => (int)trim(explode(' ', trim($splitCode[7]))[0]),
                 '2XL' => (int)trim(explode(' ', trim($splitCode[8]))[0]),
                 '3XL' => (int)trim(explode(' ', trim($splitCode[9]))[0]),
-            ];
+            ] or throw new Exception('order string not valid');
 
             if (isset($splitCode[10])) $returnArray['4XL'] = (int)trim(explode(' ', trim($splitCode[10]))[0]);
             if (isset($splitCode[11])) $returnArray['5XL'] = (int)trim(explode(' ', trim($splitCode[11]))[0]);
 
             return $returnArray;
         } catch (Exception $e) {
-            print_r($e->getMessage());
+            // print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'parseCode()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
-            die();
+            return false;
+            // die();
         }
     }
 
@@ -102,9 +104,9 @@ class FanaticOrders extends Database
 
             return $type . $color;
         } catch (Exception $e) {
-            print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'getStockCode()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
             die();
         }
     }

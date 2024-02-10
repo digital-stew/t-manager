@@ -339,11 +339,20 @@ class Stock extends Database
 
     function getTypes($all = false): array
     {
-        $sql = <<<EOD
-            SELECT id, newCode, oldCode, type
+        if ($all) {
+            $sql = <<<EOD
+            SELECT id, newCode, oldCode, type, trueCode
             FROM `t-manager`.stockCodes_type
             ORDER BY id
-        EOD;
+            EOD;
+        } else {
+            $sql = <<<EOD
+            SELECT id, newCode, oldCode, type, trueCode
+            FROM `t-manager`.stockCodes_type
+            WHERE trueCode = true
+            ORDER BY id
+            EOD;
+        }
 
         try {
             $stm = $this->db->prepare($sql);
@@ -356,14 +365,15 @@ class Stock extends Database
                     'id' => $row['id'],
                     'newCode' => $row['newCode'],
                     'oldCode' => $row['oldCode'],
-                    'type' => $row['type']
+                    'type' => $row['type'],
+                    'trueCode' => $row['trueCode']
                 );
                 array_push($types, $newType);
             }
+
             $stm->close();
 
-            if ($all) return $types;
-            else return $this->unique_array($types, 'type');
+            return $types;
         } catch (Exception $e) {
             print_r($e->getMessage());
             $Log = new Log();
@@ -406,11 +416,20 @@ class Stock extends Database
 
     function getColors($all = false): array
     {
-        $sql = <<<EOD
-            SELECT id, newCode, oldCode, color
+        if ($all) {
+            $sql = <<<EOD
+            SELECT id, newCode, oldCode, color, trueCode
             FROM `t-manager`.stockCodes_color
             ORDER BY id
-        EOD;
+            EOD;
+        } else {
+            $sql = <<<EOD
+            SELECT id, newCode, oldCode, color, trueCode
+            FROM `t-manager`.stockCodes_color
+            WHERE trueCode = true
+            ORDER BY id
+            EOD;
+        }
 
         try {
             $stm = $this->db->prepare($sql);
@@ -424,13 +443,15 @@ class Stock extends Database
                     'newCode' => $row['newCode'],
                     'oldCode' => $row['oldCode'],
                     'color' => $row['color'],
+                    'trueCode' => $row['trueCode']
                 );
                 array_push($colors, $newColor);
             }
             $stm->close();
 
-            if ($all) return $colors;
-            else return $this->unique_array($colors, 'color');
+            return $colors;
+            // if ($all) return $colors;
+            // else return $this->unique_array($colors, 'color');
         } catch (Exception $e) {
             //print_r($e->getMessage());
             $Log = new Log();
@@ -442,10 +463,11 @@ class Stock extends Database
 
     private function unique_array($array, $key)
     {
+        $rArray = array_reverse($array); // potential bug in manual add fanatic order
         $temp_array = array();
         $i = 0;
         $key_array = array();
-        foreach ($array as $val) {
+        foreach ($rArray as $val) {
             if (!in_array($val[$key], $key_array)) {
                 $key_array[$i] = $val[$key];
                 $temp_array[$i] = $val;

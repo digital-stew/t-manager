@@ -80,13 +80,24 @@ function flashUser(text) {
   element.innerText = text;
   element.showModal();
   queryParams.delete("flashUser");
-  const newUrl = `${window.location.pathname}?${queryParams.toString()}`;
+  const newUrl = `${window.location.pathname}${queryParams.toString()}`; //is the ? needed???
+  // const newUrl = `${window.location.pathname}?${queryParams.toString()}`; //is the ? needed???
   window.history.pushState({}, "", newUrl);
   setTimeout(() => {
     closeModal();
   }, 2000);
 }
 
+function showUser(text) {
+  document.getElementById("showUserText-modal").innerText = text;
+  document.getElementById("showUserModal").showModal();
+  queryParams.delete("showUser");
+  const newUrl = `${window.location.pathname}${queryParams.toString()}`;
+  window.history.pushState({}, "", newUrl);
+}
+
 const queryParams = new URLSearchParams(window.location.search);
 const flash = queryParams.get("flashUser");
 if (flash) flashUser(flash);
+const show = queryParams.get("showUser");
+if (show) showUser(show);

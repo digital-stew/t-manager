@@ -71,6 +71,12 @@ if (isset($_POST['newLocation'])) {
 
 <dialog id="modal" style="text-align: center;"></dialog>
 
+<dialog id="showUserModal" style="text-align: center;">
+    <p id="showUserText-modal"></p>
+    <p>Database has not been updated</p>
+    <button type="button" onclick="document.getElementById('showUserModal').close();" style="width: 80%;text-align: center;">Close </button>
+</dialog>
+
 <script>
     <?php if (!isset($_SESSION['userName'])) : ?>
         const loginForm = document.getElementById('loginForm');

@@ -19,7 +19,8 @@ if (isset($_POST['deleteColor']) && isset($_GET['colorId'])) {
 if (isset($_POST['addColor']) && isset($_POST['newCode']) && isset($_POST['oldCode']) && isset($_POST['color'])) {
     session_start();
     $Auth->isAdmin();
-    $res = $Admin->addStockColor($_POST['newCode'], $_POST['oldCode'], $_POST['color']);
+    $trueCode = isset($_POST['trueCode']) ? true : false;
+    $res = $Admin->addStockColor($_POST['newCode'], $_POST['oldCode'], $_POST['color'], $trueCode);
     if ($res) header('location: /admin?flashUser=New color added');
     else header('Location: /admin?flashUser=ERROR!! Contact admin if problem persists');
     die();
@@ -45,6 +46,10 @@ if (isset($_GET['addColor'])) {
             color
             <input type="text" name="color" required>
         </label>
+        <label>
+        true code
+        <input type="checkbox" name="trueCode" >
+        </label>      
         <button type='submit' name='addColor'>Save</button>
         <button type='button' onclick="closeModal();">Back</button>
     </form>
@@ -67,8 +72,15 @@ if (isset($_GET['colorId'])) {
                 'newCode' => $colorType['newCode'],
                 'oldCode' => $colorType['oldCode'],
                 'color' => $colorType['color'],
+                'trueCode' => $colorType['trueCode']
             ];
         }
+    }
+
+    if ($selectedStock['trueCode']) {
+        $trueCode = "this color is a true code and \"{$selectedStock['newCode']}\" will appear in stock tables and on boxes <br> remove with caution!!";
+    } else {
+        $trueCode = "this is a dummy code for the purpose of dealing with code changes beyond are control";
     }
 
     $html = <<<EOD
@@ -78,6 +90,7 @@ if (isset($_GET['colorId'])) {
         <p>new code: {$selectedStock['newCode']}</p>
         <p>old code: {$selectedStock['oldCode']}</p>
         <p>color: {$selectedStock['color']}</p>
+        <p>{$trueCode}</p>
         <button type='submit' onclick="return confirm('Permanently delete color?')" name='deleteColor'>Delete</button>
         <button type='button' onclick="closeModal();">Back</button>
     </form>
@@ -98,6 +111,7 @@ $stockColors = $Stock->getColors(true);
                 <th>new code<br>(on boxes)</th>
                 <th>old code<br>(on orders)</th>
                 <th>color</th>
+                <th>true code</th>
             </tr>
         </thead>
         <tbody id="searchResults">
@@ -106,6 +120,7 @@ $stockColors = $Stock->getColors(true);
                     <td><?= $stock['newCode'] ?></td>
                     <td><?= $stock['oldCode'] ?></td>
                     <td><?= $stock['color'] ?></td>
+                    <td><input type="checkbox" disabled <?= $stock['trueCode'] ? 'checked' : '' ?>></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

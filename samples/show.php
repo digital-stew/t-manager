@@ -33,6 +33,7 @@ $imageNumber = 0;
             <h4>Info</h4>
             <p id="sampleName"><?= $sample['name'] ?></p>
             <p id="sampleNumber"><?= $sample['number'] ?></p>
+            <p id="otherRef"><?= $sample['otherRef'] ?></p>
             <p class="timestamp"><?= $sample['date'] ?></p>
             <p><?= $sample['printer'] ?></p>
             <!-- show edit button if the user is the printer or user is admin -->

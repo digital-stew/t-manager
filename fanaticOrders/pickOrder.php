@@ -5,6 +5,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
 
 if (isset($_POST['manualAddOrder']) && isset($_POST['orderName'])) {
     session_start();
+    $FanaticOrders = new FanaticOrders();
+
     // code example 4336-2 ¦ 211M-00U2-ERS-ERS ¦ Hood Sports Grey ¦ 6 XS ¦ 6 S ¦ 8 M ¦ 8 L ¦ 8 XL ¦ 8 2XL ¦ 6 3XL ¦ 0 4XL ¦ 0 5XL
     $colorCode = trim(explode(':', $_POST['color'])[0]);
     $colorText = trim(explode(':', $_POST['color'])[1]);
@@ -30,8 +32,14 @@ if (isset($_POST['manualAddOrder']) && isset($_POST['orderName'])) {
             $manualCode .= '0 ' . $size['size'] . ' ¦ ';
         }
     }
+    try {
+        $parsedInputString = $FanaticOrders->parseCode($manualCode) or throw new Exception('cant parse order input string');
+        $parsedStockCode = $FanaticOrders->getStockCode($parsedInputString['orderCode']) or throw new Exception("error with order string");
+    } catch (Exception $e) {
+        header("Location: {$_SERVER['HTTP_REFERER']}?showUser={$e->getMessage()}");
+        die();
+    }
 
-    $FanaticOrders = new FanaticOrders();
     $newOrderID = $FanaticOrders->addOrder($manualCode);
     if ($newOrderID) {
         header('location: /fanaticOrders');
@@ -41,16 +49,30 @@ if (isset($_POST['manualAddOrder']) && isset($_POST['orderName'])) {
     die();
 }
 
-if (isset($_POST['code'])) {
+//add and pick fanatic order + batch add
+if (isset($_POST['orderInputString'])) { // add new fanatic order
     session_start();
     $FanaticOrders = new FanaticOrders();
-    $newOrderID = $FanaticOrders->addOrder($_POST['code']);
+    try {
+        $parsedInputString = $FanaticOrders->parseCode($_POST['orderInputString']) or throw new Exception('cant parse order input string');
+        $parsedStockCode = $FanaticOrders->getStockCode($parsedInputString['orderCode']) or throw new Exception("error with order string");
+    } catch (Exception $e) {
+        header("Location: {$_SERVER['HTTP_REFERER']}?showUser={$e->getMessage()}");
+        die();
+    }
+
+    $newOrderID = $FanaticOrders->addOrder($_POST['orderInputString']);
     if ($newOrderID) {
-        die((string)$newOrderID); //reply to js function
+        if (isset($_GET['batchAddOrder'])) {
+            header('location: /fanaticOrders/?batchAddOrder=true');
+        } else {
+            header('location: /fanaticOrders/pickOrder.php?id=' . $newOrderID);
+        }
     } else {
         header('Location: /fanaticOrders?flashUser=ERROR!! Contact admin if problem persists');
     }
 }
+/////////////////////////////
 
 if (isset($_POST['pick']) && isset($_POST['orderId'])) {
     session_start();

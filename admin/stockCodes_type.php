@@ -20,7 +20,8 @@ if (isset($_POST['deleteType']) && isset($_GET['typeId'])) {
 if (isset($_POST['addType']) && isset($_POST['newCode']) && isset($_POST['oldCode']) && isset($_POST['type'])) {
     session_start();
     $Auth->isAdmin();
-    $res = $Admin->addStockType($_POST['newCode'], $_POST['oldCode'], $_POST['type']);
+    $trueCode = isset($_POST['trueCode']) ? true : false;
+    $res = $Admin->addStockType($_POST['newCode'], $_POST['oldCode'], $_POST['type'], $trueCode);
     if ($res) header('location: /admin?flashUser=New type added');
     else header('Location: /admin?flashUser=ERROR!! Contact admin if problem persists');
     die();
@@ -46,6 +47,9 @@ if (isset($_GET['addType'])) {
             type
             <input type="text" name="type" required>
         </label>
+        true code
+        <input type="checkbox" name="trueCode" >
+        </label> 
         <button type='submit' name='addType'>Save</button>
         <button type='button' onclick="closeModal();">Back</button>
     </form>
@@ -66,8 +70,15 @@ if (isset($_GET['typeId'])) {
                 'newCode' => $stockType['newCode'],
                 'oldCode' => $stockType['oldCode'],
                 'type' => $stockType['type'],
+                'trueCode' => $stockType['trueCode'],
             ];
         }
+    }
+
+    if ($selectedStock['trueCode']) {
+        $trueCode = "this type is a true code and \"{$selectedStock['newCode']}\" will appear in stock tables and on boxes <br> remove with caution!!";
+    } else {
+        $trueCode = "this is a dummy code for the purpose of dealing with code changes beyond are control";
     }
 
     $html = <<<EOD
@@ -77,6 +88,7 @@ if (isset($_GET['typeId'])) {
         <p>new code: {$selectedStock['newCode']}</p>
         <p>old code: {$selectedStock['oldCode']}</p>
         <p>type: {$selectedStock['type']}</p>
+        <p>{$trueCode}</p>
         <button type='submit' onclick="return confirm('Permanently delete type?')" name='deleteType'>Delete</button>
         <button type='button' onclick="closeModal();">Back</button>
     </form>
@@ -96,6 +108,7 @@ $stockTypes = $Stock->getTypes(true);
                 <th>new code<br>(on boxes)</th>
                 <th>old code<br>(on orders)</th>
                 <th>type</th>
+                <th>true code</th>
             </tr>
         </thead>
         <tbody>
@@ -104,6 +117,7 @@ $stockTypes = $Stock->getTypes(true);
                     <td><?= $stock['newCode'] ?></td>
                     <td><?= $stock['oldCode'] ?></td>
                     <td><?= $stock['type'] ?></td>
+                    <td><input type="checkbox" disabled <?= $stock['trueCode'] ? 'checked' : '' ?>></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
