@@ -12,10 +12,16 @@ if ((isset($_POST['code']) || isset($_POST['manualAddStock'])) && isset($_POST['
     }
 
     $Stock = new Stock();
-    $res =  $Stock->addStock($stockCode, $_POST['location'], $_POST['amount']);
-    if ($res) header('Location: /stores?flashUser=stock added');
-    else header('Location: /stores?flashUser=ERROR!! Contact admin if problem persists');
-    die();
+    try {
+        $Stock->parseCode($stockCode) or throw new Exception("invalid stock code {$stockCode}");
+        $res =  $Stock->addStock($stockCode, $_POST['location'], $_POST['amount']) or throw new Exception('error updating database');
+        if ($res) header('Location: /stores?flashUser=stock added');
+        else header('Location: /stores?flashUser=ERROR!! Contact admin if problem persists');
+        die();
+    } catch (Exception $e) {
+        header("Location: {$_SERVER['HTTP_REFERER']}?showUser={$e->getMessage()}");
+        die();
+    }
 }
 
 if (isset($_POST['batchAddStyle']) && isset($_POST['batchAddColor']) && isset($_POST['location'])) {
@@ -31,12 +37,15 @@ if (isset($_POST['batchAddStyle']) && isset($_POST['batchAddColor']) && isset($_
         if ($tmpAmount > 0) {
             $stockCode = str_pad($styleCode . $colorCode . $tmpSize, 11, '0');
             try {
-                $res =  $Stock->addStock($stockCode, $_POST['location'], $tmpAmount);
+                $Stock->parseCode($stockCode) or throw new Exception("invalid stock code {$stockCode}");
+                $res =  $Stock->addStock($stockCode, $_POST['location'], $tmpAmount) or throw new Exception('error updating database');
             } catch (Exception $e) {
-                header('Location: /stores?flashUser=ERROR!! Contact admin if problem persists');
+                header("Location: {$_SERVER['HTTP_REFERER']}?showUser={$e->getMessage()}");
+                die();
             }
             if ($res == true) continue;
             header('Location: /stores?flashUser=ERROR!! Contact admin if problem persists');
+            die();
         }
     }
 

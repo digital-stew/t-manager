@@ -7,7 +7,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 class Stock extends Database
 {
 
-    function parseCode(string $code): array
+    function parseCode(string $code): array | bool
     {
         try {
             if (strlen($code) < 11) throw new Exception('stock code must be 11 characters');
@@ -68,9 +68,9 @@ class Stock extends Database
                 'size' => $size,
             ];
         } catch (Exception $e) {
-            print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'parseCode()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
             die();
         }
     }
@@ -230,7 +230,6 @@ class Stock extends Database
 
             return false;
         } catch (Exception $e) {
-            print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'addStock()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
             return false;
