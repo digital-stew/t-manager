@@ -24,6 +24,7 @@ foreach ($removeStockReasons as $reason) {
     <title>Stores</title>
     <link rel="stylesheet" href="/assets/styles.css">
     <!-- <link rel="stylesheet" href="/assets/light.css"> -->
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.png">
     <script src="/assets/qrCode.js"></script>
     <script src="/assets/globalFunctions.js" defer></script>
     <script src="/stores/stores.js" defer></script>

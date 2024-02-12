@@ -14,6 +14,7 @@ if (isset($_GET['complete'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.5">
     <title>maintenance log</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.png">
     <link rel="stylesheet" href="/assets/styles.css">
     <script src="/assets/globalFunctions.js" defer></script>
     <script src="/maintenance/maintenance.js" defer></script>

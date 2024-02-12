@@ -19,6 +19,7 @@ if (isset($_GET['complete'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.5">
     <title>Fanatic orders</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.png">
     <link rel="stylesheet" href="/assets/styles.css">
     <script src="/assets/qrCode.js"></script>
     <script src="/assets/globalFunctions.js" defer></script>
@@ -91,7 +92,7 @@ if (isset($_GET['complete'])) {
             <h4>manual add job</h4>
             <input type="text" name="orderName" placeholder="order name / batch" required> <br>
             <select name="type" required>
-                <!-- <option value="">--select garment--</option> -->
+                <option value="">--select garment--</option>
                 <?php foreach ($Stock->getTypes() as $type) : ?>
                     <option value="<?= $type['oldCode'] ?>"><?= $type['type'] ?></option>
                 <?php endforeach ?>

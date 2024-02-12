@@ -4,8 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Admin.php';
 session_start();
 $Admin = new Admin();
 $locations = $Admin->getLocations();
-// print_r($_SERVER);
-// die();
+
 //set user location
 if (isset($_POST['newLocation'])) {
     $Admin->setLocation($_POST['newLocation']);
@@ -31,7 +30,6 @@ if (isset($_POST['newLocation'])) {
             <form action="/header.php" method="post">
                 <label for="currentLocationSelect">set location</label>
                 <select onchange="this.form.submit()" name="newLocation" id="currentLocationSelect" style="width: 100%;text-align: center;">
-                    <!-- <option value="<?= $_SESSION['location'] ?>"><?= $_SESSION['location'] ?></option> -->
                     <?php foreach ($locations as $location) : ?>
                         <option <?= $_SESSION['location'] == $location ? 'selected' : '' ?> value="<?= $location ?>"><?= $location ?></option>
                     <?php endforeach ?>
@@ -65,12 +63,14 @@ if (isset($_POST['newLocation'])) {
     </ul>
 
     <div style="margin-top: auto;">
-        t-manager V1.0 rc1
+        t-manager V1.0 rc2
     </div>
 </nav>
 
+<!-- flash user modal -->
 <dialog id="modal" style="text-align: center;"></dialog>
 
+<!-- show user modal -->
 <dialog id="showUserModal" style="text-align: center;">
     <p id="showUserText-modal"></p>
     <p>Database has not been updated</p>

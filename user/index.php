@@ -9,6 +9,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.5">
     <title>Stores</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.png">
     <link rel="stylesheet" href="/assets/styles.css">
     <script src="/assets/globalFunctions.js" defer></script>
 </head>

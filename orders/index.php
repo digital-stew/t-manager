@@ -13,6 +13,7 @@ $sizes = $Stock->getSizes();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.5">
     <title>orders</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.png">
     <link rel="stylesheet" href="/assets/styles.css">
     <!-- <link rel="stylesheet" href="/assets/light.css"> -->
     <script src="/assets/globalFunctions.js" defer></script>
