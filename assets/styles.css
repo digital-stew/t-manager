@@ -1,35 +1,6 @@
 :root {
-  /*
-  --body-text-color: #333;
-  --heading-color: #333;
-  --body-background-image: linear-gradient(to right, #e6e6e6, #e6e6e6);
-
-  --navbar-background-image: #f4f4f4;
-  --navbar-a-color: #333;
-  --navbar-hover: rgba(255, 255, 255, 0.4);
-  --navbar-width: 200px;
-
-  --box-background: #f4f4f4;
-  --box-background-color: #fff;
-  --border-color: #ddd;
-
-  --th-color: #333;
-  --nth-child-1: #f4f4f4;
-  --nth-child-2: #fff;
-  --table-head-background: #e6e6e6;
-  --tr-hover-color: #333;
-  --tr-hover-background: #f0f0f0;
-
-  --textarea-background-color: #fff;
-  --textarea-color: #333;
-
-  --button-background-color: #4a32d1;
-  --button-text-color: #fff;
-
-  --modal-backdrop-color: rgba(255, 255, 255, 0.6);
-  */
   --body-text-color: lightgrey;
-  --heading-color: #e6e6e6;
+  --heading-color: lightgrey;
   --body-background-image: linear-gradient(to right, #222, #122);
 
   --navbar-background-image: #222;
@@ -39,7 +10,6 @@
 
   --box-background: #e6e6e6;
   --box-background-color: #333;
-  /* --box-background-color: linear-gradient(to right, #111, #333); */
   --border-color: #333;
 
   --th-color: white;
@@ -126,7 +96,7 @@ h6 {
   color: var(--heading-color);
 }
 
-/* -------------------NAVBAR------------------------------*/
+/*****************NAVBAR****************/
 .burgerMenu {
   position: absolute;
   z-index: 101;
@@ -194,7 +164,7 @@ h6 {
   background-color: var(--navbar-hover);
 }
 
-/* ==========table========================= */
+/***************table*******************/
 table {
   border-collapse: collapse;
   /* margin-inline: 2px; */
@@ -216,8 +186,6 @@ th {
 td {
   border: 1px solid black;
   text-align: center;
-  /* padding-inline: 1rem; */
-  /* height: 100px; */
 }
 td img {
   vertical-align: middle;
@@ -234,14 +202,15 @@ tr:hover:not(thead tr) {
   background-color: var(--tr-hover-background);
 }
 
-/* sample table */
+/*********sample table to handle images*********/
 .sampleTable td:nth-child(5) {
   width: 50px;
 }
 .sampleTable td:nth-child(1) {
   width: 50px;
 }
-/* ====================================================== */
+
+/****************************/
 
 .animate,
 .fadeIn {
@@ -359,14 +328,13 @@ input[type="file"]::file-selector-button {
   color: var(--button-text-color);
   border: unset;
   transition: all 500ms;
-  /* margin: 1rem; */
   margin: 1rem;
 }
 button:hover,
 input[type="file"]::file-selector-button:hover {
   border-radius: 15px;
 }
-/* ===================helpers================= */
+/*************helpers************/
 .border {
   border: 20px solid var(--border-color);
   border-radius: 1 0px;
@@ -375,10 +343,16 @@ input[type="file"]::file-selector-button:hover {
 label {
   display: inline-flex;
   flex-direction: column;
-  /* background-color: red; */
 }
 
-/* ===================modal================= */
+hr {
+  height: 30px;
+  border-style: solid;
+  border-color: black;
+  border-width: 2px 0 0 0;
+}
+
+/*************modal***************/
 dialog {
   text-align: center;
   background-image: var(--body-background-image);
@@ -388,7 +362,7 @@ dialog {
 dialog::backdrop {
   background-color: var(--modal-backdrop-color);
 }
-/* =============================================== */
+/********************************/
 
 @media (max-width: 1500px) {
   body {
@@ -413,15 +387,29 @@ dialog::backdrop {
   }
 }
 
-hr {
-  height: 30px;
-  border-style: solid;
-  border-color: black;
-  border-width: 2px 0 0 0;
-  /* border-radius: 20px;   */
-}
-
 .qr-reader {
   width: 200px;
   margin-inline: auto;
 }
+
+/* mouse over tooltip help */
+.tooltip-text {
+  visibility: hidden;
+  position: fixed;
+  z-index: 1;
+  max-width: 500px;
+  background-color: #192733;
+  border-radius: 10px;
+  padding: 10px 15px 10px 15px;
+}
+.with-tooltip {
+  width: min-content;
+  position: absolute;
+}
+.with-tooltip:hover .tooltip-text {
+  visibility: visible;
+}
+.help-icon {
+  width: 20px;
+}
+/***************************/

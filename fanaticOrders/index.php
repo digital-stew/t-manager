@@ -68,9 +68,12 @@ if (isset($_GET['complete'])) {
     </table>
 
     <dialog id="addAndPickOrder-modal">
+        <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
+            <span class="tooltip-text">example order string = 4336-2 ¦ 211M-00U2-ERS-ERS ¦ Hood Sports Grey ¦ 6 XS ¦ 6 S ¦ 8 M ¦ 8 L ¦ 8 XL ¦ 8 2XL ¦ 6 3XL ¦ 0 4XL ¦ 0 5XL</span>
+        </div>
         <h4>Scan and pick fanatic order</h4>
         <div id="qr-reader-add" class="qr-reader"></div>
-        <form action="/fanaticOrders/pickOrder.php" method="post">
+        <form action="/fanaticOrders/pickOrder.php" method="post" autocomplete="off">
             <input type="text" name="orderInputString" id="orderInputStringAdd" placeholder="manual order string" style="width: 100%;">
             <button id="addOrderSubmitButton" type="submit" name="addAndPickOrder" style="width: 80%;">add and pick</button>
             <button type="button" style="width: 80%;" onclick="closeAddModal();">cancel</button>
@@ -78,9 +81,12 @@ if (isset($_GET['complete'])) {
     </dialog>
 
     <dialog id="batchAddOrders-modal">
+        <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
+            <span class="tooltip-text">example order string = 4336-2 ¦ 211M-00U2-ERS-ERS ¦ Hood Sports Grey ¦ 6 XS ¦ 6 S ¦ 8 M ¦ 8 L ¦ 8 XL ¦ 8 2XL ¦ 6 3XL ¦ 0 4XL ¦ 0 5XL</span>
+        </div>
         <h4>Scan fanatic order</h4>
         <div id="qr-reader-batchAdd" class="qr-reader"></div>
-        <form action="/fanaticOrders/pickOrder.php?batchAddOrder=true" method="post">
+        <form action="/fanaticOrders/pickOrder.php?batchAddOrder=true" method="post" autocomplete="off">
             <input type="text" name="orderInputString" id="orderInputStringBatchAdd" placeholder="manual order string" style="width: 100%;">
             <button id="batchAddSubmitButton" type="submit" name="batchAddOrder" style="width: 80%;">add order</button>
             <button type="button" style="width: 80%;" onclick="closeBatchAddModal();">cancel</button>
@@ -88,7 +94,10 @@ if (isset($_GET['complete'])) {
     </dialog>
 
     <dialog id="manualAddJobModal">
-        <form action="/fanaticOrders/pickOrder.php" method="post" style="text-align: center;">
+        <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
+            <span class="tooltip-text">This should only be utilized in the absence of a QR code</span>
+        </div>
+        <form action="/fanaticOrders/pickOrder.php" method="post" style="text-align: center;" autocomplete="off">
             <h4>manual add job</h4>
             <input type="text" name="orderName" placeholder="order name / batch" required> <br>
             <select name="type" required>

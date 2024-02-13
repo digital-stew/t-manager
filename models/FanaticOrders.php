@@ -10,8 +10,12 @@ class FanaticOrders extends Database
     function parseCode(string $code): array | bool
     {
         try {
+
             $splitCode = explode('¦', $code) or throw new Exception('cant split code');
-            if (sizeof($splitCode) < 9) throw new Exception('invalid order string');
+            if (count($splitCode) >= 10 && count($splitCode) <= 12) {
+            } else {
+                throw new Exception('invalid fanatic order string');
+            }
             $returnArray = [
                 'orderName' => trim($splitCode[0]),
                 'orderCode' => trim($splitCode[1]),
@@ -30,7 +34,6 @@ class FanaticOrders extends Database
 
             return $returnArray;
         } catch (Exception $e) {
-            // print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'parseCode()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
             return false;

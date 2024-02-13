@@ -23,7 +23,6 @@ foreach ($removeStockReasons as $reason) {
     <meta name="viewport" content="width=device-width, initial-scale=0.5">
     <title>Stores</title>
     <link rel="stylesheet" href="/assets/styles.css">
-    <!-- <link rel="stylesheet" href="/assets/light.css"> -->
     <link rel="icon" type="image/x-icon" href="/assets/images/favicon.png">
     <script src="/assets/qrCode.js"></script>
     <script src="/assets/globalFunctions.js" defer></script>
@@ -96,6 +95,9 @@ foreach ($removeStockReasons as $reason) {
     </section>
 
     <dialog id="addStockModal">
+        <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
+            <span class="tooltip-text">example stock code = 202M590FXS0</span>
+        </div>
         <form action="/stores/add.php" method="post" autocomplete="off" style="display: flex;flex-direction: column;text-align: center;">
             <h4>Add stock</h4>
 
@@ -155,6 +157,9 @@ foreach ($removeStockReasons as $reason) {
 
 
     <dialog id="removeStockModal">
+        <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
+            <span class="tooltip-text">example stock code = 202M590FXS0 <br>To remove stock, a valid order number is required, excluding "other"</span>
+        </div>
         <form action="/stores/remove.php" method="post" autocomplete="off" style="display: flex;flex-direction: column;text-align: center;">
             <h4>remove stock</h4>
 
@@ -188,6 +193,9 @@ foreach ($removeStockReasons as $reason) {
     </dialog>
 
     <dialog id="removeStockModal-manual">
+        <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
+            <span class="tooltip-text">To remove stock, a valid order number is required, excluding "other"</span>
+        </div>
         <form action="/stores/remove.php" method="post" autocomplete="off" style="display: flex;flex-direction: column;text-align: center;">
             <h4>remove stock</h4>
 
@@ -233,6 +241,10 @@ foreach ($removeStockReasons as $reason) {
     </dialog>
 
     <dialog id="transferStockModal">
+        <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
+            <span class="tooltip-text">example stock code = 202M590FXS0</span>
+        </div>
+        <h4>Transfer stock</h4>
         <form action="/stores/transfer.php" method="post" style="display: flex;flex-direction: column;text-align: center;">
 
             <div id="transferStockModal-qrReader" class="qr-reader"></div>
@@ -264,15 +276,20 @@ foreach ($removeStockReasons as $reason) {
     </dialog>
 
     <dialog id="batchAddStockModal">
+        <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
+            <span class="tooltip-text">will add multiple entries of the selected type, color and sizes</span>
+        </div>
         <h4>batch add stock</h4>
         <h4><?= $sLocation ?></h4>
         <form action="/stores/add.php" method="post" style="text-align: center;">
-            <select id="batchAddStyle" name="batchAddStyle" style="margin-bottom: 1rem;">
+            <select id="batchAddStyle" name="batchAddStyle" style="margin-bottom: 1rem;" required>
+                <option value="none">--- select type ---</option>
                 <?php foreach ($types as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['type'] ?></option>
                 <?php endforeach ?>
             </select>
-            <select id="batchAddColor" name="batchAddColor" style="margin-bottom: 1rem;">
+            <select id="batchAddColor" name="batchAddColor" style="margin-bottom: 1rem;" required>
+                <option value="none">--- select color ---</option>
                 <?php foreach ($colors as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['color'] ?></option>
                 <?php endforeach ?>

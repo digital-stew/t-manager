@@ -15,7 +15,7 @@ if (isset($_POST['manualAddOrder']) && isset($_POST['orderName'])) {
     //add order name eg 4336-2
     $manualCode .= $_POST['orderName'] . ' ¦ ';
 
-    //add order code eg 211M-00U2-ERS-ERS
+    //add order code eg 211M-00U2-ERS-ERS       
     $rand1 = rand3();
     $rand2 = rand3();
     $manualCode .= "{$_POST['type']}-{$colorCode}-{$rand1}-{$rand2} ¦ ";
@@ -33,8 +33,8 @@ if (isset($_POST['manualAddOrder']) && isset($_POST['orderName'])) {
         }
     }
     try {
-        $parsedInputString = $FanaticOrders->parseCode($manualCode) or throw new Exception('cant parse order input string');
-        $parsedStockCode = $FanaticOrders->getStockCode($parsedInputString['orderCode']) or throw new Exception("error with order string");
+        $parsedInputString = $FanaticOrders->parseCode($manualCode) or throw new Exception("error with input string: {$manualCode}");
+        $parsedStockCode = $FanaticOrders->getStockCode($parsedInputString['orderCode']) or throw new Exception("error with order code: {$parsedInputString['orderCode']}");
     } catch (Exception $e) {
         header("Location: {$_SERVER['HTTP_REFERER']}?showUser={$e->getMessage()}");
         die();
@@ -54,8 +54,8 @@ if (isset($_POST['orderInputString'])) { // add new fanatic order
     session_start();
     $FanaticOrders = new FanaticOrders();
     try {
-        $parsedInputString = $FanaticOrders->parseCode($_POST['orderInputString']) or throw new Exception('cant parse order input string');
-        $parsedStockCode = $FanaticOrders->getStockCode($parsedInputString['orderCode']) or throw new Exception("error with order string");
+        $parsedInputString = $FanaticOrders->parseCode($_POST['orderInputString']) or throw new Exception("error with input string: {$_POST['orderInputString']}");
+        $parsedStockCode = $FanaticOrders->getStockCode($parsedInputString['orderCode']) or throw new Exception("error with order code: {$parsedInputString['orderCode']}");
     } catch (Exception $e) {
         header("Location: {$_SERVER['HTTP_REFERER']}?showUser={$e->getMessage()}");
         die();
