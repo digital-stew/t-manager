@@ -158,13 +158,13 @@ foreach ($removeStockReasons as $reason) {
 
     <dialog id="batchAddStockModal">
         <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
-            <span class="tooltip-text">will add multiple entries of the selected type, color and sizes</span>
+            <span class="tooltip-text">add multiple entries of the selected type, color and sizes</span>
         </div>
         <h4>batch add stock</h4>
         <form action="/stores/add.php" method="post" style="text-align: center;">
             <select name="batchAddStockLocation" id="batchAddStockLocation" style="text-align: center;">
                 <?php foreach ($locations as $location) : ?>
-                    <option <?= $_SESSION['location'] == $location ? 'selected' : '' ?> value="<?= $location ?>"><?= $location ?></option>
+                    <option <?= $_SESSION['location'] ?? '' == $location ? 'selected' : '' ?> value="<?= $location ?>"><?= $location ?></option>
                 <?php endforeach ?>
             </select>
             <br>
@@ -363,7 +363,7 @@ foreach ($removeStockReasons as $reason) {
 
     <dialog id="batchTransferModal">
         <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
-            <span class="tooltip-text">place holder</span>
+            <span class="tooltip-text">transfer multiple of type and color</span>
         </div>
         <h4>batch transfer stock</h4>
         <form action="/stores/transfer.php" method="post" style="text-align: center;">
