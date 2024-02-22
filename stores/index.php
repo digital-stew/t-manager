@@ -329,7 +329,7 @@ foreach ($removeStockReasons as $reason) {
                 <?php endforeach ?>
             </select>
             <select id="transferManualSize" name="transferManualSize" style="margin-bottom: 1rem;width: 100%;" onchange="manualTransferStockCodeSize = this.value;updateManualTransferStockCode();">
-                <option value="">--- select color ---</option>
+                <option value="">--- select size ---</option>
                 <?php foreach ($sizes as $size) : ?>
                     <option value="<?= $size['code'] ?>"><?= $size['size'] ?></option>
                 <?php endforeach ?>
