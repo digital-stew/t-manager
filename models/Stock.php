@@ -488,17 +488,13 @@ class Stock extends Database
             if (!in_array($from, $locations)) throw new Exception('invalid source');
             if (!in_array($to, $locations)) throw new Exception('invalid destination');
 
-            $this->db->query("START TRANSACTION");
             //remove stock
             $this->removeStock($stockCode, $from, (int)$amount, "transfer from: {$from}", '', 0) or throw new Exception('transfer stock remove error ' . "from: {$from} - code: {$stockCode} - amount: {$amount}");
             //add stock
             $this->addStock($stockCode, $to, $amount) or throw new Exception('transfer stock add error');
-            $this->db->query("COMMIT");
 
             return true;
         } catch (Exception $e) {
-            $this->db->query("ROLLBACK");
-            //print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'transferStock()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
             return false;

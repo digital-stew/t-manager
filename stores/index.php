@@ -38,9 +38,10 @@ foreach ($removeStockReasons as $reason) {
         <?php if (isset($_SESSION['userName'])) : ?>
             <div>
                 <button id="addStockButton" onclick="addStockButton()">add</button>
-                <button id="batchAddStockButton" onclick="batchAddStockButton()">batch add</button>
+                <button id="batchAddStockButton" onclick="document.getElementById('batchAddStockModal').showModal();">batch add</button>
                 <button id="removeStockButton" onclick="removeStockButton()">remove</button>
                 <button id="transferStockButton" onclick="transferStockButton()">transfer</button>
+                <button id="transferStockButton" onclick="document.getElementById('batchTransferModal').showModal();">batch transfer</button>
             </div>
         <?php endif ?>
         <hr>
@@ -112,7 +113,7 @@ foreach ($removeStockReasons as $reason) {
             <input id="addStockModal-stockCode" name="code" type="text" minlength="11" maxlength="11" required>
 
             <label for="addStockModal-amount" style="margin-top: 1rem;">amount</label>
-            <input id="addStockModal-amount" name="amount" type="number" min="0" style="text-align: center;" required>
+            <input id="addStockModal-amount" name="amount" type="number" min="1" style="text-align: center;" required>
 
             <button id="addStockSubmitButton" type="submit" style="width: 80%;">Save</button><br>
             <button type="button" onclick="closeAddStockModal();" style="width: 80%;">Cancel</button>
@@ -155,6 +156,41 @@ foreach ($removeStockReasons as $reason) {
         </form>
     </dialog>
 
+    <dialog id="batchAddStockModal">
+        <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
+            <span class="tooltip-text">will add multiple entries of the selected type, color and sizes</span>
+        </div>
+        <h4>batch add stock</h4>
+        <form action="/stores/add.php" method="post" style="text-align: center;">
+            <select name="batchAddStockLocation" id="batchAddStockLocation" style="text-align: center;">
+                <?php foreach ($locations as $location) : ?>
+                    <option <?= $_SESSION['location'] == $location ? 'selected' : '' ?> value="<?= $location ?>"><?= $location ?></option>
+                <?php endforeach ?>
+            </select>
+            <br>
+            <select id="batchAddStyle" name="batchAddStyle" style="margin-bottom: 1rem;" onchange="batchAddStockType = this.value;updateBatchAddStockCode();">
+                <option value="">--- select type ---</option>
+                <?php foreach ($types as $type) : ?>
+                    <option value="<?= $type['newCode'] ?>"><?= $type['type'] ?></option>
+                <?php endforeach ?>
+            </select>
+            <select id="batchAddColor" name="batchAddColor" style="margin-bottom: 1rem;" onchange="batchAddStockColor = this.value;updateBatchAddStockCode();">
+                <option value="">--- select color ---</option>
+                <?php foreach ($colors as $type) : ?>
+                    <option value="<?= $type['newCode'] ?>"><?= $type['color'] ?></option>
+                <?php endforeach ?>
+            </select>
+            <br>
+            <input type="text" id="batchAddModalStockCodeInput" name="batchAddModal-stockCodeInput" placeholder="Stock code" minlength="8" maxlength="8" required>
+            <br>
+            <?php foreach ($sizes as $size) : ?>
+                <input type="number" name="<?= $size['size'] ?>" id="" placeholder="<?= $size['size'] ?>" min="1" style="width: 7ch;">
+            <?php endforeach ?>
+
+            <button id="batchAddStock-submit" name="batchAddStock" type="submit" style="width: 80%;">Save</button><br>
+            <button type="button" onclick="document.getElementById('batchAddStockModal').close();" style="width: 80%;">Cancel</button>
+        </form>
+    </dialog>
 
     <dialog id="removeStockModal">
         <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
@@ -179,7 +215,7 @@ foreach ($removeStockReasons as $reason) {
             <input type="text" name="order" id="removeStockModal-order">
 
             <label for="removeStockModal-amount" style="margin-top: 1rem;">amount</label>
-            <input id="removeStockModal-amount" name="amount" type="number" min="0" style="text-align: center;" required>
+            <input id="removeStockModal-amount" name="amount" type="number" min="1" style="text-align: center;" required>
 
             <label for="reason-select" style="margin-top: 1rem;">reason</label>
             <select id="reason-select" name="reason" required>
@@ -227,7 +263,7 @@ foreach ($removeStockReasons as $reason) {
             <input type="text" name="order" id="removeStockModal-manual-order">
 
             <label for="removeStockModal-manual-amount" style="margin-top: 1rem;">amount</label>
-            <input id="removeStockModal-manual-amount" name="amount" type="number" min="0" style="text-align: center;" required>
+            <input id="removeStockModal-manual-amount" name="amount" type="number" min="1" style="text-align: center;" required>
 
             <label for="reason-select" style="margin-top: 1rem;">reason</label>
             <select id="reason-select" name="reason" required>
@@ -253,59 +289,123 @@ foreach ($removeStockReasons as $reason) {
             <input type="text" id="stockCodeInput" name="stockCodeInput" minlength="11" maxlength="11" required>
 
             <label for="amountInput">amount</label>
-            <input type="number" id="amountInput" name="amountInput" min="0" style="text-align: inherit;" required>
+            <input type="number" id="amountInput" name="amountInput" min="1" style="text-align: inherit;" required>
 
             <label for="transferFromSelect">from</label>
-            <select name="transferFromSelect" id="transferFromSelect">
-                <option value="none">--- select option ---</option>
+            <select name="transferFromSelect" id="transferFromSelect" required>
+                <option value="">--- select option ---</option>
                 <?php foreach ($locations as $location) : ?>
                     <option value="<?= $location ?>"><?= $location ?></option>
                 <?php endforeach ?>
             </select>
 
             <label for="transferToSelect">to</label>
-            <select name="transferToSelect" id="transferToSelect">
-                <option value="none">--- select option ---</option>
+            <select name="transferToSelect" id="transferToSelect" required>
+                <option value="">--- select option ---</option>
                 <?php foreach ($locations as $location) : ?>
                     <option value="<?= $location ?>"><?= $location ?></option>
                 <?php endforeach ?>
             </select>
-            <button id="transfer-submit" type="submit" style="width: 80%;">Save</button><br>
+            <button id="transfer-manual-button" type="button" style="width: 80%;" onclick="closeTransferStockModal();document.getElementById('transferStockManualModal').showModal();">manual</button><br>
+            <button id="transfer-submit" name="transferStock" type="submit" style="width: 80%;">Save</button><br>
             <button type="button" onclick="closeTransferStockModal();" style="width: 80%;">Cancel</button>
         </form>
     </dialog>
 
-    <dialog id="batchAddStockModal">
+    <dialog id="transferStockManualModal">
+        <h4>Transfer stock Manual</h4>
+        <form action="/stores/transfer.php" method="post" style="display: flex;flex-direction: column;text-align: center;align-items: center;">
+
+            <select id="transferManualStyle" name="transferManualStyle" style="margin-bottom: 1rem;width: 100%;" onchange="manualTransferStockCodeType = this.value;updateManualTransferStockCode();">
+                <option value="">--- select type ---</option>
+                <?php foreach ($types as $type) : ?>
+                    <option value="<?= $type['newCode'] ?>"><?= $type['type'] ?></option>
+                <?php endforeach ?>
+            </select>
+            <select id="transferManualColor" name="transferManualColor" style="margin-bottom: 1rem;width: 100%;" onchange="manualTransferStockCodeColor = this.value;updateManualTransferStockCode();">
+                <option value="">--- select color ---</option>
+                <?php foreach ($colors as $type) : ?>
+                    <option value="<?= $type['newCode'] ?>"><?= $type['color'] ?></option>
+                <?php endforeach ?>
+            </select>
+            <select id="transferManualSize" name="transferManualSize" style="margin-bottom: 1rem;width: 100%;" onchange="manualTransferStockCodeSize = this.value;updateManualTransferStockCode();">
+                <option value="">--- select color ---</option>
+                <?php foreach ($sizes as $size) : ?>
+                    <option value="<?= $size['code'] ?>"><?= $size['size'] ?></option>
+                <?php endforeach ?>
+            </select>
+
+            <input type="text" id="transferStockManual-stockCode" name="stockCodeInput" minlength="11" maxlength="11" style="text-align: inherit;" placeholder="stockCode" required>
+
+            <label for="amountInput">amount</label>
+            <input type="number" id="ManualAmountInput" name="amountInput" min="1" style="text-align: inherit;" required>
+
+            <label for="ManualTransferFromSelect">from</label>
+            <select name="transferFromSelect" id="ManualTransferFromSelect" required>
+                <option value="">--- select option ---</option>
+                <?php foreach ($locations as $location) : ?>
+                    <option value="<?= $location ?>"><?= $location ?></option>
+                <?php endforeach ?>
+            </select>
+
+            <label for="manualTransferToSelect">to</label>
+            <select name="transferToSelect" id="ManualTransferToSelect" required>
+                <option value="">--- select option ---</option>
+                <?php foreach ($locations as $location) : ?>
+                    <option value="<?= $location ?>"><?= $location ?></option>
+                <?php endforeach ?>
+            </select>
+
+            <button id="manual-transfer-submit" type="submit" name="transferStockManual" style="width: 80%;">Save</button><br>
+            <button type="button" onclick="document.getElementById('transferStockManualModal').close();" style="width: 80%;">Cancel</button>
+        </form>
+    </dialog>
+
+    <dialog id="batchTransferModal">
         <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">
-            <span class="tooltip-text">will add multiple entries of the selected type, color and sizes</span>
+            <span class="tooltip-text">place holder</span>
         </div>
-        <h4>batch add stock</h4>
-        <h4><?= $sLocation ?></h4>
-        <form action="/stores/add.php" method="post" style="text-align: center;">
-            <select id="batchAddStyle" name="batchAddStyle" style="margin-bottom: 1rem;" required>
+        <h4>batch transfer stock</h4>
+        <form action="/stores/transfer.php" method="post" style="text-align: center;">
+            <select id="batchTransferStyle" name="batchTransferStyle" style="margin-bottom: 1rem;" onchange="batchTransferStockCodeType = this.value;updateBatchTransferStockCode();">
                 <option value="none">--- select type ---</option>
                 <?php foreach ($types as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['type'] ?></option>
                 <?php endforeach ?>
             </select>
-            <select id="batchAddColor" name="batchAddColor" style="margin-bottom: 1rem;" required>
+            <select id="batchTransferColor" name="batchTransferColor" style="margin-bottom: 1rem;" onchange="batchTransferStockCodeColor = this.value;updateBatchTransferStockCode();">
                 <option value="none">--- select color ---</option>
                 <?php foreach ($colors as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['color'] ?></option>
                 <?php endforeach ?>
             </select>
             <br>
+            <select name="batchTransferFromSelect" id="batchTransferFromSelect" required>
+                <option value="">--- select option ---</option>
+                <?php foreach ($locations as $location) : ?>
+                    <option value="<?= $location ?>"><?= $location ?></option>
+                <?php endforeach ?>
+            </select>
+
+            <label for="batchTransferToSelect">to</label>
+            <select name="batchTransferToSelect" id="batchTransferToSelect" required>
+                <option value="">--- select option ---</option>
+                <?php foreach ($locations as $location) : ?>
+                    <option value="<?= $location ?>"><?= $location ?></option>
+                <?php endforeach ?>
+            </select>
+            <br>
+            <input type="text" id="batchTransferModalStockCodeInput" name="batchTransferModal-stockCodeInput" placeholder="Stock code" minlength="8" maxlength="8" required>
+            <br>
             <?php foreach ($sizes as $size) : ?>
-                <input type="number" name="<?= $size['size'] ?>" id="" placeholder="<?= $size['size'] ?>" min="0" style="width: 7ch;">
+                <input type="number" name="<?= $size['size'] ?>" id="" placeholder="<?= $size['size'] ?>" min="1" style="width: 7ch;">
             <?php endforeach ?>
 
-            <input id="hiddenLocationInput" type="hidden" name="location" value="<?= $sLocation ?? 'none' ?>" id="">
 
-            <button id="batchAddStock-submit" type="submit" style="width: 80%;">Save</button><br>
-            <button type="button" onclick="closeBatchAddStockModal();" style="width: 80%;">Cancel</button>
+            <button id="batchTransferStock-submit" name="batchTransferStock" type="submit" style="width: 80%;">Save</button><br>
+            <button type="button" onclick="document.getElementById('batchTransferModal').close();" style="width: 80%;">Cancel</button>
         </form>
     </dialog>
-
 </body>
 
 </html>

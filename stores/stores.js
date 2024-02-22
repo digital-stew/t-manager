@@ -2,7 +2,7 @@
 const config = { fps: 10, qrbox: { width: 130, height: 130 } };
 
 searchStock();
-/*********** add stock *********/
+/********************************************************** add stock ************************************************/
 let addQrReader = null;
 
 function addStockButton() {
@@ -38,16 +38,17 @@ function closeAddStockModal() {
   }
   document.getElementById("addStockModal").close();
 }
-
+//batch add stock
+let batchAddStockType = "";
+let batchAddStockColor = "";
+function updateBatchAddStockCode() {
+  document.getElementById("batchAddModalStockCodeInput").value =
+    batchAddStockType + batchAddStockColor;
+}
 /*********** remove stock *********/
 let removeQrReader = null;
 function removeStockButton() {
   removeQrReader = new Html5Qrcode("removeStockModal-qrReader");
-  // const userLocation = document.getElementById("currentLocationSelect").value;
-  // document.getElementById("removeStockModal-userLocation").innerText =
-  // userLocation;
-  // document.getElementById("removeStockModal-hiddenLocationInput").value =
-  // userLocation;
 
   let showUser = document.getElementById("removeStockModal-showUser");
 
@@ -124,7 +125,7 @@ function closeRemoveStockModal() {
 }
 /*********** ******* *********/
 
-/*********** transfer stock *********/
+/***************************************************** transfer stock *****************************************/
 let transferQrReader = null;
 function transferStockButton() {
   transferQrReader = new Html5Qrcode("transferStockModal-qrReader");
@@ -160,16 +161,27 @@ function closeTransferStockModal() {
   }
   document.getElementById("transferStockModal").close();
 }
-/*********** ******* *********/
+// batch transfer stock
+let batchTransferStockCodeType = "";
+let batchTransferStockCodeColor = "";
 
-/*********** batch add stock *********/
-function batchAddStockButton() {
-  document.getElementById("batchAddStockModal").showModal();
+function updateBatchTransferStockCode() {
+  document.getElementById("batchTransferModalStockCodeInput").value =
+    batchTransferStockCodeType + batchTransferStockCodeColor;
 }
+// manual transfer stock
+let manualTransferStockCodeType = "";
+let manualTransferStockCodeColor = "";
+let manualTransferStockCodeSize = "";
 
-function closeBatchAddStockModal() {
-  document.getElementById("batchAddStockModal").close();
+function updateManualTransferStockCode() {
+  document.getElementById("transferStockManual-stockCode").value =
+    manualTransferStockCodeType +
+    manualTransferStockCodeColor +
+    manualTransferStockCodeSize;
 }
+/*******************************************************************************************************/
+
 /*********** ******* *********/
 
 function closeCamModal() {

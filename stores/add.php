@@ -24,31 +24,36 @@ if ((isset($_POST['code']) || isset($_POST['manualAddStock'])) && isset($_POST['
     }
 }
 
-if (isset($_POST['batchAddStyle']) && isset($_POST['batchAddColor']) && isset($_POST['location'])) {
+if (isset($_POST['batchAddStock'])) {
     $Stock = new Stock();
     $sizes = $Stock->getSizes();
 
-    $styleCode = $_POST['batchAddStyle'];
-    $colorCode = $_POST['batchAddColor'];
+    $stockCode =  $_POST['batchAddModal-stockCodeInput'];
+
+    $Stock->db->query("START TRANSACTION");
 
     foreach ($sizes as $size) {
         (int)$tmpAmount = $_POST[$size['size']];
         $tmpSize = $size['size'];
         if ($tmpAmount > 0) {
-            $stockCode = str_pad($styleCode . $colorCode . $tmpSize, 11, '0');
+            $stockCode_full = str_pad($stockCode . $tmpSize, 11, '0');
             try {
-                $Stock->parseCode($stockCode) or throw new Exception("invalid stock code {$stockCode}");
-                $res =  $Stock->addStock($stockCode, $_POST['location'], $tmpAmount) or throw new Exception('error updating database');
+                $Stock->parseCode($stockCode_full) or throw new Exception("invalid stock code {$stockCode_full}");
+                $res =  $Stock->addStock($stockCode_full, $_POST['batchAddStockLocation'], $tmpAmount) or throw new Exception('error updating database');
             } catch (Exception $e) {
+                $Stock->db->query("ROLLBACK");
                 header("Location: {$_SERVER['HTTP_REFERER']}?showUser={$e->getMessage()}");
                 die();
             }
             if ($res == true) continue;
-            header('Location: /stores?flashUser=ERROR!! Contact admin if problem persists');
+
+            $Stock->db->query("ROLLBACK");
+            header("Location: {$_SERVER['HTTP_REFERER']}?showUser=something went wrong");
             die();
         }
     }
 
+    $Stock->db->query("COMMIT");
     header('Location: /stores?flashUser=stock added');
     die();
 }
