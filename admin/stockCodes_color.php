@@ -26,6 +26,17 @@ if (isset($_POST['addColor']) && isset($_POST['newCode']) && isset($_POST['oldCo
     die();
 }
 
+if (isset($_POST['editColor']) && isset($_POST['newCode']) && isset($_POST['oldCode'])) {
+    session_start();
+    $Auth->isAdmin();
+    $trueCode = isset($_POST['trueCodeCheckbox']) ? true : false;
+
+    $res = $Admin->editStockColor($_GET['colorId'], $_POST['newCode'], $_POST['oldCode'], $_POST['color'], $trueCode);
+    if ($res) header('location: /admin?flashUser= color edited');
+    else header('Location: /admin?flashUser=ERROR!! Contact admin if problem persists');
+    die();
+}
+
 //=============add color modal==================
 if (isset($_GET['addColor'])) {
     session_start();
@@ -58,6 +69,64 @@ if (isset($_GET['addColor'])) {
     die();
 }
 
+//=============edit modal==================
+if (isset($_GET['editColor'])) {
+    session_start();
+    $Auth->isAdmin();
+    $colorTypes = $Stock->getColors(true);
+
+    foreach ($colorTypes as $colorType) {
+        if ($colorType['id'] == $_GET['colorId']) {
+            $selectedStock = [
+                'id' => $colorType['id'],
+                'newCode' => $colorType['newCode'],
+                'oldCode' => $colorType['oldCode'],
+                'color' => $colorType['color'],
+                'trueCode' => $colorType['trueCode']
+            ];
+        }
+    }
+
+    if ($selectedStock['trueCode']) {
+        $trueCode = "<input type='checkbox' name='trueCodeCheckbox' id='trueCodeCheckbox' checked>";
+    } else {
+        $trueCode = "<input type='checkbox' name='trueCodeCheckbox' id='trueCodeCheckbox'>";
+    }
+
+    echo "
+    <form method='post' action='/admin/stockCodes_color.php?colorId={$selectedStock['id']}'  class='newBox'  autocomplete='off'>
+        <h4>Stock color</h4>
+        <p>Id: {$selectedStock['id']}</p>
+        
+        <label for='newCode'>new code:</label>
+        <input type='text' name='newCode' id='newCode' style='width:min-content;margin-inline:auto;margin-bottom:1rem;' value='{$selectedStock['newCode']}'>
+        
+        
+        <label for='oldCode'>old code:</label>
+        <input type='text' name='oldCode' id='oldCode' style='width:min-content;margin-inline:auto;margin-bottom:1rem;' value='{$selectedStock['oldCode']}'>
+        
+
+        <label for='color'>color:</label>
+        <input type='text' name='color' id='color' style='width:min-content;margin-inline:auto;margin-bottom:1rem;' value='{$selectedStock['color']}'>
+        
+
+        <div style='margin-bottom:1rem;'>
+        <label for='trueCodeCheckbox'>true code:</label>
+        {$trueCode}
+        </div>
+
+        
+        <button type='submit' name='editColor'>save</button>
+        <button type='button' onclick='closeModal();'>Back</button>
+        
+    </form>
+    ";
+
+    // echo $html;
+    die();
+}
+
+//=======================================
 
 //=============modal==================
 if (isset($_GET['colorId'])) {
@@ -91,6 +160,7 @@ if (isset($_GET['colorId'])) {
         <p>old code: {$selectedStock['oldCode']}</p>
         <p>color: {$selectedStock['color']}</p>
         <p>{$trueCode}</p>
+        <button type='button' onclick="showModal('/admin/stockCodes_color.php?editColor=true&colorId={$selectedStock['id']}')">Edit</button>
         <button type='submit' onclick="return confirm('Permanently delete color?')" name='deleteColor'>Delete</button>
         <button type='button' onclick="closeModal();">Back</button>
     </form>
@@ -100,9 +170,13 @@ if (isset($_GET['colorId'])) {
 }
 //=======================================
 
+
 $Auth->isAdmin();
 $stockColors = $Stock->getColors(true);
 ?>
+
+
+
 <section id="adminView" style="width: fit-content;" class="newBox border">
     <h2>Stock colors</h2>
     <table id="stockColor-table">

@@ -32,6 +32,8 @@ if (isset($_POST['manualAddOrder']) && isset($_POST['orderName'])) {
             $manualCode .= '0 ' . $size['size'] . ' ¦ ';
         }
     }
+    //remove last  ¦ 
+    $manualCode = substr($manualCode, 0, -3);
     try {
         $parsedInputString = $FanaticOrders->parseCode($manualCode) or throw new Exception("error with input string: {$manualCode}");
         $parsedStockCode = $FanaticOrders->getStockCode($parsedInputString['orderCode']) or throw new Exception("error with order code: {$parsedInputString['orderCode']}");

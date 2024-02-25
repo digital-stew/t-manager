@@ -1,5 +1,6 @@
 <?php
 //$phpLines = shell_exec("find . -type f -name '*.php' | xargs wc -l | awk '{ total += $1 } END { print total }'");
+//die($phpLines);
 //$jsLines = shell_exec("find . -type f -name '*.js' | xargs wc -l | awk '{ total += $1 } END { print total }'");
 //$allLines = shell_exec("find . -type f -name '*' | xargs wc -l | awk '{ total += $1 } END { print total }'");
 ?>

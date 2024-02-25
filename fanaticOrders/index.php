@@ -98,7 +98,7 @@ if (isset($_GET['complete'])) {
             <span class="tooltip-text">This should only be utilized in the absence of a QR code</span>
         </div>
         <form action="/fanaticOrders/pickOrder.php" method="post" style="text-align: center;" autocomplete="off">
-            <h4>manual add job</h4>
+            <h4>manual add order</h4>
             <input type="text" name="orderName" placeholder="order name / batch" required> <br>
             <select name="type" required>
                 <option value="">--select garment--</option>

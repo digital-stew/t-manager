@@ -102,6 +102,29 @@ function addStockManualInput() {
   return;
 }
 
+function updateRemoveStockOrderField(value) {
+  if (value != "other") {
+    document.getElementById("removeStockModal-order-label").style.display =
+      "block";
+    document.getElementById("removeStockModal-order").style.display = "block";
+    document.getElementById(
+      "removeStockModal-manual-order-label"
+    ).style.display = "block";
+    document.getElementById("removeStockModal-manual-order").style.display =
+      "block";
+  } else {
+    document.getElementById("removeStockModal-order-label").style.display =
+      "none";
+    document.getElementById("removeStockModal-order").style.display = "none";
+    document.getElementById(
+      "removeStockModal-manual-order-label"
+    ).style.display = "none";
+    document.getElementById("removeStockModal-manual-order").style.display =
+      "none";
+  }
+}
+
+/* can remove these????
 function updateStockCode_type() {
   let select = document.getElementById("removeStockSelectType");
   let stockCode = document.getElementById("removeStockModal-stockCode");
@@ -114,7 +137,7 @@ function updateStockCode_color() {
   stockCode.value = select.value + stockCode.value.substring(4, -1);
 }
 function updateStockCode_size() {}
-
+*/
 function closeRemoveStockModal() {
   try {
     removeQrReader.stop();

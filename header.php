@@ -63,7 +63,7 @@ if (isset($_POST['newLocation'])) {
     </ul>
 
     <div style="margin-top: auto;">
-        t-manager V1.0 rc2
+        t-manager V1.0
     </div>
 </nav>
 

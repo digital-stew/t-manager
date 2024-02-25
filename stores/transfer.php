@@ -71,6 +71,7 @@ if (isset($_POST['batchTransferStock'])) {
                 die();
             }
             if ($res == true) continue;
+            $Stock->db->query("ROLLBACK");
             header('Location: /stores?flashUser=ERROR!! Contact admin if problem persists');
             die();
         }

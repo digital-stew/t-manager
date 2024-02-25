@@ -26,6 +26,16 @@ if (isset($_POST['addType']) && isset($_POST['newCode']) && isset($_POST['oldCod
     else header('Location: /admin?flashUser=ERROR!! Contact admin if problem persists');
     die();
 }
+if (isset($_POST['editType']) && isset($_POST['newCode']) && isset($_POST['oldCode'])) {
+    session_start();
+    $Auth->isAdmin();
+    $trueCode = isset($_POST['trueCodeCheckbox']) ? true : false;
+
+    $res = $Admin->editStockType($_GET['typeId'], $_POST['newCode'], $_POST['oldCode'], $_POST['type'], $trueCode);
+    if ($res) header('location: /admin?flashUser=type edited');
+    else header('Location: /admin?flashUser=ERROR!! Contact admin if problem persists');
+    die();
+}
 
 //=============add type modal==================
 if (isset($_GET['addType'])) {
@@ -57,6 +67,65 @@ if (isset($_GET['addType'])) {
     echo $html;
     die();
 }
+//=============edit modal==================
+if (isset($_GET['editType'])) {
+    session_start();
+    $Auth->isAdmin();
+    $stockTypes = $Stock->getTypes(true);
+
+    foreach ($stockTypes as $stockType) {
+        if ($stockType['id'] == $_GET['typeId']) {
+            $selectedStock = [
+                'id' => $stockType['id'],
+                'newCode' => $stockType['newCode'],
+                'oldCode' => $stockType['oldCode'],
+                'type' => $stockType['type'],
+                'trueCode' => $stockType['trueCode']
+            ];
+        }
+    }
+
+    if ($selectedStock['trueCode']) {
+        $trueCode = "<input type='checkbox' name='trueCodeCheckbox' id='trueCodeCheckbox' checked>";
+    } else {
+        $trueCode = "<input type='checkbox' name='trueCodeCheckbox' id='trueCodeCheckbox'>";
+    }
+
+    echo "
+    <form method='post' action='/admin/stockCodes_type.php?typeId={$selectedStock['id']}'  class='newBox'  autocomplete='off'>
+        <h4>Stock type</h4>
+        <p>Id: {$selectedStock['id']}</p>
+        
+        <label for='newCode'>new code:</label>
+        <input type='text' name='newCode' id='newCode' style='width:min-content;margin-inline:auto;margin-bottom:1rem;' value='{$selectedStock['newCode']}'>
+        
+        
+        <label for='oldCode'>old code:</label>
+        <input type='text' name='oldCode' id='oldCode' style='width:min-content;margin-inline:auto;margin-bottom:1rem;' value='{$selectedStock['oldCode']}'>
+        
+
+        <label for='color'>type:</label>
+        <input type='text' name='type' id='type' style='width:min-content;margin-inline:auto;margin-bottom:1rem;' value='{$selectedStock['type']}'>
+        
+
+        <div style='margin-bottom:1rem;'>
+        <label for='trueCodeCheckbox'>true code:</label>
+        {$trueCode}
+        </div>
+
+        
+        <button type='submit' name='editType'>save</button>
+        <button type='button' onclick='closeModal();'>Back</button>
+        
+    </form>
+    ";
+
+    // echo $html;
+    die();
+}
+
+//=======================================
+
 //=============modal==================
 if (isset($_GET['typeId'])) {
     session_start();
@@ -89,6 +158,7 @@ if (isset($_GET['typeId'])) {
         <p>old code: {$selectedStock['oldCode']}</p>
         <p>type: {$selectedStock['type']}</p>
         <p>{$trueCode}</p>
+        <button type='button' onclick="showModal('/admin/stockCodes_type.php?editType=true&typeId={$selectedStock['id']}')" >Edit</button>
         <button type='submit' onclick="return confirm('Permanently delete type?')" name='deleteType'>Delete</button>
         <button type='button' onclick="closeModal();">Back</button>
     </form>

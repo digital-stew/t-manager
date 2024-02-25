@@ -8,7 +8,7 @@ $totalAmount = 0;
 
 <?php foreach ($searchResults as $result) : ?>
     <tr>
-        <td><?= $result['code'] ?></td>
+        <td><?= implode(' ', str_split($result['code'], 4)) ?></td>
         <td><?= $result['color'] ?></td>
         <td><?= $result['size'] ?></td>
         <td><?= $result['type'] ?></td>

@@ -37,7 +37,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
             <hr>
             <div style="display: flex; flex-wrap: wrap;gap: 2rem;justify-content: center">
                 <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/removeStockReasons.php'; ?>
-                <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/autoLocation.php'; ?>
+                <?php require $_SERVER['DOCUMENT_ROOT'] . '/admin/locations.php'; ?>
 
             </div>
         </section>

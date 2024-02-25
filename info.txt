@@ -57,3 +57,6 @@ mysql:
     mysqldump -u debian-sys-maint -p t-manager > /root/dump.sql
     restore:
     mysql -u debian-sys-maint -p t-manager < /root/dump.sql
+
+TODO:
+    add locations to DB

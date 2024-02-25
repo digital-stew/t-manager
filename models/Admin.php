@@ -230,7 +230,7 @@ class Admin extends Database
             EOD;
 
             $stm = $this->db->prepare($sql);
-            $stm->bind_param("sssi", $newCode, $oldCode, $color, $trueCode);
+            $stm->bind_param("sssi", $newCode, $oldCode, $color, $trueCode); // code-spell-checker:disable-line
             $res = $stm->execute();
             $stm->close();
 
@@ -245,6 +245,28 @@ class Admin extends Database
             print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'addStockColor()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            die();
+        }
+    }
+
+    function editStockColor($id, $newCode, $oldCode, $color, $trueCode)
+    {
+        try {
+            $sql = <<<EOD
+                UPDATE `t-manager`.stockCodes_color
+                SET newCode =?, oldCode = ?, color = ?, trueCode = ? 
+                WHERE id = ?
+            EOD;
+            $stm = $this->db->prepare($sql);
+            $stm->bind_param("sssii", $newCode, $oldCode, $color, $trueCode, $id); // code-spell-checker:disable-line
+            $res = $stm->execute();
+            $stm->close();
+
+            return true;
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'editStockColor()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
             die();
         }
     }
@@ -299,7 +321,7 @@ class Admin extends Database
             EOD;
 
             $stm = $this->db->prepare($sql);
-            $stm->bind_param("sssi", $newCode, $oldCode, $type, $trueCode);
+            $stm->bind_param("sssi", $newCode, $oldCode, $type, $trueCode); // code-spell-checker:disable-line
             $res = $stm->execute();
             $stm->close();
 
@@ -317,7 +339,27 @@ class Admin extends Database
             die();
         }
     }
+    function editStockType($id, $newCode, $oldCode, $type, $trueCode)
+    {
+        try {
+            $sql = <<<EOD
+                UPDATE `t-manager`.stockCodes_type
+                SET newCode =?, oldCode = ?, type = ?, trueCode = ? 
+                WHERE id = ?
+            EOD;
+            $stm = $this->db->prepare($sql);
+            $stm->bind_param("sssii", $newCode, $oldCode, $type, $trueCode, $id); // code-spell-checker:disable-line
+            $res = $stm->execute();
+            $stm->close();
 
+            return true;
+        } catch (Exception $e) {
+            return false;
+            $Log = new Log();
+            $Log->add('ERROR', 'editStockColor()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            die();
+        }
+    }
     function deleteStockType(int $id): bool
     {
         try {
@@ -411,22 +453,34 @@ class Admin extends Database
 
     function getLocations(): array
     {
-        return ['hawkins', 'fleetwood', 't-print', 'cornwall'];
+        $sql = <<<EOD
+        SELECT location
+        FROM `t-manager`.locations
+        EOD;
+        $stm = $this->db->prepare($sql);
+        $res = $stm->execute();
+        $results = $stm->get_result();
+        $searchResults = [];
+        while ($result = $results->fetch_assoc()) {
+            array_push($searchResults, $result['location']);
+        }
+        $stm->close();
+        return $searchResults;
     }
 
     function setLocation($newLocation)
     {
+        //add check here
         $Auth = new Auth();
         $Auth->isLoggedIn();
         $_SESSION['location'] = $newLocation;
     }
 
-    function getAutoLocations(): array|bool
+    function getFullLocations(): array|bool
     {
         $sql = <<<EOD
             SELECT *
-            FROM `t-manager`.autoLocations
-            ORDER BY id DESC
+            FROM `t-manager`.locations
         EOD;
 
         try {
@@ -447,20 +501,20 @@ class Admin extends Database
         } catch (Exception $e) {
             print_r($e->getMessage());
             $Log = new Log();
-            $Log->add('ERROR', 'getAutoLocations()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            $Log->add('ERROR', 'getFullLocations()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
             return false;
             die();
         }
     }
 
-    function addAutoLocation(string $ipAddress, string $location): bool
+    function addLocation(string $ipAddress, string $location): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
 
         try {
             $sql = <<<EOD
-            INSERT INTO `t-manager`.autoLocations
+            INSERT INTO `t-manager`.locations
             (
                 ip, location
             )
@@ -475,42 +529,42 @@ class Admin extends Database
             $res = $stm->execute();
             $stm->close();
 
-            (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.autoLocations LIMIT 1;")->fetch_column();
+            (int)$lastID = $this->db->query("SELECT LAST_INSERT_ID() FROM `t-manager`.locations LIMIT 1;")->fetch_column();
 
             $Log = new Log();
-            $Log->add("NEW", "auto location", null, $lastID, "ip: {$ipAddress} - location: {$location}");
+            $Log->add("NEW", "location", null, $lastID, "ip: {$ipAddress} - location: {$location}");
 
             if ($res) return true;
             else return false;
         } catch (Exception $e) {
             print_r($e->getMessage());
             $Log = new Log();
-            $Log->add('ERROR', 'addAutoLocation()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            $Log->add('ERROR', 'addLocation()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
             return false;
             die();
         }
     }
 
-    function deleteAutoLocation(int $id): bool
+    function deleteLocation(int $id): bool
     {
         $Auth = new Auth();
         $Auth->isAdmin();
 
         try {
-            $sql = "DELETE FROM `t-manager`.autoLocations WHERE id = ?";
+            $sql = "DELETE FROM `t-manager`.locations WHERE id = ?";
             $stm = $this->db->prepare($sql);
             $stm->bind_param("i", $id);
             $res = $stm->execute();
             $stm->close();
 
             $Log = new Log();
-            $Log->add("DELETE", "auto location", null, $id, "delete auto location");
+            $Log->add("DELETE", "location", null, $id, "delete location");
 
             if ($res) return true;
             else return false;
         } catch (Exception $e) {
             $Log = new Log();
-            $Log->add('ERROR', 'deleteRemoveStockReason()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            $Log->add('ERROR', 'deleteLocation()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
             return false;
             die();
         }
@@ -543,7 +597,7 @@ class Admin extends Database
         } catch (Exception $e) {
             //            print_r($e->getMessage());
             $Log = new Log();
-            $Log->add('ERROR', 'getReasonsToRemoveStock()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            $Log->add('ERROR', 'getRemoveStockReasons()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
             return false;
             die();
         }

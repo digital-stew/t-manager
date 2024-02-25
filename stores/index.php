@@ -164,18 +164,18 @@ foreach ($removeStockReasons as $reason) {
         <form action="/stores/add.php" method="post" style="text-align: center;">
             <select name="batchAddStockLocation" id="batchAddStockLocation" style="text-align: center;">
                 <?php foreach ($locations as $location) : ?>
-                    <option <?= $_SESSION['location'] ?? '' == $location ? 'selected' : '' ?> value="<?= $location ?>"><?= $location ?></option>
+                    <option <?= isset($_SESSION['location']) && $_SESSION['location'] == $location ? 'selected' : '' ?> value="<?= $location ?>"><?= $location ?></option>
                 <?php endforeach ?>
             </select>
             <br>
             <select id="batchAddStyle" name="batchAddStyle" style="margin-bottom: 1rem;" onchange="batchAddStockType = this.value;updateBatchAddStockCode();">
-                <option value="">--- select type ---</option>
+                <option value="">--- type ---</option>
                 <?php foreach ($types as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['type'] ?></option>
                 <?php endforeach ?>
             </select>
             <select id="batchAddColor" name="batchAddColor" style="margin-bottom: 1rem;" onchange="batchAddStockColor = this.value;updateBatchAddStockCode();">
-                <option value="">--- select color ---</option>
+                <option value="">--- color ---</option>
                 <?php foreach ($colors as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['color'] ?></option>
                 <?php endforeach ?>
@@ -211,17 +211,17 @@ foreach ($removeStockReasons as $reason) {
             <label id="removeStockModal-stockCode-label" for="removeStockModal-stockCode">stock code</label>
             <input id="removeStockModal-stockCode" name="code" type="text" minlength="11" maxlength="11" required>
 
-            <label for="removeStockModal-order">order</label>
-            <input type="text" name="order" id="removeStockModal-order">
-
             <label for="removeStockModal-amount" style="margin-top: 1rem;">amount</label>
             <input id="removeStockModal-amount" name="amount" type="number" min="1" style="text-align: center;" required>
 
             <label for="reason-select" style="margin-top: 1rem;">reason</label>
-            <select id="reason-select" name="reason" required>
+            <select id="reason-select" name="reason" onchange="updateRemoveStockOrderField(this.value);" required>
                 <option value="">--Please choose an option--</option>
                 <?= $options ?>
             </select>
+
+            <label for="removeStockModal-order" id="removeStockModal-order-label" style="display: none;">order</label>
+            <input type="text" name="order" id="removeStockModal-order" style="display: none;">
 
             <button id="removeStock-submit" type="submit" style="width: 80%;margin-inline: auto;">Save</button><br>
             <button type="button" onclick="closeRemoveStockModal();" style="width: 80%;margin-inline: auto;">Cancel</button>
@@ -259,17 +259,17 @@ foreach ($removeStockReasons as $reason) {
                 <?php endforeach ?>
             </select>
 
-            <label for="removeStockModal-manual-order">order</label>
-            <input type="text" name="order" id="removeStockModal-manual-order">
-
             <label for="removeStockModal-manual-amount" style="margin-top: 1rem;">amount</label>
             <input id="removeStockModal-manual-amount" name="amount" type="number" min="1" style="text-align: center;" required>
 
             <label for="reason-select" style="margin-top: 1rem;">reason</label>
-            <select id="reason-select" name="reason" required>
+            <select id="reason-select" name="reason" onchange="updateRemoveStockOrderField(this.value);" required>
                 <option value="">--Please choose an option--</option>
                 <?= $options ?>
             </select>
+
+            <label for="removeStockModal-manual-order" id="removeStockModal-manual-order-label" style="display: none;">order</label>
+            <input type="text" name="order" id="removeStockModal-manual-order" style="display: none;">
 
             <button type="submit" name="manualRemoveStock" style="width: 80%;margin-inline: auto;">Save</button><br>
             <button type="button" onclick="document.getElementById('removeStockModal-manual').close();" style="width: 80%;margin-inline: auto;">Cancel</button>
@@ -293,7 +293,7 @@ foreach ($removeStockReasons as $reason) {
 
             <label for="transferFromSelect">from</label>
             <select name="transferFromSelect" id="transferFromSelect" required>
-                <option value="">--- select option ---</option>
+                <option value="">--- select ---</option>
                 <?php foreach ($locations as $location) : ?>
                     <option value="<?= $location ?>"><?= $location ?></option>
                 <?php endforeach ?>
@@ -301,7 +301,7 @@ foreach ($removeStockReasons as $reason) {
 
             <label for="transferToSelect">to</label>
             <select name="transferToSelect" id="transferToSelect" required>
-                <option value="">--- select option ---</option>
+                <option value="">--- select ---</option>
                 <?php foreach ($locations as $location) : ?>
                     <option value="<?= $location ?>"><?= $location ?></option>
                 <?php endforeach ?>
@@ -317,19 +317,19 @@ foreach ($removeStockReasons as $reason) {
         <form action="/stores/transfer.php" method="post" style="display: flex;flex-direction: column;text-align: center;align-items: center;">
 
             <select id="transferManualStyle" name="transferManualStyle" style="margin-bottom: 1rem;width: 100%;" onchange="manualTransferStockCodeType = this.value;updateManualTransferStockCode();">
-                <option value="">--- select type ---</option>
+                <option value="">--- type ---</option>
                 <?php foreach ($types as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['type'] ?></option>
                 <?php endforeach ?>
             </select>
             <select id="transferManualColor" name="transferManualColor" style="margin-bottom: 1rem;width: 100%;" onchange="manualTransferStockCodeColor = this.value;updateManualTransferStockCode();">
-                <option value="">--- select color ---</option>
+                <option value="">--- color ---</option>
                 <?php foreach ($colors as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['color'] ?></option>
                 <?php endforeach ?>
             </select>
             <select id="transferManualSize" name="transferManualSize" style="margin-bottom: 1rem;width: 100%;" onchange="manualTransferStockCodeSize = this.value;updateManualTransferStockCode();">
-                <option value="">--- select size ---</option>
+                <option value="">--- size ---</option>
                 <?php foreach ($sizes as $size) : ?>
                     <option value="<?= $size['code'] ?>"><?= $size['size'] ?></option>
                 <?php endforeach ?>
@@ -342,7 +342,7 @@ foreach ($removeStockReasons as $reason) {
 
             <label for="ManualTransferFromSelect">from</label>
             <select name="transferFromSelect" id="ManualTransferFromSelect" required>
-                <option value="">--- select option ---</option>
+                <option value="">--- select ---</option>
                 <?php foreach ($locations as $location) : ?>
                     <option value="<?= $location ?>"><?= $location ?></option>
                 <?php endforeach ?>
@@ -350,7 +350,7 @@ foreach ($removeStockReasons as $reason) {
 
             <label for="manualTransferToSelect">to</label>
             <select name="transferToSelect" id="ManualTransferToSelect" required>
-                <option value="">--- select option ---</option>
+                <option value="">--- select ---</option>
                 <?php foreach ($locations as $location) : ?>
                     <option value="<?= $location ?>"><?= $location ?></option>
                 <?php endforeach ?>
@@ -368,20 +368,20 @@ foreach ($removeStockReasons as $reason) {
         <h4>batch transfer stock</h4>
         <form action="/stores/transfer.php" method="post" style="text-align: center;">
             <select id="batchTransferStyle" name="batchTransferStyle" style="margin-bottom: 1rem;" onchange="batchTransferStockCodeType = this.value;updateBatchTransferStockCode();">
-                <option value="none">--- select type ---</option>
+                <option value="none">--- type ---</option>
                 <?php foreach ($types as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['type'] ?></option>
                 <?php endforeach ?>
             </select>
             <select id="batchTransferColor" name="batchTransferColor" style="margin-bottom: 1rem;" onchange="batchTransferStockCodeColor = this.value;updateBatchTransferStockCode();">
-                <option value="none">--- select color ---</option>
+                <option value="none">--- color ---</option>
                 <?php foreach ($colors as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['color'] ?></option>
                 <?php endforeach ?>
             </select>
             <br>
             <select name="batchTransferFromSelect" id="batchTransferFromSelect" required>
-                <option value="">--- select option ---</option>
+                <option value="">--- from ---</option>
                 <?php foreach ($locations as $location) : ?>
                     <option value="<?= $location ?>"><?= $location ?></option>
                 <?php endforeach ?>
@@ -389,7 +389,7 @@ foreach ($removeStockReasons as $reason) {
 
             <label for="batchTransferToSelect">to</label>
             <select name="batchTransferToSelect" id="batchTransferToSelect" required>
-                <option value="">--- select option ---</option>
+                <option value="">--- to ---</option>
                 <?php foreach ($locations as $location) : ?>
                     <option value="<?= $location ?>"><?= $location ?></option>
                 <?php endforeach ?>
