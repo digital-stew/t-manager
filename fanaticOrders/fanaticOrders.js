@@ -25,7 +25,11 @@ function startCamAdd() {
 }
 
 function closeAddModal() {
-  html5QrCodeAdd.stop();
+  try {
+    html5QrCodeAdd.stop();
+  } catch (error) {
+    console.log("no camera top stop");
+  }
   document.getElementById("addAndPickOrder-modal").close();
 }
 //*************************************** */
@@ -55,7 +59,11 @@ function startCamBatchAdd() {
 }
 
 function closeBatchAddModal() {
-  html5QrCodeBatchAdd.stop();
+  try {
+    html5QrCodeBatchAdd.stop();
+  } catch (error) {
+    console.log("no camera top stop");
+  }
   document.getElementById("batchAddOrders-modal").close();
 }
 const queryParamsFanaticOrders = new URLSearchParams(window.location.search);

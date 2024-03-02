@@ -209,6 +209,30 @@ class Admin extends Database
     {
         $Auth = new Auth();
         $Auth->isAdmin();
+        //check to duplicate 
+        try {
+            $sql = <<<EOD
+                SELECT *
+                FROM `t-manager`.stockCodes_color
+                WHERE newCode = ?
+                AND oldCode = ?
+                AND color = ?
+                AND trueCode = ?
+            EOD;
+            $stm = $this->db->prepare($sql);
+            $stm->bind_param("sssi", $newCode, $oldCode, $color, $trueCode); // code-spell-checker:disable-line
+            $res = $stm->execute();
+            $existInDb = $stm->get_result()->fetch_assoc();
+            $stm->close();
+
+            if ($existInDb) throw new Exception('you are trying to duplicate a entry');
+        } catch (\Exception $e) {
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'addStockColor()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
+            die();
+        }
 
         try {
             if (!isset($newCode) || $newCode == '') new Exception('add new code error');
@@ -251,6 +275,30 @@ class Admin extends Database
 
     function editStockColor($id, $newCode, $oldCode, $color, $trueCode)
     {
+        //check to duplicate 
+        try {
+            $sql = <<<EOD
+                        SELECT *
+                        FROM `t-manager`.stockCodes_color
+                        WHERE newCode = ?
+                        AND oldCode = ?
+                        AND color = ?
+                        AND trueCode = ?
+                    EOD;
+            $stm = $this->db->prepare($sql);
+            $stm->bind_param("sssi", $newCode, $oldCode, $color, $trueCode); // code-spell-checker:disable-line
+            $res = $stm->execute();
+            $existInDb = $stm->get_result()->fetch_assoc();
+            $stm->close();
+
+            if ($existInDb) throw new Exception('you are trying to duplicate a entry');
+        } catch (\Exception $e) {
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'addStockColor()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
+            die();
+        }
         try {
             $sql = <<<EOD
                 UPDATE `t-manager`.stockCodes_color
@@ -261,7 +309,8 @@ class Admin extends Database
             $stm->bind_param("sssii", $newCode, $oldCode, $color, $trueCode, $id); // code-spell-checker:disable-line
             $res = $stm->execute();
             $stm->close();
-
+            $Log = new Log();
+            $Log->add("edit", "stock color", null, $id, "new code: {$newCode} - old code: {$oldCode} - color: {$color} - true code: {$trueCode}");
             return true;
         } catch (Exception $e) {
             print_r($e->getMessage());
@@ -300,6 +349,31 @@ class Admin extends Database
     {
         $Auth = new Auth();
         $Auth->isAdmin();
+
+        //check to duplicate 
+        try {
+            $sql = <<<EOD
+                SELECT *
+                FROM `t-manager`.stockCodes_type
+                WHERE newCode = ?
+                AND oldCode = ?
+                AND type = ?
+                AND trueCode = ?
+            EOD;
+            $stm = $this->db->prepare($sql);
+            $stm->bind_param("sssi", $newCode, $oldCode, $type, $trueCode); // code-spell-checker:disable-line
+            $res = $stm->execute();
+            $existInDb = $stm->get_result()->fetch_assoc();
+            $stm->close();
+
+            if ($existInDb) throw new Exception('you are trying to duplicate a entry');
+        } catch (\Exception $e) {
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'addStockType()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
+            die();
+        }
 
         try {
             if (!isset($newCode) || $newCode == '') new Exception('add new code error');
@@ -341,6 +415,31 @@ class Admin extends Database
     }
     function editStockType($id, $newCode, $oldCode, $type, $trueCode)
     {
+        //check to duplicate 
+        try {
+            $sql = <<<EOD
+                SELECT *
+                FROM `t-manager`.stockCodes_type
+                WHERE newCode = ?
+                AND oldCode = ?
+                AND type = ?
+                AND trueCode = ?
+            EOD;
+            $stm = $this->db->prepare($sql);
+            $stm->bind_param("sssi", $newCode, $oldCode, $type, $trueCode); // code-spell-checker:disable-line
+            $res = $stm->execute();
+            $existInDb = $stm->get_result()->fetch_assoc();
+            $stm->close();
+
+            if ($existInDb) throw new Exception('you are trying to duplicate a entry');
+        } catch (\Exception $e) {
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'editStockType()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
+            die();
+        }
+
         try {
             $sql = <<<EOD
                 UPDATE `t-manager`.stockCodes_type
@@ -351,6 +450,8 @@ class Admin extends Database
             $stm->bind_param("sssii", $newCode, $oldCode, $type, $trueCode, $id); // code-spell-checker:disable-line
             $res = $stm->execute();
             $stm->close();
+            $Log = new Log();
+            $Log->add("edit", "stock type", null, $id, "new code: {$newCode} - old code: {$oldCode} - type: {$type} - true code: {$trueCode}");
 
             return true;
         } catch (Exception $e) {

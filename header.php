@@ -14,9 +14,11 @@ if (isset($_POST['newLocation'])) {
 
 ?>
 <div id="burgerMenu" class="burgerMenu" onclick="toggleNavbar();">
-    <span></span> <!-- burger menu horizontal line -->
-    <span></span> <!-- burger menu horizontal line -->
-    <span></span> <!-- burger menu horizontal line -->
+    <div class="burgerMenu-background">
+        <span></span> <!-- burger menu horizontal line -->
+        <span></span> <!-- burger menu horizontal line -->
+        <span></span> <!-- burger menu horizontal line -->
+    </div>
 </div>
 
 <nav class="navbar" id="navbar">

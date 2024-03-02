@@ -38,13 +38,21 @@ function closeAddStockModal() {
   }
   document.getElementById("addStockModal").close();
 }
+
 //batch add stock
 let batchAddStockType = "";
 let batchAddStockColor = "";
+
 function updateBatchAddStockCode() {
+  //update client stock code
   document.getElementById("batchAddModalStockCodeInput").value =
     batchAddStockType + batchAddStockColor;
+
+  removeInvalidOptions(batchAddStockType, "#batchAddColor option");
+  removeInvalidOptions(batchAddStockColor, "#batchAddStyle option");
 }
+
+function updateSelectableTypes() {}
 /*********** remove stock *********/
 let removeQrReader = null;
 function removeStockButton() {
@@ -103,6 +111,7 @@ function addStockManualInput() {
 }
 
 function updateRemoveStockOrderField(value) {
+  //show "order" input field to user
   if (value != "other") {
     document.getElementById("removeStockModal-order-label").style.display =
       "block";
@@ -191,6 +200,15 @@ let batchTransferStockCodeColor = "";
 function updateBatchTransferStockCode() {
   document.getElementById("batchTransferModalStockCodeInput").value =
     batchTransferStockCodeType + batchTransferStockCodeColor;
+
+  removeInvalidOptions(
+    batchTransferStockCodeType,
+    "#batchTransferColor option"
+  );
+  removeInvalidOptions(
+    batchTransferStockCodeColor,
+    "#batchTransferStyle option"
+  );
 }
 // manual transfer stock
 let manualTransferStockCodeType = "";
@@ -202,6 +220,15 @@ function updateManualTransferStockCode() {
     manualTransferStockCodeType +
     manualTransferStockCodeColor +
     manualTransferStockCodeSize;
+
+  removeInvalidOptions(
+    manualTransferStockCodeType,
+    "#transferManualColor option"
+  );
+  removeInvalidOptions(
+    manualTransferStockCodeColor,
+    "#transferManualStyle option"
+  );
 }
 /*******************************************************************************************************/
 
@@ -255,4 +282,36 @@ async function searchStock() {
   );
   const res = await req.text();
   document.getElementById("searchResults").innerHTML = res;
+}
+
+function removeInvalidOptions(inputString, querySelector) {
+  // nike stock or not??
+  let oppositeSelectElement = document.querySelectorAll(querySelector);
+  switch (inputString.charAt(0)) {
+    case "":
+      oppositeSelectElement.forEach((opt) => {
+        opt.disabled = false;
+      });
+      break;
+    case "N":
+      oppositeSelectElement.forEach((opt) => {
+        if (opt.value.charAt(0).toString() != "N") {
+          opt.disabled = true;
+        } else opt.disabled = false;
+      });
+      break;
+    default:
+      oppositeSelectElement.forEach((opt) => {
+        if (opt.value.charAt(0).toString() == "N") {
+          opt.disabled = true;
+        } else opt.disabled = false;
+      });
+      break;
+  }
+  //always allow user to reset selection
+  oppositeSelectElement.forEach((opt) => {
+    if (opt.value.charAt(0).toString() == "") {
+      opt.disabled = false;
+    }
+  });
 }

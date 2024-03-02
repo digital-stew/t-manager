@@ -128,12 +128,12 @@ class Stock extends Database
                 stockCodes_color.newCode,
                 stockCodes_color.color
             FROM `t-manager`.stock
-                LEFT JOIN `t-manager`.stockCodes_color
-                ON SUBSTRING(stock.code,5,4) = stockCodes_color.newCode AND stockCodes_color.trueCode = 1
+                LEFT JOIN `t-manager`.stockCodes_color 
+                ON SUBSTRING(stock.code,5,4) = stockCodes_color.newCode AND stockCodes_color.trueCode = 1 
                 LEFT JOIN `t-manager`.stockCodes_size
                 ON SUBSTRING(stock.code,9,3) = stockCodes_size.code
                 LEFT JOIN `t-manager`.stockCodes_type
-                ON SUBSTRING(stock.code,1,4) = stockCodes_type.newCode  AND stockCodes_type.trueCode = 1
+                ON SUBSTRING(stock.code,1,4) = stockCodes_type.newCode AND stockCodes_type.trueCode = 1
         EOD;
 
         try {

@@ -127,14 +127,14 @@ foreach ($removeStockReasons as $reason) {
             <h4 id="addStockModal-manual-userLocation"><?= $sLocation ?></h4>
             <input type="hidden" name="location" id="addStockModal-manual-hiddenLocationInput" value="<?= $sLocation ?>" required>
 
-            <select id="addStockSelectType" name="addStockSelectType" required>
+            <select id="addStockSelectType" name="addStockSelectType" onchange="removeInvalidOptions(this.value,'#addStockSelectColor option')" required>
                 <option value="">--- type ---</option>
                 <?php foreach ($types as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['type'] ?></option>
                 <?php endforeach ?>
             </select>
 
-            <select id="addStockSelectColor" name="addStockSelectColor" required>
+            <select id="addStockSelectColor" name="addStockSelectColor" onchange="removeInvalidOptions(this.value,'#addStockSelectType option')" required>
                 <option value="">--- color ---</option>
                 <?php foreach ($colors as $color) : ?>
                     <option value="<?= $color['newCode'] ?>"><?= $color['color'] ?></option>
@@ -238,14 +238,14 @@ foreach ($removeStockReasons as $reason) {
             <h4 id="removeStockModal-manual-userLocation"><?= $sLocation ?></h4>
             <input type="hidden" name="location" id="removeStockModal-manual-hiddenLocationInput" value="<?= $sLocation ?>" required>
 
-            <select name="removeStockSelectType" required>
+            <select id="removeStockSelectType" name="removeStockSelectType" onchange="removeInvalidOptions(this.value,'#removeStockSelectColor option')" required>
                 <option value="">--- type ---</option>
                 <?php foreach ($types as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['type'] ?></option>
                 <?php endforeach ?>
             </select>
 
-            <select name="removeStockSelectColor" required>
+            <select id="removeStockSelectColor" name="removeStockSelectColor" onchange="removeInvalidOptions(this.value,'#removeStockSelectType option')" required>
                 <option value="">--- color ---</option>
                 <?php foreach ($colors as $color) : ?>
                     <option value="<?= $color['newCode'] ?>"><?= $color['color'] ?></option>
@@ -368,13 +368,13 @@ foreach ($removeStockReasons as $reason) {
         <h4>batch transfer stock</h4>
         <form action="/stores/transfer.php" method="post" style="text-align: center;">
             <select id="batchTransferStyle" name="batchTransferStyle" style="margin-bottom: 1rem;" onchange="batchTransferStockCodeType = this.value;updateBatchTransferStockCode();">
-                <option value="none">--- type ---</option>
+                <option value="">--- type ---</option>
                 <?php foreach ($types as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['type'] ?></option>
                 <?php endforeach ?>
             </select>
             <select id="batchTransferColor" name="batchTransferColor" style="margin-bottom: 1rem;" onchange="batchTransferStockCodeColor = this.value;updateBatchTransferStockCode();">
-                <option value="none">--- color ---</option>
+                <option value="">--- color ---</option>
                 <?php foreach ($colors as $type) : ?>
                     <option value="<?= $type['newCode'] ?>"><?= $type['color'] ?></option>
                 <?php endforeach ?>
