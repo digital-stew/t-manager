@@ -112,16 +112,7 @@ function addStockManualInput() {
 
 function updateRemoveStockOrderField(value) {
   //show "order" input field to user
-  if (value != "other") {
-    document.getElementById("removeStockModal-order-label").style.display =
-      "block";
-    document.getElementById("removeStockModal-order").style.display = "block";
-    document.getElementById(
-      "removeStockModal-manual-order-label"
-    ).style.display = "block";
-    document.getElementById("removeStockModal-manual-order").style.display =
-      "block";
-  } else {
+  if (value == "other" || value == "stock adjust") {
     document.getElementById("removeStockModal-order-label").style.display =
       "none";
     document.getElementById("removeStockModal-order").style.display = "none";
@@ -130,6 +121,15 @@ function updateRemoveStockOrderField(value) {
     ).style.display = "none";
     document.getElementById("removeStockModal-manual-order").style.display =
       "none";
+  } else {
+    document.getElementById("removeStockModal-order-label").style.display =
+      "block";
+    document.getElementById("removeStockModal-order").style.display = "block";
+    document.getElementById(
+      "removeStockModal-manual-order-label"
+    ).style.display = "block";
+    document.getElementById("removeStockModal-manual-order").style.display =
+      "block";
   }
 }
 

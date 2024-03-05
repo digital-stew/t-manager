@@ -296,7 +296,6 @@ class sample extends Database
 
             return true;
         } catch (Exception $e) {
-            //print_r($e->getMessage());
             $Log = new Log();
             $Log->add('ERROR', 'removeImage()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
             return false;

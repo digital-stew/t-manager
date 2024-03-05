@@ -14,58 +14,34 @@ class Stock extends Database
             $code  = strtoupper($code); // auto capitalize user input
             $splitCode = str_split($code, 4);
 
-            $type = '';
-            $color = '';
-            $size = '';
+            $type = $splitCode[0];
+            $color = $splitCode[1];
+            $size = $splitCode[2];
 
-            //      test type
             $sql = <<<EOD
-                SELECT id, newCode, oldCode, type
-                FROM `t-manager`.stockCodes_type
+                SELECT stockCodes_type.type, stockCodes_color.color, stockCodes_size.size
+                FROM `t-manager`.stockCodes_type, `t-manager`.stockCodes_color, `t-manager`.stockCodes_size
+                WHERE 
+                stockCodes_type.newCode = ? AND stockCodes_type.trueCode = 1
+                AND 
+                stockCodes_color.newCode = ? AND stockCodes_color.trueCode = 1
+                AND
+                stockCodes_size.code = ?
             EOD;
             $stm = $this->db->prepare($sql);
+            $stm->bind_param("sss", $type, $color, $size);
             $stm->execute();
-            $result = $stm->get_result();
-
-            while ($row = $result->fetch_assoc()) {
-                if ($splitCode[0] == $row['newCode']) $type = $row['type'];
-            }
+            $result = $stm->get_result()->fetch_assoc();
             $stm->close();
 
-            //      test color
-            $sql = <<<EOD
-                SELECT id, newCode, oldCode, color
-                FROM `t-manager`.stockCodes_color
-            EOD;
-            $stm = $this->db->prepare($sql);
-            $stm->execute();
-            $result = $stm->get_result();
-            while ($row = $result->fetch_assoc()) {
-                if ($splitCode[1] == $row['newCode']) $color = $row['color'];
-            }
-            $stm->close();
-
-            //      test size
-            $sql = <<<EOD
-                SELECT id, code, size
-                FROM `t-manager`.stockCodes_size
-            EOD;
-            $stm = $this->db->prepare($sql);
-            $stm->execute();
-            $result = $stm->get_result();
-            while ($row = $result->fetch_assoc()) {
-                if ($splitCode[2] == $row['code']) $size = $row['size'];
-            }
-            $stm->close();
-
-            if ($type == '') throw new Exception('parse error: type');
-            if ($color == '') throw new Exception('parse error: color');
-            if ($size == '') throw new Exception('parse error: size');
+            if (!$result['type']) throw new Exception('parse error: type');
+            if (!$result['color']) throw new Exception('parse error: color');
+            if (!$result['size']) throw new Exception('parse error: size');
 
             return [
-                'type' => $type,
-                'color' => $color,
-                'size' => $size,
+                'type' => $result['type'],
+                'color' => $result['color'],
+                'size' => $result['size'],
             ];
         } catch (Exception $e) {
             $Log = new Log();
@@ -78,7 +54,7 @@ class Stock extends Database
     function searchCode(string $code): array
     {
         $sql = <<<EOD
-            SELECT stock.*
+            SELECT stock.id, stock.code, stock.location, stock.amount
             FROM `t-manager`.stock
             WHERE code LIKE ?
         EOD;
@@ -191,7 +167,7 @@ class Stock extends Database
 
             //check is code exists in database
             $sql = <<<EOD
-                SELECT *
+                SELECT stock.id
                 FROM `t-manager`.stock
                 WHERE code = ?
                 AND location = ?

@@ -59,11 +59,6 @@ mysql:
     mysql -u debian-sys-maint -p t-manager < /root/dump.sql
 
 TODO:
-    *batch add order - error on no cam fanatics page
-    *no logging on color or type change
-    *check for identical type or color before saving new - limit db return to 1
-    *separate nike and fanatics - make user unable to select invalid type color combinations
-        and in backend (just for dave)
     add search to fanatic orders
     add search to logs
-    *stop stock table using multiple lines on mobile
+

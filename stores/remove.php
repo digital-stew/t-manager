@@ -41,7 +41,8 @@ if ((isset($_POST['code']) || isset($_POST['manualRemoveStock'])) && isset($_POS
 
         //valid reason
         //get current order id and allow "other" to remove stock with no order number
-        if ($_POST['reason'] == 'other') {
+
+        if ($_POST['reason'] == 'other' || $_POST['reason'] == 'stock adjust') {
             $orderId = 0;
         } else {
             $FanaticOrders = new FanaticOrders();

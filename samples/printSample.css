@@ -1,5 +1,5 @@
 body {
-  height: 25cm;
+  max-height: 25cm;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -14,6 +14,13 @@ h2 {
   background-color: none;
   background: none;
 }
+
+.heading {
+  background-color: red;
+  border-width: 5px;
+  border: 5px;
+  border-color: black;
+}
 .printData {
   display: flex;
   padding: 0;
@@ -23,6 +30,8 @@ h2 {
   justify-content: center;
   gap: 2rem;
   color: inherit;
+  margin-bottom: auto;
+  margin-top: auto;
 }
 
 .printData * {
@@ -33,11 +42,12 @@ h2 {
 
 .sampleImage {
   display: block;
-  max-width: 220px;
-  height: auto;
+  max-width: 250px;
+  object-fit: contain;
 }
 
 .images {
+  background-color: green;
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;

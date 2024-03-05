@@ -118,6 +118,8 @@ function printSample(elem) {
 
   const sampleName = document.getElementById("sampleName").innerText;
   const sampleNumber = document.getElementById("sampleNumber").innerText;
+  const sampleOtherRef = document.getElementById("otherRef").innerText;
+  const sampledDate = document.getElementById("sampledDate").innerText;
   const samplePrintData = document.getElementById("samplePrintData").outerHTML;
 
   let sampleNotes;
@@ -126,8 +128,10 @@ function printSample(elem) {
     sampleNotes = document.getElementById("sampleNotes").innerText;
   } catch (error) {}
 
-  html += `<section>`;
+  html += `<section class="heading">`;
   html += `<h1>${sampleName} ${sampleNumber}</h1>`;
+  html += `<h2>${sampleOtherRef}</h2>`;
+  html += `<h2>${sampledDate}</h2>`;
   html += `</section>`;
 
   html += `<section class="printData">`;
@@ -151,5 +155,6 @@ function printSample(elem) {
   window.print();
 
   document.body.innerHTML = oldPage; //restore old page back to user viewable
+  closeModal();
   return false;
 }

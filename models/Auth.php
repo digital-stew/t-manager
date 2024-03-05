@@ -10,9 +10,11 @@ class Auth extends Database
         try {
             $stm = $this->db->prepare("SELECT * FROM `t-manager`.users WHERE user = ?");
             $stm->bind_param("s", $userName);
-            $stm->execute() or die('db error');
+            $stm->execute();
             $user = $stm->get_result()->fetch_assoc();
             $stm->close();
+
+            if (!$user) throw new Exception('invalid user');
 
             if (password_verify($password, $user['password'])) {
                 $_SESSION['userName'] = $user['user'];
@@ -32,15 +34,6 @@ class Auth extends Database
     function isLoggedIn()
     {
         if (!isset($_SESSION['userName'])) {
-            // print_r($_SERVER);
-            // exit;
-            /*
-            if (isset($_SERVER['HTTP_REFERER'])) {
-                header("Refresh:0; url=" . $_SERVER['HTTP_REFERER'] . "?flashUser=not logged in");
-            } else {
-                echo "<script>alert('not logged in'); </script>";
-            }
-            */
             die("<script>alert('not logged in'); </script>");
         };
         return true;

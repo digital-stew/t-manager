@@ -676,7 +676,7 @@ class Admin extends Database
         $sql = <<<EOD
             SELECT id, reason
             FROM `t-manager`.removeStockReasons
-            ORDER BY id DESC
+            ORDER BY id ASC
         EOD;
 
         try {
