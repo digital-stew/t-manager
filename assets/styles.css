@@ -112,9 +112,9 @@ h6 {
 .burgerMenu span {
   position: relative;
   display: block;
-  margin-block: 5px;
-  width: 30px;
-  height: 3px;
+  margin-block: 7px;
+  width: 50px;
+  height: 4px;
   background-color: var(--body-text-color);
   z-index: 102;
 }
