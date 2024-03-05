@@ -30,8 +30,8 @@ if (isset($_GET['getUser']) && isset($_GET['id'])) {
 if (isset($_POST['addUser'])) {
     session_start();
     $Auth->isAdmin();
-    if (strlen($_POST['userName']) < 4) {
-        header('Location: /admin?flashUser=Username too short. > 3');
+    if (strlen($_POST['userName']) < 3) {
+        header('Location: /admin?flashUser=Username too short. > 2');
         die();
     }
     if (strlen($_POST['userName']) > 10) {

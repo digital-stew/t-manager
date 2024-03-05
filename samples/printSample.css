@@ -16,7 +16,7 @@ h2 {
 }
 
 .heading {
-  background-color: red;
+  /* background-color: red; */
   border-width: 5px;
   border: 5px;
   border-color: black;
@@ -38,6 +38,10 @@ h2 {
   padding: 0;
   margin: 0;
   color: inherit;
+  /* max-width: 50%; */
+}
+.notes {
+  max-width: 30%;
 }
 
 .sampleImage {
@@ -47,7 +51,7 @@ h2 {
 }
 
 .images {
-  background-color: green;
+  /* background-color: green; */
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;

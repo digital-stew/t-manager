@@ -137,7 +137,7 @@ function printSample(elem) {
   html += `<section class="printData">`;
   html += samplePrintData;
   if (sampleNotes) {
-    html += `<div><h4>Notes</h4>`;
+    html += `<div class="notes"><h4>Notes</h4>`;
     html += sampleNotes;
     html += `</div>`;
   }
