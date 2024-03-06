@@ -76,4 +76,49 @@ class Log extends Database
         if ($dbResponse) return true;
         else return false;
     }
+
+    function search(string $searchString)
+    {
+        try {
+            $sql = <<<EOD
+            SELECT *
+            FROM `t-manager`.log
+            WHERE 
+            logID LIKE ?
+            OR action LIKE ?
+            OR subject LIKE ?
+            OR note LIKE ?
+            OR userName LIKE ?
+            OR orderName LIKE ?
+            LIMIT 1000
+        EOD;
+            $stm = $this->db->prepare($sql);
+            $searchTerm = '%' . $searchString . '%';
+            $stm->bind_param("ssssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+            $stm->execute();
+            $result = $stm->get_result();
+
+            $searchResults = [];
+            while ($log = $result->fetch_assoc()) {
+                $tmp = array(
+                    'id' => $log['id'],
+                    'action' => $log['action'],
+                    'subject' => $log['subject'],
+                    'orderName' => $log['orderName'],
+                    'logID' => $log['logID'],
+                    'note' => $log['note'],
+                    'userName' => $log['userName'],
+                    'timestamp' => $log['timestamp'],
+                );
+                array_push($searchResults, $tmp);
+            }
+            return $searchResults;
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'search()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
+            die();
+        }
+    }
 }

@@ -59,6 +59,4 @@ mysql:
     mysql -u debian-sys-maint -p t-manager < /root/dump.sql
 
 TODO:
-    add search to fanatic orders
-    add search to logs
 

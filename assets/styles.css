@@ -312,6 +312,7 @@ input[type="date"] {
   padding-inline: 12px;
   border: none;
   padding-block: 3px;
+  -webkit-box-shadow: 0 5px 25px rgba(0, 0, 0, 0.8);
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.8);
   -webkit-appearance: button;
   appearance: button;
@@ -336,6 +337,8 @@ input[type="file"]::file-selector-button {
   border: unset;
   transition: all 500ms;
   margin: 1rem;
+  -webkit-box-shadow: 0 5px 25px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.8);
 }
 button:hover,
 input[type="file"]::file-selector-button:hover {

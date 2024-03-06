@@ -3,9 +3,13 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Auth.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Log.php';
 
-$Log = new Log();
-$log = $Log->get();
 $Auth = new Auth();
+$Log = new Log();
+if (isset($_GET['search'])) {
+    $log = $Log->search($_GET['search']);
+} else {
+    $log = $Log->get();
+}
 
 ?>
 <!DOCTYPE html>
@@ -32,6 +36,9 @@ $Auth = new Auth();
     </div>
 
     <section>
+        <form action="/admin/log.php" method="get" autocomplete="off" style="height: min-content;text-align: center;margin-bottom: 1rem;">
+            <input type="search" id="search" autocomplete="off" name="search" placeholder="search...">
+        </form>
         <table class="border" style="width: 100%;">
             <thead>
                 <tr>

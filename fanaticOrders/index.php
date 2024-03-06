@@ -5,8 +5,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/models/Stock.php';
 $Stock = new Stock();
 $FanaticOrders = new FanaticOrders();
 
+
 if (isset($_GET['complete'])) {
     $orders = $FanaticOrders->getOrders('complete');
+} elseif (isset($_GET['search'])) {
+    $orders = $FanaticOrders->search($_GET['search']);
 } else {
     $orders = $FanaticOrders->getOrders('pending/short');
 }
@@ -43,29 +46,33 @@ if (isset($_GET['complete'])) {
         <hr>
 
     </div>
-
-    <table class="border" style="align-self: flex-start;">
-        <thead>
-            <tr>
-                <th>id</th>
-                <th>batch</th>
-                <th>garment</th>
-                <th>code</th>
-                <th>status</th>
-            </tr>
-        </thead>
-        <tbody id="searchResults">
-            <?php foreach ($orders as $order) : ?>
-                <tr onclick="showModal('/fanaticOrders/orderDetails.php?id=<?= $order['id'] ?>');">
-                    <td><?= $order['id'] ?></td>
-                    <td><?= $order['name'] ?></td>
-                    <td><?= $order['garment'] ?></td>
-                    <td><?= $order['code'] ?></td>
-                    <td><?= $order['status'] ?></td>
+    <section style="display: flex;flex-direction: column;">
+        <form action="/fanaticOrders/" method="get" autocomplete="off" style="height: min-content;text-align: center;margin-bottom: 1rem;">
+            <input type="search" id="search" autocomplete="off" name="search" placeholder="search...">
+        </form>
+        <table class="border" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>batch</th>
+                    <th>garment</th>
+                    <th>code</th>
+                    <th>status</th>
                 </tr>
-            <?php endforeach ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody id="searchResults">
+                <?php foreach ($orders as $order) : ?>
+                    <tr onclick="showModal('/fanaticOrders/orderDetails.php?id=<?= $order['id'] ?>');">
+                        <td><?= $order['id'] ?></td>
+                        <td><?= $order['name'] ?></td>
+                        <td><?= $order['garment'] ?></td>
+                        <td><?= $order['code'] ?></td>
+                        <td><?= $order['status'] ?></td>
+                    </tr>
+                <?php endforeach ?>
+            </tbody>
+        </table>
+    </section>
 
     <dialog id="addAndPickOrder-modal">
         <div class="with-tooltip"><img src="/assets/images/help.png" alt="help" class="help-icon">

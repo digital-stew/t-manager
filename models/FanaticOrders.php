@@ -427,4 +427,41 @@ class FanaticOrders extends Database
             die();
         }
     }
+
+    function search(string $searchString)
+    {
+        try {
+            $sql = <<<EOD
+            SELECT *
+            FROM `t-manager`.forders
+            WHERE name LIKE ?
+            OR code LIKE ?
+        EOD;
+            $stm = $this->db->prepare($sql);
+            $searchTerm = '%' . $searchString . '%';
+            $stm->bind_param("ss", $searchTerm, $searchTerm);
+            $stm->execute();
+            $result = $stm->get_result();
+
+            $searchResults = [];
+            while ($order = $result->fetch_assoc()) {
+                $order = [
+                    'id' => $order['id'],
+                    'code' => $order['code'],
+                    'name' => $order['name'],
+                    'garment' => $order['garment'],
+                    'status' => $order['status']
+                ];
+                array_push($searchResults, $order);
+            }
+
+            return $searchResults;
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+            $Log = new Log();
+            $Log->add('ERROR', 'search()', $e->getFile(), '', "{$e->getMessage()} - line: {$e->getLine()}");
+            return false;
+            die();
+        }
+    }
 }
