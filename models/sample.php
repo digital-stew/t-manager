@@ -85,7 +85,7 @@ class sample extends Database
         try {
             $stm = $this->db->prepare($sql);
             $searchTerm = '%' . $search . '%';
-            $stm->bind_param("sssi", $searchTerm, $searchTerm, $searchTerm, $limit); // code-spell-checker:disable-line
+            $stm->bind_param("sssi", $searchTerm, $searchTerm, $search, $limit); // code-spell-checker:disable-line
             $stm->execute();
             $response = $stm->get_result();
 
